@@ -21,26 +21,39 @@ export function Inicio() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-57px)] flex-col md:flex-row">
-      <div className="h-72 shrink-0 md:h-full md:w-3/5">
+    <div className="flex w-full flex-col md:flex-row">
+      <div className="relative h-72 shrink-0 border-b-2 border-brand-700 md:h-full md:w-3/5 md:border-r-2 md:border-b-0">
         <MapaMascotas mascotas={mascotas} />
       </div>
-      <div className="flex-1 overflow-y-auto bg-brand-50 p-4">
-        <h2 className="mb-3 text-lg font-bold text-brand-800">
-          Mascotas reportadas ({mascotas.length})
-        </h2>
-        {cargando && <p className="text-sm text-gray-500">Cargando...</p>}
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        <div className="space-y-3">
+      <div className="flex flex-1 flex-col overflow-y-auto bg-paper">
+        <div className="sticky top-0 z-[1] flex items-center justify-between border-b border-line bg-paper-raised px-4 py-3">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-widest text-ink-faint">
+              Casos activos
+            </p>
+            <p className="font-display text-2xl font-extrabold text-brand-700">
+              {cargando ? '—' : mascotas.length}
+            </p>
+          </div>
+          <span className="rounded-full border border-brand-200 bg-brand-50 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-brand-700">
+            En tiempo real
+          </span>
+        </div>
+
+        <div className="flex-1 space-y-3 p-4">
+          {cargando && <p className="text-sm text-ink-soft">Cargando reportes...</p>}
+          {error && <p className="text-sm text-brand-700">{error}</p>}
           {mascotas.map((mascota) => (
             <MascotaCard key={mascota.id} mascota={mascota} onEncontrada={handleEncontrada} />
           ))}
+          {!cargando && mascotas.length === 0 && !error && (
+            <div className="rounded-lg border border-dashed border-line-strong p-6 text-center">
+              <p className="text-sm text-ink-soft">
+                Aún no hay mascotas reportadas. Sé el primero en publicar un caso.
+              </p>
+            </div>
+          )}
         </div>
-        {!cargando && mascotas.length === 0 && !error && (
-          <p className="text-sm text-gray-500">
-            Aún no hay mascotas reportadas. Sé el primero en publicar un reporte.
-          </p>
-        )}
       </div>
     </div>
   );

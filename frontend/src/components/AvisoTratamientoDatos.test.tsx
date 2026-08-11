@@ -16,7 +16,7 @@ describe('AvisoTratamientoDatos', () => {
   it('abre el modal con el aviso completo al hacer click en "Leer más"', async () => {
     render(<AvisoTratamientoDatos checked={false} onChange={vi.fn()} />);
 
-    await userEvent.click(screen.getByText('Leer más'));
+    await userEvent.click(screen.getByText('Leer aviso completo'));
 
     expect(screen.getByText('Aviso de tratamiento de datos personales')).toBeInTheDocument();
   });

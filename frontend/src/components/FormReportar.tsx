@@ -1,10 +1,29 @@
-import { type FormEvent, useState } from 'react';
+import { type FormEvent, type ReactNode, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SelectorUbicacion } from './SelectorUbicacion';
 import { AvisoTratamientoDatos } from './AvisoTratamientoDatos';
 import { crearMascota, guardarEditToken, presignUpload, subirFotoAS3 } from '../api';
 
 const TELEFONO_REGEX = /^(\+?57)?[3][0-9]{9}$/;
+
+const inputClass =
+  'mt-1 w-full rounded-md border border-line-strong bg-paper-raised px-3 py-2 text-sm text-ink placeholder:text-ink-faint focus:border-brand-600 focus:outline-none';
+const labelClass = 'block text-xs font-semibold tracking-wide text-ink-soft uppercase';
+const errorClass = 'mt-1 text-xs font-medium text-brand-700';
+
+function Seccion({ numero, titulo, children }: { numero: string; titulo: string; children: ReactNode }) {
+  return (
+    <section className="rounded-lg border border-line bg-paper-raised p-4 sm:p-5">
+      <div className="mb-4 flex items-center gap-2 border-b border-line pb-2.5">
+        <span className="font-mono text-xs text-brand-600">{numero}</span>
+        <h2 className="font-display text-sm font-bold tracking-wide text-ink uppercase">
+          {titulo}
+        </h2>
+      </div>
+      <div className="space-y-4">{children}</div>
+    </section>
+  );
+}
 
 interface Errores {
   [campo: string]: string;
@@ -88,144 +107,146 @@ export function FormReportar() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto max-w-2xl space-y-6 p-4">
-      <h1 className="text-2xl font-bold text-brand-800">Reportar mascota perdida</h1>
+    <form onSubmit={handleSubmit} className="mx-auto max-w-2xl space-y-4 p-4 sm:p-6">
+      <div>
+        <p className="font-mono text-xs tracking-widest text-brand-600 uppercase">
+          Formulario de reporte
+        </p>
+        <h1 className="font-display text-2xl font-extrabold text-ink">Reportar mascota perdida</h1>
+      </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Nombre del perro</label>
-          <input
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none"
-          />
-          {errores.nombre && <p className="mt-1 text-xs text-red-600">{errores.nombre}</p>}
+      <Seccion numero="01" titulo="Datos de la mascota">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label className={labelClass}>Nombre del perro</label>
+            <input
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              className={inputClass}
+            />
+            {errores.nombre && <p className={errorClass}>{errores.nombre}</p>}
+          </div>
+
+          <div>
+            <label className={labelClass}>Raza</label>
+            <input value={raza} onChange={(e) => setRaza(e.target.value)} className={inputClass} />
+            {errores.raza && <p className={errorClass}>{errores.raza}</p>}
+          </div>
+
+          <div>
+            <label className={labelClass}>Género</label>
+            <select
+              value={genero}
+              onChange={(e) => setGenero(e.target.value as 'Macho' | 'Hembra')}
+              className={inputClass}
+            >
+              <option value="Macho">Macho</option>
+              <option value="Hembra">Hembra</option>
+            </select>
+          </div>
+
+          <div className="sm:col-span-2">
+            <label className={labelClass}>Foto de la mascota</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setFoto(e.target.files?.[0] ?? null)}
+              className="mt-1 w-full text-sm text-ink-soft file:mr-3 file:rounded-md file:border-0 file:bg-brand-100 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-brand-700 hover:file:bg-brand-200"
+            />
+            {errores.foto && <p className={errorClass}>{errores.foto}</p>}
+          </div>
+        </div>
+      </Seccion>
+
+      <Seccion numero="02" titulo="Última vez vista">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label className={labelClass}>Fecha y hora</label>
+            <input
+              type="datetime-local"
+              value={ultimaVezFecha}
+              onChange={(e) => setUltimaVezFecha(e.target.value)}
+              className={inputClass}
+            />
+            {errores.ultimaVezFecha && <p className={errorClass}>{errores.ultimaVezFecha}</p>}
+          </div>
+
+          <div>
+            <label className={labelClass}>Lugar (descripción)</label>
+            <input
+              value={ultimaVezLugarTexto}
+              onChange={(e) => setUltimaVezLugarTexto(e.target.value)}
+              placeholder="Parque principal, cerca a la iglesia"
+              className={inputClass}
+            />
+            {errores.ultimaVezLugarTexto && (
+              <p className={errorClass}>{errores.ultimaVezLugarTexto}</p>
+            )}
+          </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Raza</label>
-          <input
-            value={raza}
-            onChange={(e) => setRaza(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none"
-          />
-          {errores.raza && <p className="mt-1 text-xs text-red-600">{errores.raza}</p>}
+          <label className={labelClass}>Punto exacto en el mapa (click para marcar)</label>
+          <div className="mt-1 overflow-hidden rounded-md border border-line-strong">
+            <SelectorUbicacion
+              lat={lat}
+              lng={lng}
+              onSeleccionar={(a, b) => {
+                setLat(a);
+                setLng(b);
+              }}
+            />
+          </div>
+          {errores.ubicacion && <p className={errorClass}>{errores.ubicacion}</p>}
         </div>
+      </Seccion>
 
+      <Seccion numero="03" titulo="Contacto y residencia">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Género</label>
-          <select
-            value={genero}
-            onChange={(e) => setGenero(e.target.value as 'Macho' | 'Hembra')}
-            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none"
-          >
-            <option value="Macho">Macho</option>
-            <option value="Hembra">Hembra</option>
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Última vez visto (fecha y hora)
-          </label>
-          <input
-            type="datetime-local"
-            value={ultimaVezFecha}
-            onChange={(e) => setUltimaVezFecha(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none"
-          />
-          {errores.ultimaVezFecha && (
-            <p className="mt-1 text-xs text-red-600">{errores.ultimaVezFecha}</p>
-          )}
-        </div>
-
-        <div className="sm:col-span-2">
-          <label className="block text-sm font-medium text-gray-700">
-            Lugar donde fue visto por última vez
-          </label>
-          <input
-            value={ultimaVezLugarTexto}
-            onChange={(e) => setUltimaVezLugarTexto(e.target.value)}
-            placeholder="Ej. Parque principal, cerca a la iglesia"
-            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none"
-          />
-          {errores.ultimaVezLugarTexto && (
-            <p className="mt-1 text-xs text-red-600">{errores.ultimaVezLugarTexto}</p>
-          )}
-        </div>
-
-        <div className="sm:col-span-2">
-          <label className="block text-sm font-medium text-gray-700">
-            Lugar de residencia (para saber a dónde ir si se encuentra)
-          </label>
+          <label className={labelClass}>Lugar de residencia (para saber a dónde ir)</label>
           <input
             value={lugarResidencia}
             onChange={(e) => setLugarResidencia(e.target.value)}
-            placeholder="Ej. Cra 10 #5-20, barrio Centro, Armenia"
-            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none"
+            placeholder="Cra 10 #5-20, barrio Centro, Armenia"
+            className={inputClass}
           />
-          {errores.lugarResidencia && (
-            <p className="mt-1 text-xs text-red-600">{errores.lugarResidencia}</p>
-          )}
+          {errores.lugarResidencia && <p className={errorClass}>{errores.lugarResidencia}</p>}
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Teléfono de contacto 1
-          </label>
-          <input
-            value={telefono1}
-            onChange={(e) => setTelefono1(e.target.value)}
-            placeholder="3001234567"
-            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none"
-          />
-          {errores.telefono1 && <p className="mt-1 text-xs text-red-600">{errores.telefono1}</p>}
-        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label className={labelClass}>Teléfono de contacto 1</label>
+            <input
+              value={telefono1}
+              onChange={(e) => setTelefono1(e.target.value)}
+              placeholder="3001234567"
+              className={`${inputClass} font-mono`}
+            />
+            {errores.telefono1 && <p className={errorClass}>{errores.telefono1}</p>}
+          </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Teléfono de contacto 2
-          </label>
-          <input
-            value={telefono2}
-            onChange={(e) => setTelefono2(e.target.value)}
-            placeholder="3007654321"
-            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none"
-          />
-          {errores.telefono2 && <p className="mt-1 text-xs text-red-600">{errores.telefono2}</p>}
+          <div>
+            <label className={labelClass}>Teléfono de contacto 2</label>
+            <input
+              value={telefono2}
+              onChange={(e) => setTelefono2(e.target.value)}
+              placeholder="3007654321"
+              className={`${inputClass} font-mono`}
+            />
+            {errores.telefono2 && <p className={errorClass}>{errores.telefono2}</p>}
+          </div>
         </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Ubicación donde fue vista (click en el mapa)
-        </label>
-        <div className="mt-1">
-          <SelectorUbicacion lat={lat} lng={lng} onSeleccionar={(a, b) => { setLat(a); setLng(b); }} />
-        </div>
-        {errores.ubicacion && <p className="mt-1 text-xs text-red-600">{errores.ubicacion}</p>}
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Foto de la mascota</label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setFoto(e.target.files?.[0] ?? null)}
-          className="mt-1 w-full text-sm"
-        />
-        {errores.foto && <p className="mt-1 text-xs text-red-600">{errores.foto}</p>}
-      </div>
+      </Seccion>
 
       <AvisoTratamientoDatos checked={autoriza} onChange={setAutoriza} />
-      {errores.autoriza && <p className="text-xs text-red-600">{errores.autoriza}</p>}
+      {errores.autoriza && <p className={errorClass}>{errores.autoriza}</p>}
 
-      {errorEnvio && <p className="text-sm text-red-600">{errorEnvio}</p>}
+      {errorEnvio && <p className="text-sm font-medium text-brand-700">{errorEnvio}</p>}
 
       <button
         type="submit"
         disabled={enviando}
-        className="w-full rounded-full bg-brand-600 px-4 py-3 font-semibold text-white hover:bg-brand-700 disabled:opacity-50"
+        className="w-full rounded-md bg-brand-600 px-4 py-3 font-display font-bold tracking-wide text-white uppercase shadow-sm shadow-brand-900/20 transition-colors hover:bg-brand-700 disabled:opacity-50"
       >
         {enviando ? 'Publicando...' : 'Publicar reporte'}
       </button>

@@ -4,9 +4,9 @@ import type { Mascota } from '../types';
 
 const iconoMascota = L.divIcon({
   className: '',
-  html: `<div style="background:#dc2626;width:16px;height:16px;border-radius:50%;border:3px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.4)"></div>`,
-  iconSize: [16, 16],
-  iconAnchor: [8, 8],
+  html: `<div style="background:#c81e3a;width:18px;height:18px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.4)"></div>`,
+  iconSize: [18, 18],
+  iconAnchor: [9, 18],
 });
 
 const CENTRO_COLOMBIA: [number, number] = [4.5709, -74.2973];

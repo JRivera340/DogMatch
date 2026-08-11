@@ -34,7 +34,7 @@ describe('MascotaCard', () => {
     render(<MascotaCard mascota={mascota} />);
 
     expect(screen.getByText('Firulais')).toBeInTheDocument();
-    expect(screen.getByText('Criollo')).toBeInTheDocument();
+    expect(screen.getByText(/Criollo/)).toBeInTheDocument();
     expect(screen.getByText(/Parque principal/)).toBeInTheDocument();
     expect(screen.getByText(/Cra 10 #5-20/)).toBeInTheDocument();
   });
@@ -47,8 +47,8 @@ describe('MascotaCard', () => {
     expect(botonesWhatsApp[0]).toHaveAttribute('href', expect.stringContaining('573001234567'));
     expect(botonesWhatsApp[1]).toHaveAttribute('href', expect.stringContaining('573007654321'));
 
-    expect(screen.getByText('Copiar 3001234567')).toBeInTheDocument();
-    expect(screen.getByText('Copiar 3007654321')).toBeInTheDocument();
+    expect(screen.getByText('3001234567')).toBeInTheDocument();
+    expect(screen.getByText('3007654321')).toBeInTheDocument();
   });
 
   it('no muestra botón de "marcar encontrada" sin editToken guardado', () => {

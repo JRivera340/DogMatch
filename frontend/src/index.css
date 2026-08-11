@@ -1,27 +1,82 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-50: #fef2f2;
-  --color-brand-100: #fee2e2;
-  --color-brand-200: #fecaca;
-  --color-brand-300: #fca5a5;
-  --color-brand-400: #f87171;
-  --color-brand-500: #ef4444;
-  --color-brand-600: #dc2626;
-  --color-brand-700: #b91c1c;
-  --color-brand-800: #991b1b;
-  --color-brand-900: #7f1d1d;
+  /* superficie */
+  --color-paper: #faf8f4;
+  --color-paper-raised: #ffffff;
 
-  --font-sans: 'Segoe UI', system-ui, Roboto, sans-serif;
+  /* texto */
+  --color-ink: #221d1a;
+  --color-ink-soft: #6b6058;
+  --color-ink-faint: #9c9188;
+
+  /* marca — rojo de sello oficial, no bootstrap-red */
+  --color-brand-900: #4a0e17;
+  --color-brand-800: #6b1420;
+  --color-brand-700: #8f1626;
+  --color-brand-600: #c81e3a;
+  --color-brand-500: #e0334a;
+  --color-brand-100: #f9dee1;
+  --color-brand-50: #fdf2f3;
+
+  /* estado encontrada */
+  --color-moss-700: #33502e;
+  --color-moss-600: #4b7040;
+  --color-moss-100: #e6ecd9;
+
+  --color-line: #e8dfd2;
+  --color-line-strong: #d8ccb9;
+
+  --font-display: 'Archivo', system-ui, sans-serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 }
 
 body {
   margin: 0;
-  background-color: var(--color-brand-50);
+  background-color: var(--color-paper);
+  color: var(--color-ink);
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-brand-100);
+  color: var(--color-brand-900);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand-600);
+  outline-offset: 2px;
 }
 
 .leaflet-container {
   width: 100%;
   height: 100%;
+  font-family: var(--font-sans);
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 0.5rem;
+}
+
+/* sello rotado de estado, motivo firma de la marca */
+.stamp {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border: 2px solid currentColor;
+  border-radius: 9999px;
+  padding: 0.2rem 0.6rem;
+  transform: rotate(-6deg);
+  display: inline-block;
+}
+
+/* línea de perforación entre foto y datos, motivo ficha/talonario */
+.perforation {
+  background-image: radial-gradient(circle, var(--color-paper) 2.5px, transparent 2.6px);
+  background-size: 10px 100%;
+  background-repeat: repeat-y;
 }
