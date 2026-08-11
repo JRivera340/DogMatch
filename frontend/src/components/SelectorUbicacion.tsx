@@ -1,19 +1,24 @@
-import { MapContainer, Marker, TileLayer, useMapEvents } from 'react-leaflet';
+import { useEffect } from 'react';
+import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 
 const iconoSeleccion = L.divIcon({
   className: '',
-  html: `<div style="background:#dc2626;width:20px;height:20px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.4)"></div>`,
-  iconSize: [20, 20],
-  iconAnchor: [10, 20],
+  html: `<div style="position:relative"><div style="background:#c81e3a;width:22px;height:22px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.45)"></div><div class="pin-sombra"></div></div>`,
+  iconSize: [22, 22],
+  iconAnchor: [11, 22],
 });
 
-const CENTRO_COLOMBIA: [number, number] = [4.5709, -74.2973];
+// Bogotá — centro por defecto cuando no hay geolocalización disponible
+const CENTRO_BOGOTA: [number, number] = [4.711, -74.0721];
+const ZOOM_DEFECTO = 12;
+const ZOOM_PUNTO = 14;
 
 interface Props {
   lat: number | null;
   lng: number | null;
   onSeleccionar: (lat: number, lng: number) => void;
+  error?: string;
 }
 
 function ClickHandler({ onSeleccionar }: { onSeleccionar: (lat: number, lng: number) => void }) {
@@ -25,19 +30,71 @@ function ClickHandler({ onSeleccionar }: { onSeleccionar: (lat: number, lng: num
   return null;
 }
 
-export function SelectorUbicacion({ lat, lng, onSeleccionar }: Props) {
+/** Recentra el mapa en la ubicación del navegador si el usuario la concede, una sola vez al montar. */
+function GeolocalizarAlMontar({ yaTieneSeleccion }: { yaTieneSeleccion: boolean }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (yaTieneSeleccion || !navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (posicion) => {
+        map.setView([posicion.coords.latitude, posicion.coords.longitude], ZOOM_DEFECTO);
+      },
+      () => {
+        // permiso denegado o no disponible: se queda en el centro por defecto (Bogotá)
+      },
+      { timeout: 4000 },
+    );
+    // solo al montar
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return null;
+}
+
+export function SelectorUbicacion({ lat, lng, onSeleccionar, error }: Props) {
+  const tienePunto = lat !== null && lng !== null;
+
   return (
-    <MapContainer
-      center={lat && lng ? [lat, lng] : CENTRO_COLOMBIA}
-      zoom={lat && lng ? 13 : 6}
-      className="h-64 w-full rounded-lg"
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      <ClickHandler onSeleccionar={onSeleccionar} />
-      {lat !== null && lng !== null && <Marker position={[lat, lng]} icon={iconoSeleccion} />}
-    </MapContainer>
+    <div className="relative">
+      <MapContainer
+        center={tienePunto ? [lat, lng] : CENTRO_BOGOTA}
+        zoom={tienePunto ? ZOOM_PUNTO : ZOOM_DEFECTO}
+        style={{ height: '16rem', width: '100%' }}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <GeolocalizarAlMontar yaTieneSeleccion={tienePunto} />
+        <ClickHandler onSeleccionar={onSeleccionar} />
+        {tienePunto && (
+          <Marker
+            position={[lat, lng]}
+            icon={iconoSeleccion}
+            draggable
+            eventHandlers={{
+              dragend: (e) => {
+                const posicion = e.target.getLatLng();
+                onSeleccionar(posicion.lat, posicion.lng);
+              },
+            }}
+          />
+        )}
+      </MapContainer>
+
+      {error && !tienePunto && (
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-[500] border-b-2 border-brand-600 bg-brand-50/95 px-3 py-2 text-[13px] font-medium text-brand-800">
+          {error}
+        </div>
+      )}
+
+      <div className="flex items-center justify-between border-t border-line-strong bg-paper-raised px-3 py-1.5">
+        <span className="u-data text-ink-faint">
+          {tienePunto ? `${lat.toFixed(5)}, ${lng.toFixed(5)}` : 'Sin punto marcado'}
+        </span>
+        {tienePunto && <span className="u-data text-brand-600">Arrastra el pin para ajustar</span>}
+      </div>
+    </div>
   );
 }

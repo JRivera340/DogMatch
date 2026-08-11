@@ -10,10 +10,8 @@ export function AvisoTratamientoDatos({ checked, onChange }: Props) {
 
   return (
     <div className="border-l-4 border-brand-600 bg-brand-50 p-4">
-      <p className="font-mono text-[10px] tracking-widest text-brand-700 uppercase">
-        Ley 1581 de 2012 · Habeas Data
-      </p>
-      <label className="mt-1.5 flex items-start gap-3 text-sm text-ink">
+      <p className="u-eyebrow">Ley 1581 de 2012 · Habeas Data</p>
+      <label className="mt-2 flex items-start gap-3 u-body">
         <input
           type="checkbox"
           checked={checked}
@@ -40,20 +38,20 @@ export function AvisoTratamientoDatos({ checked, onChange }: Props) {
           onClick={() => setModalAbierto(false)}
         >
           <div
-            className="max-h-[80vh] max-w-lg overflow-y-auto rounded-lg border-t-4 border-brand-600 bg-paper-raised p-6 shadow-xl"
+            className="max-h-[80vh] max-w-lg overflow-y-auto border-t-4 border-brand-600 bg-paper-raised p-6 shadow-[4px_4px_0_rgba(34,29,26,0.15)]"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="font-display mb-3 text-lg font-extrabold text-brand-800">
+            <h2 className="u-title-card mb-3 text-brand-800">
               Aviso de tratamiento de datos personales
             </h2>
-            <p className="mb-3 text-sm text-ink-soft">
+            <p className="u-body mb-3 text-ink-soft">
               De conformidad con la Ley 1581 de 2012 y el Decreto 1377 de 2013 de la República de
               Colombia, los datos personales suministrados en este formulario (nombre de contacto,
               números telefónicos y dirección de residencia) serán utilizados exclusivamente para
               publicar el reporte de mascota perdida en esta plataforma y facilitar el contacto
               entre las personas que puedan haber encontrado a la mascota y su propietario.
             </p>
-            <p className="mb-4 text-sm text-ink-soft">
+            <p className="u-body mb-4 text-ink-soft">
               Estos datos se mostrarán públicamente en la página junto con la información de la
               mascota. Al marcar la casilla de autorización, usted declara haber leído este aviso
               y otorga su consentimiento libre, expreso e informado para el tratamiento de sus
@@ -62,7 +60,7 @@ export function AvisoTratamientoDatos({ checked, onChange }: Props) {
             <button
               type="button"
               onClick={() => setModalAbierto(false)}
-              className="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700"
+              className="border-2 border-brand-700 bg-brand-600 px-4 py-2 text-[13px] font-semibold text-white hover:bg-brand-700"
             >
               Entendido
             </button>

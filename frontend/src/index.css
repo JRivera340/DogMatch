@@ -2,8 +2,8 @@
 
 @theme {
   /* superficie */
-  --color-paper: #faf8f4;
-  --color-paper-raised: #ffffff;
+  --color-paper: #f6f2ea;
+  --color-paper-raised: #fffdf9;
 
   /* texto */
   --color-ink: #221d1a;
@@ -24,12 +24,65 @@
   --color-moss-600: #4b7040;
   --color-moss-100: #e6ecd9;
 
-  --color-line: #e8dfd2;
-  --color-line-strong: #d8ccb9;
+  --color-line: #ded2bc;
+  --color-line-strong: #c7b89a;
 
   --font-display: 'Archivo', system-ui, sans-serif;
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+/*
+  Escala tipográfica explícita — 7 pasos fijos, cada uno con
+  line-height y letter-spacing propios. No usar text-sm/lg sueltos
+  fuera de esta escala.
+
+  step-1  12px / mono, datos y códigos
+  step0   14px / cuerpo secundario, labels
+  step1   16px / cuerpo, base
+  step2   20px / subtítulos de card
+  step3   28px / títulos de sección
+  step4   40px / título de página
+  step5   56px / wordmark grande (uso puntual)
+*/
+:root {
+  --text-step--1: 0.75rem;
+  --lh-step--1: 1.4;
+  --ls-step--1: 0.03em;
+
+  --text-step-0: 0.875rem;
+  --lh-step-0: 1.45;
+  --ls-step-0: 0.01em;
+
+  --text-step-1: 1rem;
+  --lh-step-1: 1.55;
+  --ls-step-1: 0;
+
+  --text-step-2: 1.25rem;
+  --lh-step-2: 1.25;
+  --ls-step-2: -0.005em;
+
+  --text-step-3: 1.75rem;
+  --lh-step-3: 1.15;
+  --ls-step-3: -0.01em;
+
+  --text-step-4: 2.5rem;
+  --lh-step-4: 1.05;
+  --ls-step-4: -0.015em;
+
+  --text-step-5: 3.5rem;
+  --lh-step-5: 0.95;
+  --ls-step-5: -0.02em;
+
+  /* ritmo de espaciado — unidad base 4px */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
 }
 
 body {
@@ -37,6 +90,8 @@ body {
   background-color: var(--color-paper);
   color: var(--color-ink);
   font-family: var(--font-sans);
+  font-size: var(--text-step-1);
+  line-height: var(--lh-step-1);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -51,32 +106,186 @@ body {
 }
 
 .leaflet-container {
-  width: 100%;
-  height: 100%;
   font-family: var(--font-sans);
 }
 
 .leaflet-popup-content-wrapper {
-  border-radius: 0.5rem;
+  border-radius: 2px;
+  font-family: var(--font-sans);
 }
 
-/* sello rotado de estado, motivo firma de la marca */
+.leaflet-popup-content {
+  margin: 10px 12px;
+}
+
+/* ---------------------------------------------------------------
+   Sello de tinta — motivo firma de la marca.
+   Bordes ligeramente irregulares (clip-path), textura de opacidad
+   variable y rotación, para que lea como estampado físico y no
+   como badge de producto.
+   --------------------------------------------------------------- */
 .stamp {
+  --stamp-color: currentColor;
+  position: relative;
+  display: inline-block;
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 0.65rem;
-  letter-spacing: 0.14em;
+  font-size: var(--text-step--1);
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  border: 2px solid currentColor;
-  border-radius: 9999px;
-  padding: 0.2rem 0.6rem;
-  transform: rotate(-6deg);
-  display: inline-block;
+  padding: 0.3rem 0.7rem 0.32rem;
+  color: var(--stamp-color);
+  transform: rotate(-7deg);
+  clip-path: polygon(
+    2% 12%, 9% 2%, 22% 6%, 38% 0%, 55% 5%, 71% 1%, 86% 7%, 98% 3%,
+    100% 22%, 96% 40%, 100% 58%, 95% 76%, 99% 92%, 84% 97%, 70% 100%,
+    54% 95%, 40% 100%, 24% 96%, 10% 100%, 4% 84%, 0% 66%, 3% 48%, 0% 30%
+  );
 }
 
-/* línea de perforación entre foto y datos, motivo ficha/talonario */
+.stamp::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--stamp-color);
+  opacity: 0.14;
+  clip-path: inherit;
+}
+
+.stamp::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border: 1.5px solid var(--stamp-color);
+  clip-path: inherit;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .stamp {
+    animation: asentar-sello 0.42s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+    animation-delay: 0.05s;
+  }
+}
+
+@keyframes asentar-sello {
+  0% {
+    opacity: 0;
+    transform: rotate(-7deg) scale(1.9);
+  }
+  70% {
+    opacity: 1;
+    transform: rotate(-9deg) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(-7deg) scale(1);
+  }
+}
+
+/* ---------------------------------------------------------------
+   Línea de perforación — separa dos mitades de una ficha física,
+   como el borde de un talonario. Franja ancha con recortes
+   circulares reales (mask), no una línea punteada decorativa.
+   --------------------------------------------------------------- */
 .perforation {
-  background-image: radial-gradient(circle, var(--color-paper) 2.5px, transparent 2.6px);
-  background-size: 10px 100%;
-  background-repeat: repeat-y;
+  position: relative;
+  width: 14px;
+  flex-shrink: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--color-line-strong) 0,
+    var(--color-line-strong) 1px,
+    transparent 1px,
+    transparent 9px
+  );
+  background-position: center;
+  background-size: 1px 100%;
+  background-repeat: no-repeat;
+  mask-image: radial-gradient(circle 3.5px, transparent 98%, black 100%);
+  mask-size: 14px 12px;
+  mask-repeat: repeat-y;
+  mask-position: center;
+}
+
+/* control de mapa con look de nota adhesiva sobre papel */
+.mapa-control {
+  background: var(--color-paper-raised);
+  border: 1px solid var(--color-line-strong);
+  box-shadow: 2px 2px 0 rgba(34, 29, 26, 0.08);
+}
+
+/* sombra de pin real caído sobre papel, no el drop-shadow por defecto de Leaflet */
+.pin-sombra {
+  position: absolute;
+  bottom: -3px;
+  left: 50%;
+  width: 12px;
+  height: 4px;
+  background: rgba(34, 29, 26, 0.28);
+  border-radius: 50%;
+  transform: translateX(-50%);
+  filter: blur(1px);
+}
+
+/* ---------------------------------------------------------------
+   Clases tipográficas semánticas — usar estas en lugar de
+   text-xs/sm/lg sueltos, para mantener la escala consistente.
+   --------------------------------------------------------------- */
+.u-eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-step--1);
+  line-height: var(--lh-step--1);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-brand-600);
+}
+
+.u-title-page {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--text-step-4);
+  line-height: var(--lh-step-4);
+  letter-spacing: var(--ls-step-4);
+  color: var(--color-ink);
+}
+
+.u-title-section {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-step-3);
+  line-height: var(--lh-step-3);
+  letter-spacing: var(--ls-step-3);
+  color: var(--color-ink);
+}
+
+.u-title-card {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--text-step-2);
+  line-height: var(--lh-step-2);
+  letter-spacing: var(--ls-step-2);
+  color: var(--color-ink);
+}
+
+.u-label {
+  font-family: var(--font-sans);
+  font-size: var(--text-step-0);
+  line-height: var(--lh-step-0);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+
+.u-data {
+  font-family: var(--font-mono);
+  font-size: var(--text-step--1);
+  line-height: var(--lh-step--1);
+  letter-spacing: var(--ls-step--1);
+}
+
+.u-body {
+  font-size: var(--text-step-0);
+  line-height: var(--lh-step-0);
+  color: var(--color-ink);
 }

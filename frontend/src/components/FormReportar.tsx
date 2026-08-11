@@ -7,20 +7,18 @@ import { crearMascota, guardarEditToken, presignUpload, subirFotoAS3 } from '../
 const TELEFONO_REGEX = /^(\+?57)?[3][0-9]{9}$/;
 
 const inputClass =
-  'mt-1 w-full rounded-md border border-line-strong bg-paper-raised px-3 py-2 text-sm text-ink placeholder:text-ink-faint focus:border-brand-600 focus:outline-none';
-const labelClass = 'block text-xs font-semibold tracking-wide text-ink-soft uppercase';
-const errorClass = 'mt-1 text-xs font-medium text-brand-700';
+  'mt-1 w-full border border-line-strong bg-paper-raised px-3 py-2 u-body text-ink placeholder:text-ink-faint focus:border-brand-600 focus:outline-none';
+const labelClass = 'u-label block';
+const errorClass = 'mt-1 text-[13px] font-medium text-brand-700';
 
 function Seccion({ numero, titulo, children }: { numero: string; titulo: string; children: ReactNode }) {
   return (
-    <section className="rounded-lg border border-line bg-paper-raised p-4 sm:p-5">
-      <div className="mb-4 flex items-center gap-2 border-b border-line pb-2.5">
-        <span className="font-mono text-xs text-brand-600">{numero}</span>
-        <h2 className="font-display text-sm font-bold tracking-wide text-ink uppercase">
-          {titulo}
-        </h2>
+    <section className="border border-line bg-paper-raised p-5 shadow-[3px_3px_0_rgba(34,29,26,0.05)] sm:p-6">
+      <div className="mb-5 flex items-baseline gap-3 border-b-2 border-line pb-3">
+        <span className="u-data text-brand-600">{numero}</span>
+        <h2 className="u-title-card">{titulo}</h2>
       </div>
-      <div className="space-y-4">{children}</div>
+      <div className="space-y-5">{children}</div>
     </section>
   );
 }
@@ -107,12 +105,10 @@ export function FormReportar() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto max-w-2xl space-y-4 p-4 sm:p-6">
+    <form onSubmit={handleSubmit} className="mx-auto max-w-2xl space-y-6 p-4 sm:p-6">
       <div>
-        <p className="font-mono text-xs tracking-widest text-brand-600 uppercase">
-          Formulario de reporte
-        </p>
-        <h1 className="font-display text-2xl font-extrabold text-ink">Reportar mascota perdida</h1>
+        <p className="u-eyebrow">Formulario de reporte</p>
+        <h1 className="u-title-page mt-1">Reportar mascota perdida</h1>
       </div>
 
       <Seccion numero="01" titulo="Datos de la mascota">
@@ -151,7 +147,7 @@ export function FormReportar() {
               type="file"
               accept="image/*"
               onChange={(e) => setFoto(e.target.files?.[0] ?? null)}
-              className="mt-1 w-full text-sm text-ink-soft file:mr-3 file:rounded-md file:border-0 file:bg-brand-100 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-brand-700 hover:file:bg-brand-200"
+              className="mt-1 w-full u-body text-ink-soft file:mr-3 file:border file:border-brand-600 file:bg-brand-100 file:px-3 file:py-1.5 file:text-[13px] file:font-semibold file:text-brand-700 hover:file:bg-brand-200"
             />
             {errores.foto && <p className={errorClass}>{errores.foto}</p>}
           </div>
@@ -187,7 +183,7 @@ export function FormReportar() {
 
         <div>
           <label className={labelClass}>Punto exacto en el mapa (click para marcar)</label>
-          <div className="mt-1 overflow-hidden rounded-md border border-line-strong">
+          <div className="mt-1 border border-line-strong">
             <SelectorUbicacion
               lat={lat}
               lng={lng}
@@ -195,9 +191,9 @@ export function FormReportar() {
                 setLat(a);
                 setLng(b);
               }}
+              error={errores.ubicacion}
             />
           </div>
-          {errores.ubicacion && <p className={errorClass}>{errores.ubicacion}</p>}
         </div>
       </Seccion>
 
@@ -241,12 +237,12 @@ export function FormReportar() {
       <AvisoTratamientoDatos checked={autoriza} onChange={setAutoriza} />
       {errores.autoriza && <p className={errorClass}>{errores.autoriza}</p>}
 
-      {errorEnvio && <p className="text-sm font-medium text-brand-700">{errorEnvio}</p>}
+      {errorEnvio && <p className="text-[13px] font-medium text-brand-700">{errorEnvio}</p>}
 
       <button
         type="submit"
         disabled={enviando}
-        className="w-full rounded-md bg-brand-600 px-4 py-3 font-display font-bold tracking-wide text-white uppercase shadow-sm shadow-brand-900/20 transition-colors hover:bg-brand-700 disabled:opacity-50"
+        className="w-full border-2 border-brand-700 bg-brand-600 px-4 py-3 font-display font-bold tracking-wide text-white uppercase shadow-[3px_3px_0_rgba(74,14,23,0.3)] transition-colors hover:bg-brand-700 disabled:opacity-50"
       >
         {enviando ? 'Publicando...' : 'Publicar reporte'}
       </button>

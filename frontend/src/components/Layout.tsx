@@ -6,16 +6,21 @@ export function Layout() {
   return (
     <div className="flex min-h-screen flex-col bg-paper">
       <header className="border-b-4 border-double border-brand-700 bg-paper-raised">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-          <Link to="/" className="flex items-center gap-2.5">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+          <Link to="/" className="flex items-center gap-3">
             <span
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-600 text-lg text-white"
+              className="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-brand-700 font-display text-base font-extrabold text-brand-700"
               aria-hidden
             >
-              🐾
+              DM
             </span>
-            <span className="font-display text-xl font-extrabold tracking-tight text-ink">
-              Dog<span className="text-brand-600">Match</span>
+            <span className="flex flex-col leading-none">
+              <span className="font-display text-[1.15rem] font-extrabold tracking-tight text-ink">
+                Dog<span className="text-brand-600">Match</span>
+              </span>
+              <span className="u-eyebrow mt-0.5 text-[9px] text-ink-faint">
+                Registro de mascotas perdidas · Colombia
+              </span>
             </span>
           </Link>
           <nav className="flex items-center gap-1 sm:gap-4">
@@ -31,7 +36,7 @@ export function Layout() {
             </Link>
             <Link
               to="/reportar"
-              className="rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm shadow-brand-900/20 transition-colors hover:bg-brand-700 sm:px-4"
+              className="border-2 border-brand-600 bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-[2px_2px_0_rgba(74,14,23,0.3)] transition-colors hover:bg-brand-700 sm:px-4"
             >
               Reportar mascota
             </Link>
@@ -41,8 +46,10 @@ export function Layout() {
       <main className="flex min-h-0 flex-1">
         <Outlet />
       </main>
-      <footer className="border-t border-line bg-paper-raised py-3 text-center font-mono text-[11px] uppercase tracking-wider text-ink-faint">
-        DogMatch · Red de apoyo para reunir mascotas con sus familias en Colombia
+      <footer className="border-t border-line bg-paper-raised py-3 text-center text-ink-faint">
+        <span className="u-eyebrow">
+          DogMatch · Red de apoyo para reunir mascotas con sus familias
+        </span>
       </footer>
     </div>
   );
