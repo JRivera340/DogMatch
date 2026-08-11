@@ -5,7 +5,9 @@ const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
 async function manejarRespuesta<T>(res: Response): Promise<T> {
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(body.error ? JSON.stringify(body.error) : `Error ${res.status}`);
+    const mensaje =
+      typeof body.error === 'string' ? body.error : body.error ? JSON.stringify(body.error) : null;
+    throw new Error(mensaje ?? `Error ${res.status}`);
   }
   return res.json() as Promise<T>;
 }

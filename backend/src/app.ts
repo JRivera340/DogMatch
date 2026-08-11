@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { type ErrorRequestHandler } from 'express';
 import cors from 'cors';
 import { mascotasRouter } from './routes/mascotas';
 import { uploadsRouter } from './routes/uploads';
@@ -17,6 +17,12 @@ export function crearApp() {
   app.use('/api/mascotas', mascotasRouter);
   app.use('/api/uploads', uploadsRouter);
   app.use('/api/admin', adminRouter);
+
+  const manejarErrores: ErrorRequestHandler = (err, _req, res, _next) => {
+    console.error(err);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  };
+  app.use(manejarErrores);
 
   return app;
 }

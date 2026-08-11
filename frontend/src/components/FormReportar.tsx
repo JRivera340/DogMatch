@@ -97,8 +97,10 @@ export function FormReportar() {
 
       guardarEditToken(id, editToken);
       navigate('/');
-    } catch {
-      setErrorEnvio('No se pudo publicar el reporte. Intenta de nuevo.');
+    } catch (error) {
+      const mensaje =
+        error instanceof Error ? error.message : 'No se pudo publicar el reporte. Intenta de nuevo.';
+      setErrorEnvio(mensaje);
     } finally {
       setEnviando(false);
     }
