@@ -73,3 +73,45 @@ export function obtenerTokensGuardados(): Record<string, string> {
     return {};
   }
 }
+
+// --- Administración ---
+
+export async function adminLogin(password: string): Promise<{ token: string }> {
+  const res = await fetch(`${API_URL}/api/admin/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password }),
+  });
+  return manejarRespuesta(res);
+}
+
+export async function adminListarMascotas(token: string): Promise<Mascota[]> {
+  const res = await fetch(`${API_URL}/api/admin/mascotas`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return manejarRespuesta<Mascota[]>(res);
+}
+
+export async function adminEliminarMascota(id: string, token: string): Promise<void> {
+  const res = await fetch(`${API_URL}/api/admin/mascotas/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error ? JSON.stringify(body.error) : `Error ${res.status}`);
+  }
+}
+
+export async function adminActualizarEstado(
+  id: string,
+  estado: 'perdida' | 'encontrada',
+  token: string,
+): Promise<void> {
+  const res = await fetch(`${API_URL}/api/admin/mascotas/${id}/estado`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ estado }),
+  });
+  await manejarRespuesta(res);
+}
