@@ -39,3 +39,5 @@ cd frontend && npx vitest run
 ## Despliegue
 
 Desplegado en Railway: PostgreSQL, servicio `backend` y servicio `frontend`. El almacenamiento de fotos usa un bucket S3 externo — configura las variables `AWS_*` y `S3_BUCKET_NAME` en el servicio `backend` una vez tengas el bucket creado.
+
+<!-- autodeploy test 2026-08-11T04:34:53Z -->
