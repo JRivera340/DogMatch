@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Mascota {
+  id                        String   @id @default(uuid())
+  nombre                    String
+  raza                      String
+  genero                    String
+  fotoUrl                   String
+  ultimaVezFecha            DateTime
+  ultimaVezLugarTexto       String
+  lat                       Float
+  lng                       Float
+  lugarResidencia           String
+  telefono1                 String
+  telefono2                 String
+  estado                    String   @default("perdida")
+  editToken                 String   @unique
+  autorizaTratamientoDatos  Boolean
+  createdAt                 DateTime @default(now())
+}
