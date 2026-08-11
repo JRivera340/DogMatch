@@ -35,6 +35,14 @@ export const marcarEncontradaSchema = z.object({
   editToken: z.string().uuid('editToken inválido'),
 });
 
+export const adminLoginSchema = z.object({
+  password: z.string().min(1, 'Contraseña requerida'),
+});
+
+export const adminEstadoSchema = z.object({
+  estado: z.enum(['perdida', 'encontrada']),
+});
+
 export const presignSchema = z.object({
   filename: z.string().trim().min(1).max(200),
   contentType: z
