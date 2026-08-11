@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
+import { BuscadorCiudad } from './BuscadorCiudad';
 
 const iconoSeleccion = L.divIcon({
   className: '',
@@ -68,6 +69,7 @@ export function SelectorUbicacion({ lat, lng, onSeleccionar, error }: Props) {
         />
         <GeolocalizarAlMontar yaTieneSeleccion={tienePunto} />
         <ClickHandler onSeleccionar={onSeleccionar} />
+        <BuscadorCiudad ayuda="Solo navega — el click en el mapa marca el punto" />
         {tienePunto && (
           <Marker
             position={[lat, lng]}

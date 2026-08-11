@@ -1,6 +1,7 @@
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import L from 'leaflet';
 import type { Mascota } from '../types';
+import { BuscadorCiudad } from './BuscadorCiudad';
 
 const iconoMascota = L.divIcon({
   className: '',
@@ -23,6 +24,7 @@ export function MapaMascotas({ mascotas, onSeleccionar }: Props) {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
+      <BuscadorCiudad ayuda="Solo mueve el mapa — no filtra los casos mostrados" />
       {mascotas.map((mascota) => (
         <Marker
           key={mascota.id}
