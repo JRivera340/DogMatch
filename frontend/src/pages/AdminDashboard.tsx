@@ -182,6 +182,50 @@ export function AdminDashboard() {
             </button>
           ))}
         </div>
+
+        <div className="flex flex-wrap items-center gap-2 border-t border-line px-4 py-2.5 sm:px-6">
+          <span className="u-label">Validación</span>
+          <button
+            type="button"
+            onClick={() => alternarFiltroValidacion('pendiente')}
+            aria-pressed={filtroValidacion === 'pendiente'}
+            className={`u-data border px-3 py-1.5 transition-colors ${
+              filtroValidacion === 'pendiente'
+                ? 'border-brand-600 bg-brand-600 text-white'
+                : 'border-line-strong text-ink-soft hover:border-brand-600 hover:text-brand-700'
+            }`}
+          >
+            Sin validar ({pendientesCount})
+          </button>
+          <button
+            type="button"
+            onClick={() => alternarFiltroValidacion('aprobada')}
+            aria-pressed={filtroValidacion === 'aprobada'}
+            className={`u-data border px-3 py-1.5 transition-colors ${
+              filtroValidacion === 'aprobada'
+                ? 'border-moss-600 bg-moss-600 text-white'
+                : 'border-line-strong text-ink-soft hover:border-moss-600 hover:text-moss-700'
+            }`}
+          >
+            Validadas ({aprobadasCount})
+          </button>
+
+          <span className="u-label ml-4">Estado</span>
+          {(['todas', 'perdida', 'encontrada'] as const).map((opcion) => (
+            <button
+              key={opcion}
+              type="button"
+              onClick={() => setFiltroEstado(opcion)}
+              className={`u-data border px-3 py-1.5 capitalize transition-colors ${
+                filtroEstado === opcion
+                  ? 'border-brand-600 bg-brand-600 text-white'
+                  : 'border-line-strong text-ink-soft hover:border-brand-600 hover:text-brand-700'
+              }`}
+            >
+              {opcion}
+            </button>
+          ))}
+        </div>
       </div>
 
       {error && (
@@ -191,58 +235,14 @@ export function AdminDashboard() {
       )}
 
       {pestana === 'mapa' && (
-        <div className="h-[75vh] min-h-[420px] w-full">
-          <MapaValidacion mascotas={mascotas} onVerDetalle={(m) => setDetalleId(m.id)} />
+        <div className="min-h-0 flex-1">
+          <MapaValidacion mascotas={mascotasFiltradas} onVerDetalle={(m) => setDetalleId(m.id)} />
         </div>
       )}
 
       {pestana === 'validacion' && (
         <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="u-label">Validación</span>
-            <button
-              type="button"
-              onClick={() => alternarFiltroValidacion('pendiente')}
-              aria-pressed={filtroValidacion === 'pendiente'}
-              className={`u-data border px-3 py-1.5 transition-colors ${
-                filtroValidacion === 'pendiente'
-                  ? 'border-brand-600 bg-brand-600 text-white'
-                  : 'border-line-strong text-ink-soft hover:border-brand-600 hover:text-brand-700'
-              }`}
-            >
-              Sin validar ({pendientesCount})
-            </button>
-            <button
-              type="button"
-              onClick={() => alternarFiltroValidacion('aprobada')}
-              aria-pressed={filtroValidacion === 'aprobada'}
-              className={`u-data border px-3 py-1.5 transition-colors ${
-                filtroValidacion === 'aprobada'
-                  ? 'border-moss-600 bg-moss-600 text-white'
-                  : 'border-line-strong text-ink-soft hover:border-moss-600 hover:text-moss-700'
-              }`}
-            >
-              Validadas ({aprobadasCount})
-            </button>
-
-            <span className="u-label ml-4">Estado</span>
-            {(['todas', 'perdida', 'encontrada'] as const).map((opcion) => (
-              <button
-                key={opcion}
-                type="button"
-                onClick={() => setFiltroEstado(opcion)}
-                className={`u-data border px-3 py-1.5 capitalize transition-colors ${
-                  filtroEstado === opcion
-                    ? 'border-brand-600 bg-brand-600 text-white'
-                    : 'border-line-strong text-ink-soft hover:border-brand-600 hover:text-brand-700'
-                }`}
-              >
-                {opcion}
-              </button>
-            ))}
-          </div>
-
-          {cargando && <p className="u-body mt-4 text-ink-soft">Cargando casos...</p>}
+          {cargando && <p className="u-body text-ink-soft">Cargando casos...</p>}
 
           {!cargando && mascotasFiltradas.length === 0 && (
             <div className="mt-4 border border-dashed border-line-strong p-6 text-center">
