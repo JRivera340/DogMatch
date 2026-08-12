@@ -45,6 +45,10 @@ export const adminEstadoSchema = z.object({
   estado: z.enum(['perdida', 'encontrada']),
 });
 
+export const adminValidacionSchema = z.object({
+  validacion: z.enum(['pendiente', 'aprobada', 'rechazada']),
+});
+
 export const presignSchema = z.object({
   filename: z.string().trim().min(1).max(200),
   contentType: z

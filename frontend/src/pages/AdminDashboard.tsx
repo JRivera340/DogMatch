@@ -1,10 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { adminActualizarEstado, adminEliminarMascota, adminListarMascotas } from '../api';
+import {
+  adminActualizarEstado,
+  adminActualizarValidacion,
+  adminEliminarMascota,
+  adminListarMascotas,
+} from '../api';
 import { limpiarTokenAdmin, obtenerTokenAdmin } from '../adminAuth';
-import type { Mascota } from '../types';
+import type { Mascota, Validacion } from '../types';
+import { MapaValidacion } from '../components/MapaValidacion';
 
 type FiltroEstado = 'todas' | 'perdida' | 'encontrada';
+type FiltroValidacion = 'pendiente' | 'aprobada' | null;
 
 function codigoCaso(id: string) {
   return id.replace(/-/g, '').slice(0, 8).toUpperCase();
@@ -19,7 +26,8 @@ export function AdminDashboard() {
   const [mascotas, setMascotas] = useState<Mascota[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filtro, setFiltro] = useState<FiltroEstado>('todas');
+  const [filtroEstado, setFiltroEstado] = useState<FiltroEstado>('todas');
+  const [filtroValidacion, setFiltroValidacion] = useState<FiltroValidacion>(null);
   const [confirmandoId, setConfirmandoId] = useState<string | null>(null);
   const [procesandoId, setProcesandoId] = useState<string | null>(null);
 
@@ -87,14 +95,39 @@ export function AdminDashboard() {
     }
   }
 
-  const mascotasFiltradas = mascotas.filter((m) => filtro === 'todas' || m.estado === filtro);
+  async function cambiarValidacion(mascota: Mascota, validacion: Validacion) {
+    const token = obtenerTokenAdmin();
+    if (!token) return cerrarSesionYRedirigir();
+    setProcesandoId(mascota.id);
+    try {
+      await adminActualizarValidacion(mascota.id, validacion, token);
+      setMascotas((prev) => prev.map((m) => (m.id === mascota.id ? { ...m, validacion } : m)));
+    } catch {
+      setError('No se pudo actualizar la validación.');
+    } finally {
+      setProcesandoId(null);
+    }
+  }
+
+  function alternarFiltroValidacion(valor: 'pendiente' | 'aprobada') {
+    setFiltroValidacion((actual) => (actual === valor ? null : valor));
+  }
+
+  const mascotasFiltradas = mascotas.filter((m) => {
+    if (filtroEstado !== 'todas' && m.estado !== filtroEstado) return false;
+    if (filtroValidacion && m.validacion !== filtroValidacion) return false;
+    return true;
+  });
+
+  const pendientesCount = mascotas.filter((m) => m.validacion === 'pendiente').length;
+  const aprobadasCount = mascotas.filter((m) => m.validacion === 'aprobada').length;
 
   return (
     <div className="w-full p-4 sm:p-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="u-eyebrow">Panel administrativo</p>
-          <h1 className="u-title-page mt-1">Todos los casos</h1>
+          <h1 className="u-title-page mt-1">Validación de reportes</h1>
         </div>
         <button
           type="button"
@@ -105,14 +138,45 @@ export function AdminDashboard() {
         </button>
       </div>
 
-      <div className="mt-5 flex gap-1.5">
+      <div className="mt-5 h-72 border border-line">
+        <MapaValidacion mascotas={mascotas} />
+      </div>
+
+      <div className="mt-5 flex flex-wrap items-center gap-2">
+        <span className="u-label">Validación</span>
+        <button
+          type="button"
+          onClick={() => alternarFiltroValidacion('pendiente')}
+          aria-pressed={filtroValidacion === 'pendiente'}
+          className={`u-data border px-3 py-1.5 transition-colors ${
+            filtroValidacion === 'pendiente'
+              ? 'border-brand-600 bg-brand-600 text-white'
+              : 'border-line-strong text-ink-soft hover:border-brand-600 hover:text-brand-700'
+          }`}
+        >
+          Sin validar ({pendientesCount})
+        </button>
+        <button
+          type="button"
+          onClick={() => alternarFiltroValidacion('aprobada')}
+          aria-pressed={filtroValidacion === 'aprobada'}
+          className={`u-data border px-3 py-1.5 transition-colors ${
+            filtroValidacion === 'aprobada'
+              ? 'border-moss-600 bg-moss-600 text-white'
+              : 'border-line-strong text-ink-soft hover:border-moss-600 hover:text-moss-700'
+          }`}
+        >
+          Validadas ({aprobadasCount})
+        </button>
+
+        <span className="u-label ml-4">Estado</span>
         {(['todas', 'perdida', 'encontrada'] as const).map((opcion) => (
           <button
             key={opcion}
             type="button"
-            onClick={() => setFiltro(opcion)}
+            onClick={() => setFiltroEstado(opcion)}
             className={`u-data border px-3 py-1.5 capitalize transition-colors ${
-              filtro === opcion
+              filtroEstado === opcion
                 ? 'border-brand-600 bg-brand-600 text-white'
                 : 'border-line-strong text-ink-soft hover:border-brand-600 hover:text-brand-700'
             }`}
@@ -133,12 +197,13 @@ export function AdminDashboard() {
 
       {!cargando && mascotasFiltradas.length > 0 && (
         <div className="mt-4 overflow-x-auto border border-line bg-paper-raised">
-          <table className="w-full min-w-[720px] border-collapse">
+          <table className="w-full min-w-[880px] border-collapse">
             <thead>
               <tr className="border-b-2 border-line text-left">
                 <th className="u-label px-3 py-2.5">Foto</th>
                 <th className="u-label px-3 py-2.5">Nombre</th>
                 <th className="u-label px-3 py-2.5">Estado</th>
+                <th className="u-label px-3 py-2.5">Validación</th>
                 <th className="u-label px-3 py-2.5">Código</th>
                 <th className="u-label px-3 py-2.5">Fecha</th>
                 <th className="u-label px-3 py-2.5">Acciones</th>
@@ -166,6 +231,23 @@ export function AdminDashboard() {
                       {mascota.estado}
                     </span>
                   </td>
+                  <td className="px-3 py-2.5">
+                    <span
+                      className={`u-data border px-2 py-0.5 ${
+                        mascota.validacion === 'aprobada'
+                          ? 'border-moss-600 text-moss-700'
+                          : mascota.validacion === 'rechazada'
+                            ? 'border-ink-faint text-ink-faint'
+                            : 'border-brand-600 text-brand-700'
+                      }`}
+                    >
+                      {mascota.validacion === 'aprobada'
+                        ? 'Validado'
+                        : mascota.validacion === 'rechazada'
+                          ? 'Rechazado'
+                          : 'Sin validar'}
+                    </span>
+                  </td>
                   <td className="u-data px-3 py-2.5 text-ink-faint">
                     #{codigoCaso(mascota.id)}
                   </td>
@@ -174,6 +256,27 @@ export function AdminDashboard() {
                   </td>
                   <td className="px-3 py-2.5">
                     <div className="flex flex-wrap items-center gap-1.5">
+                      {mascota.validacion !== 'aprobada' && (
+                        <button
+                          type="button"
+                          onClick={() => cambiarValidacion(mascota, 'aprobada')}
+                          disabled={procesandoId === mascota.id}
+                          className="u-data border border-moss-700 bg-moss-600 px-2 py-1 text-white transition-colors hover:bg-moss-700 disabled:opacity-50"
+                        >
+                          Aprobar
+                        </button>
+                      )}
+                      {mascota.validacion !== 'rechazada' && (
+                        <button
+                          type="button"
+                          onClick={() => cambiarValidacion(mascota, 'rechazada')}
+                          disabled={procesandoId === mascota.id}
+                          className="u-data border border-brand-700 px-2 py-1 text-brand-700 transition-colors hover:bg-brand-50 disabled:opacity-50"
+                        >
+                          Rechazar
+                        </button>
+                      )}
+
                       <button
                         type="button"
                         onClick={() => alternarEstado(mascota)}

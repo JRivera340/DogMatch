@@ -131,4 +131,50 @@ describe('rutas admin protegidas', () => {
     expect(res.status).toBe(400);
     expect(mockPrisma.mascota.update).not.toHaveBeenCalled();
   });
+
+  it('PATCH /api/admin/mascotas/:id/validacion aprueba un caso', async () => {
+    mockPrisma.mascota.update.mockResolvedValue({ id: '1', validacion: 'aprobada' });
+
+    const res = await request(app)
+      .patch('/api/admin/mascotas/1/validacion')
+      .set('Authorization', `Bearer ${tokenValido()}`)
+      .send({ validacion: 'aprobada' });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ id: '1', validacion: 'aprobada' });
+    expect(mockPrisma.mascota.update).toHaveBeenCalledWith({
+      where: { id: '1' },
+      data: { validacion: 'aprobada' },
+    });
+  });
+
+  it('PATCH /api/admin/mascotas/:id/validacion rechaza un caso', async () => {
+    mockPrisma.mascota.update.mockResolvedValue({ id: '1', validacion: 'rechazada' });
+
+    const res = await request(app)
+      .patch('/api/admin/mascotas/1/validacion')
+      .set('Authorization', `Bearer ${tokenValido()}`)
+      .send({ validacion: 'rechazada' });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ id: '1', validacion: 'rechazada' });
+  });
+
+  it('PATCH /api/admin/mascotas/:id/validacion rechaza valor inválido con 400', async () => {
+    const res = await request(app)
+      .patch('/api/admin/mascotas/1/validacion')
+      .set('Authorization', `Bearer ${tokenValido()}`)
+      .send({ validacion: 'algo-invalido' });
+
+    expect(res.status).toBe(400);
+    expect(mockPrisma.mascota.update).not.toHaveBeenCalled();
+  });
+
+  it('PATCH /api/admin/mascotas/:id/validacion sin token retorna 401', async () => {
+    const res = await request(app)
+      .patch('/api/admin/mascotas/1/validacion')
+      .send({ validacion: 'aprobada' });
+
+    expect(res.status).toBe(401);
+  });
 });

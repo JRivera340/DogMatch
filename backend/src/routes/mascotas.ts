@@ -6,9 +6,11 @@ import { crearMascotaSchema, marcarEncontradaSchema } from '../validation';
 export const mascotasRouter = Router();
 
 mascotasRouter.get('/', async (_req, res) => {
-  // Endpoint público: incluye perdidas y encontradas (transparencia de casos resueltos).
-  // El filtro por estado se aplica en el cliente.
+  // Endpoint público: incluye perdidas y encontradas (transparencia de casos resueltos),
+  // pero nunca reportes rechazados por un admin. El caso aparece de inmediato al publicarse
+  // con validacion="pendiente"; el filtro por estado/validación se aplica en el cliente.
   const mascotas = await prisma.mascota.findMany({
+    where: { validacion: { not: 'rechazada' } },
     orderBy: { createdAt: 'desc' },
   });
   res.json(mascotas);

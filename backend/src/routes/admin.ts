@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { prisma } from '../prisma';
-import { adminEstadoSchema, adminLoginSchema } from '../validation';
+import { adminEstadoSchema, adminLoginSchema, adminValidacionSchema } from '../validation';
 import { firmarTokenAdmin, requireAdmin } from '../adminAuth';
 
 export const adminRouter = Router();
@@ -57,6 +57,25 @@ adminRouter.patch('/mascotas/:id/estado', requireAdmin, async (req, res) => {
       data: { estado: parsed.data.estado },
     });
     res.json({ id: mascota.id, estado: mascota.estado });
+  } catch {
+    res.status(404).json({ error: 'Mascota no encontrada' });
+  }
+});
+
+adminRouter.patch('/mascotas/:id/validacion', requireAdmin, async (req, res) => {
+  const parsed = adminValidacionSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.flatten() });
+    return;
+  }
+
+  const id = String(req.params.id);
+  try {
+    const mascota = await prisma.mascota.update({
+      where: { id },
+      data: { validacion: parsed.data.validacion },
+    });
+    res.json({ id: mascota.id, validacion: mascota.validacion });
   } catch {
     res.status(404).json({ error: 'Mascota no encontrada' });
   }

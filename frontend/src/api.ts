@@ -1,4 +1,4 @@
-import type { Mascota, NuevaMascota } from './types';
+import type { Mascota, NuevaMascota, Validacion } from './types';
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
 
@@ -114,6 +114,19 @@ export async function adminActualizarEstado(
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
     body: JSON.stringify({ estado }),
+  });
+  await manejarRespuesta(res);
+}
+
+export async function adminActualizarValidacion(
+  id: string,
+  validacion: Validacion,
+  token: string,
+): Promise<void> {
+  const res = await fetch(`${API_URL}/api/admin/mascotas/${id}/validacion`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ validacion }),
   });
   await manejarRespuesta(res);
 }

@@ -23,6 +23,7 @@ model Mascota {
   telefono1                 String
   telefono2                 String
   estado                    String   @default("perdida")
+  validacion                String   @default("pendiente")
   editToken                 String   @unique
   autorizaTratamientoDatos  Boolean
   createdAt                 DateTime @default(now())

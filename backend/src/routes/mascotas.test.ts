@@ -56,6 +56,7 @@ describe('GET /api/mascotas', () => {
 
     expect(res.status).toBe(200);
     expect(mockPrisma.mascota.findMany).toHaveBeenCalledWith({
+      where: { validacion: { not: 'rechazada' } },
       orderBy: { createdAt: 'desc' },
     });
     expect(res.body).toEqual([

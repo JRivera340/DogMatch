@@ -24,6 +24,7 @@ const mascota: Mascota = {
   telefono1: '3001234567',
   telefono2: '3007654321',
   estado: 'perdida',
+  validacion: 'pendiente',
   createdAt: new Date().toISOString(),
 };
 
@@ -39,6 +40,7 @@ describe('MascotaCard', () => {
     expect(screen.getByText(/Criollo/)).toBeInTheDocument();
     expect(screen.getByText(/Parque principal/)).toBeInTheDocument();
     expect(screen.getByText(/Cra 10 #5-20/)).toBeInTheDocument();
+    expect(screen.getByText('Sin validar')).toBeInTheDocument();
   });
 
   it('muestra botones de contacto para ambos teléfonos', () => {

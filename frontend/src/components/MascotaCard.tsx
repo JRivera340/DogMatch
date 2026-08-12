@@ -106,7 +106,18 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
               {mascota.especie} · {mascota.raza} · {mascota.genero} · {mascota.color}
             </p>
           </div>
-          <span className="u-data shrink-0 text-ink-faint">#{codigoCaso(mascota.id)}</span>
+          <div className="flex shrink-0 flex-col items-end gap-1">
+            <span className="u-data text-ink-faint">#{codigoCaso(mascota.id)}</span>
+            <span
+              className={`u-data border px-1.5 py-0.5 text-[10px] ${
+                mascota.validacion === 'aprobada'
+                  ? 'border-moss-600 text-moss-700'
+                  : 'border-line-strong text-ink-faint'
+              }`}
+            >
+              {mascota.validacion === 'aprobada' ? 'Validado' : 'Sin validar'}
+            </span>
+          </div>
         </div>
 
         <dl className="mt-3 space-y-1.5">

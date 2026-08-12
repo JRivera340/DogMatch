@@ -1,4 +1,5 @@
 export type Especie = 'Perro' | 'Gato';
+export type Validacion = 'pendiente' | 'aprobada' | 'rechazada';
 
 export interface Mascota {
   id: string;
@@ -16,6 +17,7 @@ export interface Mascota {
   telefono1: string;
   telefono2: string;
   estado: 'perdida' | 'encontrada';
+  validacion: Validacion;
   createdAt: string;
 }
 

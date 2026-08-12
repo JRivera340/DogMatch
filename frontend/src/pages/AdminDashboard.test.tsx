@@ -11,6 +11,7 @@ vi.mock('../api', () => ({
   adminListarMascotas: vi.fn(),
   adminEliminarMascota: vi.fn(),
   adminActualizarEstado: vi.fn(),
+  adminActualizarValidacion: vi.fn(),
 }));
 
 const navigateMock = vi.fn();
@@ -35,6 +36,7 @@ const mascota: Mascota = {
   telefono1: '3001234567',
   telefono2: '3007654321',
   estado: 'perdida',
+  validacion: 'pendiente',
   createdAt: new Date().toISOString(),
 };
 
@@ -114,5 +116,49 @@ describe('AdminDashboard', () => {
         'token-valido',
       ),
     );
+  });
+
+  it('aprueba un caso pendiente', async () => {
+    guardarTokenAdmin('token-valido');
+    vi.mocked(api.adminListarMascotas).mockResolvedValue([mascota]);
+    vi.mocked(api.adminActualizarValidacion).mockResolvedValue(undefined);
+
+    render(
+      <MemoryRouter>
+        <AdminDashboard />
+      </MemoryRouter>,
+    );
+
+    await screen.findByText('Firulais');
+    await userEvent.click(screen.getByRole('button', { name: 'Aprobar' }));
+
+    await waitFor(() =>
+      expect(api.adminActualizarValidacion).toHaveBeenCalledWith(
+        mascota.id,
+        'aprobada',
+        'token-valido',
+      ),
+    );
+  });
+
+  it('el filtro "Sin validar" se activa y desactiva con el mismo botón', async () => {
+    guardarTokenAdmin('token-valido');
+    vi.mocked(api.adminListarMascotas).mockResolvedValue([mascota]);
+
+    render(
+      <MemoryRouter>
+        <AdminDashboard />
+      </MemoryRouter>,
+    );
+
+    await screen.findByText('Firulais');
+    const botonFiltro = screen.getByRole('button', { name: /Sin validar/ });
+
+    await userEvent.click(botonFiltro);
+    expect(botonFiltro).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByText('Firulais')).toBeInTheDocument();
+
+    await userEvent.click(botonFiltro);
+    expect(botonFiltro).toHaveAttribute('aria-pressed', 'false');
   });
 });
