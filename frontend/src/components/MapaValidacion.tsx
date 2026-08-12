@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
-import L from 'leaflet';
+import L, { type Map as LeafletMap } from 'leaflet';
 import type { Mascota } from '../types';
 import { MapaLeyenda } from './MapaLeyenda';
+import { useInvalidarMapaAlRedimensionar } from '../utils/useInvalidarMapa';
 
 const COLOR_PENDIENTE = '#c81e3a';
 const COLOR_APROBADA = '#4b7040';
@@ -34,10 +36,17 @@ interface Props {
  */
 export function MapaValidacion({ mascotas, onVerDetalle }: Props) {
   const visibles = mascotas.filter((m) => m.validacion !== 'rechazada');
+  const [map, setMap] = useState<LeafletMap | null>(null);
+  useInvalidarMapaAlRedimensionar(map);
 
   return (
     <div className="relative h-full w-full">
-      <MapContainer center={CENTRO_COLOMBIA} zoom={5} style={{ height: '100%', width: '100%' }}>
+      <MapContainer
+        ref={setMap}
+        center={CENTRO_COLOMBIA}
+        zoom={5}
+        style={{ height: '100%', width: '100%' }}
+      >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

@@ -6,6 +6,7 @@ import type { Ciudad } from '../data/ciudades';
 import { BuscadorCiudad } from './BuscadorCiudad';
 import { DetalleMascotaModal } from './DetalleMascotaModal';
 import { MapaLeyenda } from './MapaLeyenda';
+import { useInvalidarMapaAlRedimensionar } from '../utils/useInvalidarMapa';
 
 const COLOR_PERDIDA = '#c81e3a';
 const COLOR_ENCONTRADA = '#4b7040';
@@ -50,6 +51,7 @@ function RecentrarEnCiudad({ ciudad }: { ciudad: Ciudad | null | undefined }) {
 export function MapaMascotas({ mascotas, onSeleccionar, ciudadFiltro }: Props) {
   const [map, setMap] = useState<LeafletMap | null>(null);
   const [detalle, setDetalle] = useState<Mascota | null>(null);
+  useInvalidarMapaAlRedimensionar(map);
 
   return (
     <div className="relative h-full w-full">

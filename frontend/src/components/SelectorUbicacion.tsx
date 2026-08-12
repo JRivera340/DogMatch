@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet';
 import L, { type Map as LeafletMap } from 'leaflet';
 import { BuscadorCiudad } from './BuscadorCiudad';
+import { useInvalidarMapaAlRedimensionar } from '../utils/useInvalidarMapa';
 
 const iconoSeleccion = L.divIcon({
   className: '',
@@ -56,6 +57,7 @@ function GeolocalizarAlMontar({ yaTieneSeleccion }: { yaTieneSeleccion: boolean 
 export function SelectorUbicacion({ lat, lng, onSeleccionar, error }: Props) {
   const tienePunto = lat !== null && lng !== null;
   const [map, setMap] = useState<LeafletMap | null>(null);
+  useInvalidarMapaAlRedimensionar(map);
 
   return (
     <div className="relative">
