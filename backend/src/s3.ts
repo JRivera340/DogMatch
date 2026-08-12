@@ -2,9 +2,12 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { randomUUID } from 'crypto';
 
-const region = process.env.AWS_REGION ?? 'us-east-1';
+const region = process.env.AWS_REGION ?? 'auto';
 const bucket = process.env.S3_BUCKET_NAME ?? '';
 const publicBaseUrl = process.env.S3_PUBLIC_BASE_URL ?? '';
+// Endpoint custom para proveedores S3-compatibles (Cloudflare R2, etc).
+// Vacío = AWS S3 real.
+const endpoint = process.env.S3_ENDPOINT ?? '';
 
 export class S3NoConfiguradoError extends Error {
   constructor() {
@@ -19,7 +22,13 @@ function s3Configurado(): boolean {
   );
 }
 
-const s3Client = new S3Client({ region });
+const s3Client = new S3Client({
+  region,
+  ...(endpoint && {
+    endpoint,
+    forcePathStyle: true, // requerido por R2 y la mayoría de proveedores S3-compatibles
+  }),
+});
 
 export async function crearPresignedUploadUrl(filename: string, contentType: string) {
   if (!s3Configurado()) {
