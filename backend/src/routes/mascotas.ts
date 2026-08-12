@@ -2,18 +2,29 @@ import { Router } from 'express';
 import { randomUUID } from 'crypto';
 import { prisma } from '../prisma';
 import { crearMascotaSchema, marcarEncontradaSchema } from '../validation';
+import { envolverPaginado, leerPaginacion } from '../pagination';
 
 export const mascotasRouter = Router();
 
-mascotasRouter.get('/', async (_req, res) => {
+mascotasRouter.get('/', async (req, res) => {
   // Endpoint público: incluye perdidas y encontradas (transparencia de casos resueltos),
   // pero nunca reportes rechazados por un admin. El caso aparece de inmediato al publicarse
   // con validacion="pendiente"; el filtro por estado/validación se aplica en el cliente.
-  const mascotas = await prisma.mascota.findMany({
-    where: { validacion: { not: 'rechazada' } },
-    orderBy: { createdAt: 'desc' },
-  });
-  res.json(mascotas);
+  // Paginado para no sobrecargar la página con datasets grandes.
+  const paginacion = leerPaginacion(req, 50, 100);
+  const where = { validacion: { not: 'rechazada' } };
+
+  const [items, total] = await Promise.all([
+    prisma.mascota.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      skip: paginacion.skip,
+      take: paginacion.take,
+    }),
+    prisma.mascota.count({ where }),
+  ]);
+
+  res.json(envolverPaginado(items, total, paginacion));
 });
 
 mascotasRouter.post('/', async (req, res) => {

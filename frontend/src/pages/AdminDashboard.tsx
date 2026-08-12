@@ -9,27 +9,27 @@ import {
 import { limpiarTokenAdmin, obtenerTokenAdmin } from '../adminAuth';
 import type { Mascota, Validacion } from '../types';
 import { MapaValidacion } from '../components/MapaValidacion';
+import { DetalleMascotaModal } from '../components/DetalleMascotaModal';
+import { codigoCaso, formatearFecha } from '../utils/mascotaFormato';
 
 type FiltroEstado = 'todas' | 'perdida' | 'encontrada';
 type FiltroValidacion = 'pendiente' | 'aprobada' | null;
 
-function codigoCaso(id: string) {
-  return id.replace(/-/g, '').slice(0, 8).toUpperCase();
-}
-
-function formatearFecha(iso: string) {
-  return new Date(iso).toLocaleDateString('es-CO', { dateStyle: 'medium' });
-}
+const TAMANO_PAGINA = 100;
 
 export function AdminDashboard() {
   const navigate = useNavigate();
   const [mascotas, setMascotas] = useState<Mascota[]>([]);
   const [cargando, setCargando] = useState(true);
+  const [cargandoMas, setCargandoMas] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pagina, setPagina] = useState(1);
+  const [total, setTotal] = useState(0);
   const [filtroEstado, setFiltroEstado] = useState<FiltroEstado>('todas');
   const [filtroValidacion, setFiltroValidacion] = useState<FiltroValidacion>(null);
   const [confirmandoId, setConfirmandoId] = useState<string | null>(null);
   const [procesandoId, setProcesandoId] = useState<string | null>(null);
+  const [detalleId, setDetalleId] = useState<string | null>(null);
 
   useEffect(() => {
     const token = obtenerTokenAdmin();
@@ -50,8 +50,10 @@ export function AdminDashboard() {
     setCargando(true);
     setError(null);
     try {
-      const datos = await adminListarMascotas(token);
-      setMascotas(datos);
+      const resp = await adminListarMascotas(token, 1, TAMANO_PAGINA);
+      setMascotas(resp.items);
+      setTotal(resp.total);
+      setPagina(1);
     } catch (e) {
       if (e instanceof Error && e.message.includes('401')) {
         cerrarSesionYRedirigir();
@@ -63,6 +65,22 @@ export function AdminDashboard() {
     }
   }
 
+  async function cargarMas() {
+    const token = obtenerTokenAdmin();
+    if (!token) return cerrarSesionYRedirigir();
+    setCargandoMas(true);
+    try {
+      const resp = await adminListarMascotas(token, pagina + 1, TAMANO_PAGINA);
+      setMascotas((prev) => [...prev, ...resp.items]);
+      setTotal(resp.total);
+      setPagina((p) => p + 1);
+    } catch {
+      setError('No se pudieron cargar más casos.');
+    } finally {
+      setCargandoMas(false);
+    }
+  }
+
   async function eliminar(id: string) {
     const token = obtenerTokenAdmin();
     if (!token) return cerrarSesionYRedirigir();
@@ -70,6 +88,7 @@ export function AdminDashboard() {
     try {
       await adminEliminarMascota(id, token);
       setMascotas((prev) => prev.filter((m) => m.id !== id));
+      setTotal((t) => t - 1);
     } catch {
       setError('No se pudo eliminar el caso.');
     } finally {
@@ -121,6 +140,7 @@ export function AdminDashboard() {
 
   const pendientesCount = mascotas.filter((m) => m.validacion === 'pendiente').length;
   const aprobadasCount = mascotas.filter((m) => m.validacion === 'aprobada').length;
+  const mascotaDetalle = mascotas.find((m) => m.id === detalleId) ?? null;
 
   return (
     <div className="w-full p-4 sm:p-6">
@@ -141,6 +161,12 @@ export function AdminDashboard() {
       <div className="mt-5 h-72 border border-line">
         <MapaValidacion mascotas={mascotas} />
       </div>
+      {mascotas.length < total && (
+        <p className="u-data mt-1.5 text-ink-faint">
+          Mapa y tabla muestran {mascotas.length} de {total} casos cargados — usa "Cargar más" al
+          final de la tabla para ver el resto.
+        </p>
+      )}
 
       <div className="mt-5 flex flex-wrap items-center gap-2">
         <span className="u-label">Validación</span>
@@ -197,7 +223,7 @@ export function AdminDashboard() {
 
       {!cargando && mascotasFiltradas.length > 0 && (
         <div className="mt-4 overflow-x-auto border border-line bg-paper-raised">
-          <table className="w-full min-w-[880px] border-collapse">
+          <table className="w-full min-w-[960px] border-collapse">
             <thead>
               <tr className="border-b-2 border-line text-left">
                 <th className="u-label px-3 py-2.5">Foto</th>
@@ -256,6 +282,14 @@ export function AdminDashboard() {
                   </td>
                   <td className="px-3 py-2.5">
                     <div className="flex flex-wrap items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setDetalleId(mascota.id)}
+                        className="u-data border border-brand-600 px-2 py-1 text-brand-700 transition-colors hover:bg-brand-50"
+                      >
+                        Ver detalle
+                      </button>
+
                       {mascota.validacion !== 'aprobada' && (
                         <button
                           type="button"
@@ -319,7 +353,29 @@ export function AdminDashboard() {
               ))}
             </tbody>
           </table>
+          {mascotas.length < total && (
+            <button
+              type="button"
+              onClick={cargarMas}
+              disabled={cargandoMas}
+              className="u-data w-full border-t border-line py-2.5 text-ink-soft transition-colors hover:border-brand-600 hover:text-brand-700 disabled:opacity-50"
+            >
+              {cargandoMas ? 'Cargando...' : `Cargar más (${mascotas.length} de ${total})`}
+            </button>
+          )}
         </div>
+      )}
+
+      {mascotaDetalle && (
+        <DetalleMascotaModal
+          mascota={mascotaDetalle}
+          onClose={() => setDetalleId(null)}
+          admin={{
+            onAprobar: () => cambiarValidacion(mascotaDetalle, 'aprobada'),
+            onRechazar: () => cambiarValidacion(mascotaDetalle, 'rechazada'),
+            procesando: procesandoId === mascotaDetalle.id,
+          }}
+        />
       )}
     </div>
   );

@@ -1,4 +1,4 @@
-import type { Mascota, NuevaMascota, Validacion } from './types';
+import type { Mascota, NuevaMascota, Paginado, Validacion } from './types';
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
 
@@ -12,9 +12,9 @@ async function manejarRespuesta<T>(res: Response): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-export async function listarMascotas(): Promise<Mascota[]> {
-  const res = await fetch(`${API_URL}/api/mascotas`);
-  return manejarRespuesta<Mascota[]>(res);
+export async function listarMascotas(page = 1, pageSize = 50): Promise<Paginado<Mascota>> {
+  const res = await fetch(`${API_URL}/api/mascotas?page=${page}&pageSize=${pageSize}`);
+  return manejarRespuesta<Paginado<Mascota>>(res);
 }
 
 export async function crearMascota(
@@ -87,11 +87,15 @@ export async function adminLogin(password: string): Promise<{ token: string }> {
   return manejarRespuesta(res);
 }
 
-export async function adminListarMascotas(token: string): Promise<Mascota[]> {
-  const res = await fetch(`${API_URL}/api/admin/mascotas`, {
+export async function adminListarMascotas(
+  token: string,
+  page = 1,
+  pageSize = 100,
+): Promise<Paginado<Mascota>> {
+  const res = await fetch(`${API_URL}/api/admin/mascotas?page=${page}&pageSize=${pageSize}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  return manejarRespuesta<Mascota[]>(res);
+  return manejarRespuesta<Paginado<Mascota>>(res);
 }
 
 export async function adminEliminarMascota(id: string, token: string): Promise<void> {

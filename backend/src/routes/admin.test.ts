@@ -7,6 +7,7 @@ jest.mock('../prisma', () => ({
   prisma: {
     mascota: {
       findMany: jest.fn(),
+      count: jest.fn(),
       delete: jest.fn(),
       update: jest.fn(),
     },
@@ -16,6 +17,7 @@ jest.mock('../prisma', () => ({
 const mockPrisma = prisma as unknown as {
   mascota: {
     findMany: jest.Mock;
+    count: jest.Mock;
     delete: jest.Mock;
     update: jest.Mock;
   };
@@ -72,20 +74,24 @@ describe('rutas admin protegidas', () => {
     expect(res.status).toBe(401);
   });
 
-  it('GET /api/admin/mascotas retorna todas las mascotas con token válido', async () => {
+  it('GET /api/admin/mascotas retorna todas las mascotas paginadas con token válido', async () => {
     mockPrisma.mascota.findMany.mockResolvedValue([
       { id: '1', estado: 'perdida' },
       { id: '2', estado: 'encontrada' },
     ]);
+    mockPrisma.mascota.count.mockResolvedValue(2);
 
     const res = await request(app)
       .get('/api/admin/mascotas')
       .set('Authorization', `Bearer ${tokenValido()}`);
 
     expect(res.status).toBe(200);
-    expect(res.body).toHaveLength(2);
+    expect(res.body.items).toHaveLength(2);
+    expect(res.body.total).toBe(2);
     expect(mockPrisma.mascota.findMany).toHaveBeenCalledWith({
       orderBy: { createdAt: 'desc' },
+      skip: 0,
+      take: 100,
     });
   });
 

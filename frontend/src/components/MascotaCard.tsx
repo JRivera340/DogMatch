@@ -1,68 +1,20 @@
 import { useState } from 'react';
 import type { Mascota } from '../types';
 import { marcarEncontrada, obtenerTokensGuardados } from '../api';
-import { PhoneIcon, PinIcon } from './icons';
+import { PinIcon } from './icons';
+import { BotonTelefono } from './BotonTelefono';
+import { DetalleMascotaModal } from './DetalleMascotaModal';
+import { codigoCaso, formatearFecha } from '../utils/mascotaFormato';
 
 interface Props {
   mascota: Mascota;
   onEncontrada?: (id: string) => void;
 }
 
-function formatearFecha(iso: string) {
-  const fecha = new Date(iso);
-  return fecha.toLocaleString('es-CO', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  });
-}
-
-function codigoCaso(id: string) {
-  return id.replace(/-/g, '').slice(0, 8).toUpperCase();
-}
-
-function linkWhatsApp(telefono: string, nombreMascota: string) {
-  const numero = telefono.replace(/\D/g, '');
-  const conIndicativo = numero.startsWith('57') ? numero : `57${numero}`;
-  const mensaje = encodeURIComponent(
-    `Hola, vi el reporte de ${nombreMascota} en DogMatch. Creo que puedo ayudar.`,
-  );
-  return `https://wa.me/${conIndicativo}?text=${mensaje}`;
-}
-
-function BotonTelefono({ telefono, nombreMascota }: { telefono: string; nombreMascota: string }) {
-  const [copiado, setCopiado] = useState(false);
-
-  async function copiar() {
-    await navigator.clipboard.writeText(telefono);
-    setCopiado(true);
-    setTimeout(() => setCopiado(false), 2000);
-  }
-
-  return (
-    <div className="flex items-center gap-1.5">
-      <a
-        href={linkWhatsApp(telefono, nombreMascota)}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center gap-1 border border-moss-700 bg-moss-600 px-2.5 py-1.5 text-[13px] font-semibold text-white transition-colors hover:bg-moss-700"
-      >
-        <PhoneIcon className="h-3.5 w-3.5" />
-        WhatsApp
-      </a>
-      <button
-        type="button"
-        onClick={copiar}
-        className="u-data border border-line-strong px-2.5 py-1.5 text-ink-soft transition-colors hover:border-brand-600 hover:text-brand-700"
-      >
-        {copiado ? 'Copiado' : telefono}
-      </button>
-    </div>
-  );
-}
-
 export function MascotaCard({ mascota, onEncontrada }: Props) {
   const [marcando, setMarcando] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [detalleAbierto, setDetalleAbierto] = useState(false);
   const editToken = obtenerTokensGuardados()[mascota.id];
   const estaEncontrada = mascota.estado === 'encontrada';
 
@@ -82,7 +34,12 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
 
   return (
     <article className="flex border border-line bg-paper-raised">
-      <div className="relative w-24 shrink-0 overflow-visible sm:w-28">
+      <button
+        type="button"
+        onClick={() => setDetalleAbierto(true)}
+        className="relative w-24 shrink-0 overflow-visible sm:w-28"
+        aria-label={`Ver detalle de ${mascota.nombre}`}
+      >
         <img
           src={mascota.fotoUrl}
           alt={mascota.nombre}
@@ -94,7 +51,7 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
         >
           {estaEncontrada ? 'Encontrada' : 'Perdida'}
         </span>
-      </div>
+      </button>
 
       <div className="perforation bg-paper-raised" aria-hidden />
 
@@ -136,9 +93,16 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
           </div>
         </dl>
 
-        <div className="mt-3.5 flex flex-wrap gap-1.5">
+        <div className="mt-3.5 flex flex-wrap items-center gap-1.5">
           <BotonTelefono telefono={mascota.telefono1} nombreMascota={mascota.nombre} />
           <BotonTelefono telefono={mascota.telefono2} nombreMascota={mascota.nombre} />
+          <button
+            type="button"
+            onClick={() => setDetalleAbierto(true)}
+            className="u-data border border-line-strong px-2.5 py-1.5 text-ink-soft transition-colors hover:border-brand-600 hover:text-brand-700"
+          >
+            Ver detalle
+          </button>
         </div>
 
         {editToken && mascota.estado === 'perdida' && (
@@ -153,6 +117,10 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
         )}
         {error && <p className="mt-2 text-[13px] font-medium text-brand-700">{error}</p>}
       </div>
+
+      {detalleAbierto && (
+        <DetalleMascotaModal mascota={mascota} onClose={() => setDetalleAbierto(false)} />
+      )}
     </article>
   );
 }

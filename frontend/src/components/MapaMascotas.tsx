@@ -4,6 +4,7 @@ import L, { type Map as LeafletMap } from 'leaflet';
 import type { Mascota } from '../types';
 import type { Ciudad } from '../data/ciudades';
 import { BuscadorCiudad } from './BuscadorCiudad';
+import { DetalleMascotaModal } from './DetalleMascotaModal';
 
 const iconoMascota = L.divIcon({
   className: '',
@@ -39,6 +40,7 @@ function RecentrarEnCiudad({ ciudad }: { ciudad: Ciudad | null | undefined }) {
 
 export function MapaMascotas({ mascotas, onSeleccionar, ciudadFiltro }: Props) {
   const [map, setMap] = useState<LeafletMap | null>(null);
+  const [detalle, setDetalle] = useState<Mascota | null>(null);
 
   return (
     <div className="relative h-full w-full">
@@ -65,6 +67,13 @@ export function MapaMascotas({ mascotas, onSeleccionar, ciudadFiltro }: Props) {
                 <p className="u-title-card text-[1rem]">{mascota.nombre}</p>
                 <p className="text-ink-soft">{mascota.raza}</p>
                 <p className="u-data text-ink-faint">{mascota.ultimaVezLugarTexto}</p>
+                <button
+                  type="button"
+                  onClick={() => setDetalle(mascota)}
+                  className="u-data mt-2 border border-brand-600 px-2 py-1 text-brand-700 hover:bg-brand-50"
+                >
+                  Ver detalle
+                </button>
               </div>
             </Popup>
           </Marker>
@@ -72,6 +81,8 @@ export function MapaMascotas({ mascotas, onSeleccionar, ciudadFiltro }: Props) {
       </MapContainer>
 
       <BuscadorCiudad map={map} ayuda="Solo mueve el mapa — no filtra los casos mostrados" />
+
+      {detalle && <DetalleMascotaModal mascota={detalle} onClose={() => setDetalle(null)} />}
     </div>
   );
 }

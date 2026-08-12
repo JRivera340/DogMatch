@@ -17,10 +17,15 @@ const RADIO_CIUDAD_KM = 25;
 const selectClass =
   'u-data border border-line-strong bg-paper-raised px-2 py-1.5 text-ink focus:border-brand-600 focus:outline-none';
 
+const TAMANO_PAGINA = 50;
+
 export function Inicio() {
   const [mascotas, setMascotas] = useState<Mascota[]>([]);
   const [cargando, setCargando] = useState(true);
+  const [cargandoMas, setCargandoMas] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pagina, setPagina] = useState(1);
+  const [total, setTotal] = useState(0);
 
   const [filtroEspecie, setFiltroEspecie] = useState<FiltroEspecie>('Todas');
   const [filtroGenero, setFiltroGenero] = useState<FiltroGenero>('Todos');
@@ -29,11 +34,29 @@ export function Inicio() {
   const [filtroEstado, setFiltroEstado] = useState<FiltroEstado>('Todas');
 
   useEffect(() => {
-    listarMascotas()
-      .then(setMascotas)
+    listarMascotas(1, TAMANO_PAGINA)
+      .then((resp) => {
+        setMascotas(resp.items);
+        setTotal(resp.total);
+        setPagina(1);
+      })
       .catch(() => setError('No se pudieron cargar las mascotas.'))
       .finally(() => setCargando(false));
   }, []);
+
+  async function cargarMas() {
+    setCargandoMas(true);
+    try {
+      const resp = await listarMascotas(pagina + 1, TAMANO_PAGINA);
+      setMascotas((prev) => [...prev, ...resp.items]);
+      setTotal(resp.total);
+      setPagina((p) => p + 1);
+    } catch {
+      setError('No se pudieron cargar más casos.');
+    } finally {
+      setCargandoMas(false);
+    }
+  }
 
   function handleEncontrada(id: string) {
     setMascotas((prev) => prev.filter((m) => m.id !== id));
@@ -85,8 +108,10 @@ export function Inicio() {
               <p className="u-eyebrow text-ink-faint">Casos reportados</p>
               <p className="u-title-section text-brand-700">
                 {cargando ? '—' : mascotasFiltradas.length}
-                {!cargando && hayFiltrosActivos && (
-                  <span className="u-data ml-1 text-ink-faint">/ {mascotas.length}</span>
+                {!cargando && (
+                  <span className="u-data ml-1 text-ink-faint">
+                    / {total} {hayFiltrosActivos ? '(filtrado)' : ''}
+                  </span>
                 )}
               </p>
             </div>
@@ -187,6 +212,16 @@ export function Inicio() {
               <SearchOffIcon className="mx-auto h-8 w-8 text-line-strong" />
               <p className="u-body mt-2 text-ink-soft">Ningún caso coincide con estos filtros.</p>
             </div>
+          )}
+          {!cargando && mascotas.length < total && (
+            <button
+              type="button"
+              onClick={cargarMas}
+              disabled={cargandoMas}
+              className="u-data w-full border border-line-strong py-2.5 text-ink-soft transition-colors hover:border-brand-600 hover:text-brand-700 disabled:opacity-50"
+            >
+              {cargandoMas ? 'Cargando...' : `Cargar más (${mascotas.length} de ${total})`}
+            </button>
           )}
         </div>
       </div>

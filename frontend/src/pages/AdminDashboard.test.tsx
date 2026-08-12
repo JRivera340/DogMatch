@@ -5,7 +5,11 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { AdminDashboard } from './AdminDashboard';
 import * as api from '../api';
 import { guardarTokenAdmin } from '../adminAuth';
-import type { Mascota } from '../types';
+import type { Mascota, Paginado } from '../types';
+
+function paginaDe(items: Mascota[]): Paginado<Mascota> {
+  return { items, page: 1, pageSize: 100, total: items.length, totalPages: 1 };
+}
 
 vi.mock('../api', () => ({
   adminListarMascotas: vi.fn(),
@@ -59,7 +63,7 @@ describe('AdminDashboard', () => {
 
   it('lista los casos cuando hay token válido', async () => {
     guardarTokenAdmin('token-valido');
-    vi.mocked(api.adminListarMascotas).mockResolvedValue([mascota]);
+    vi.mocked(api.adminListarMascotas).mockResolvedValue(paginaDe([mascota]));
 
     render(
       <MemoryRouter>
@@ -73,7 +77,7 @@ describe('AdminDashboard', () => {
 
   it('elimina un caso tras confirmar dos veces', async () => {
     guardarTokenAdmin('token-valido');
-    vi.mocked(api.adminListarMascotas).mockResolvedValue([mascota]);
+    vi.mocked(api.adminListarMascotas).mockResolvedValue(paginaDe([mascota]));
     vi.mocked(api.adminEliminarMascota).mockResolvedValue(undefined);
 
     render(
@@ -97,7 +101,7 @@ describe('AdminDashboard', () => {
 
   it('alterna el estado del caso', async () => {
     guardarTokenAdmin('token-valido');
-    vi.mocked(api.adminListarMascotas).mockResolvedValue([mascota]);
+    vi.mocked(api.adminListarMascotas).mockResolvedValue(paginaDe([mascota]));
     vi.mocked(api.adminActualizarEstado).mockResolvedValue(undefined);
 
     render(
@@ -120,7 +124,7 @@ describe('AdminDashboard', () => {
 
   it('aprueba un caso pendiente', async () => {
     guardarTokenAdmin('token-valido');
-    vi.mocked(api.adminListarMascotas).mockResolvedValue([mascota]);
+    vi.mocked(api.adminListarMascotas).mockResolvedValue(paginaDe([mascota]));
     vi.mocked(api.adminActualizarValidacion).mockResolvedValue(undefined);
 
     render(
@@ -143,7 +147,7 @@ describe('AdminDashboard', () => {
 
   it('el filtro "Sin validar" se activa y desactiva con el mismo botón', async () => {
     guardarTokenAdmin('token-valido');
-    vi.mocked(api.adminListarMascotas).mockResolvedValue([mascota]);
+    vi.mocked(api.adminListarMascotas).mockResolvedValue(paginaDe([mascota]));
 
     render(
       <MemoryRouter>

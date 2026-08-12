@@ -21,6 +21,14 @@ export interface Mascota {
   createdAt: string;
 }
 
+export interface Paginado<T> {
+  items: T[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+}
+
 export interface NuevaMascota {
   nombre: string;
   especie: Especie;

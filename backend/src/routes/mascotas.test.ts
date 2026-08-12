@@ -7,6 +7,7 @@ jest.mock('../prisma', () => ({
   prisma: {
     mascota: {
       findMany: jest.fn(),
+      count: jest.fn(),
       create: jest.fn(),
       findUnique: jest.fn(),
       update: jest.fn(),
@@ -18,6 +19,7 @@ const app = crearApp();
 const mockPrisma = prisma as unknown as {
   mascota: {
     findMany: jest.Mock;
+    count: jest.Mock;
     create: jest.Mock;
     findUnique: jest.Mock;
     update: jest.Mock;
@@ -46,11 +48,12 @@ beforeEach(() => {
 });
 
 describe('GET /api/mascotas', () => {
-  it('retorna todas las mascotas (perdidas y encontradas)', async () => {
+  it('retorna todas las mascotas paginadas (perdidas y encontradas)', async () => {
     mockPrisma.mascota.findMany.mockResolvedValue([
       { id: '1', estado: 'perdida' },
       { id: '2', estado: 'encontrada' },
     ]);
+    mockPrisma.mascota.count.mockResolvedValue(2);
 
     const res = await request(app).get('/api/mascotas');
 
@@ -58,11 +61,36 @@ describe('GET /api/mascotas', () => {
     expect(mockPrisma.mascota.findMany).toHaveBeenCalledWith({
       where: { validacion: { not: 'rechazada' } },
       orderBy: { createdAt: 'desc' },
+      skip: 0,
+      take: 50,
     });
-    expect(res.body).toEqual([
-      { id: '1', estado: 'perdida' },
-      { id: '2', estado: 'encontrada' },
-    ]);
+    expect(res.body).toEqual({
+      items: [
+        { id: '1', estado: 'perdida' },
+        { id: '2', estado: 'encontrada' },
+      ],
+      page: 1,
+      pageSize: 50,
+      total: 2,
+      totalPages: 1,
+    });
+  });
+
+  it('respeta page y pageSize de la query, con tope máximo', async () => {
+    mockPrisma.mascota.findMany.mockResolvedValue([]);
+    mockPrisma.mascota.count.mockResolvedValue(500);
+
+    const res = await request(app).get('/api/mascotas?page=2&pageSize=999');
+
+    expect(res.status).toBe(200);
+    expect(mockPrisma.mascota.findMany).toHaveBeenCalledWith({
+      where: { validacion: { not: 'rechazada' } },
+      orderBy: { createdAt: 'desc' },
+      skip: 100, // (page 2 - 1) * pageSize tope (100)
+      take: 100,
+    });
+    expect(res.body.pageSize).toBe(100);
+    expect(res.body.totalPages).toBe(5);
   });
 });
 

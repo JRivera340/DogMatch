@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { prisma } from '../prisma';
 import { adminEstadoSchema, adminLoginSchema, adminValidacionSchema } from '../validation';
 import { firmarTokenAdmin, requireAdmin } from '../adminAuth';
+import { envolverPaginado, leerPaginacion } from '../pagination';
 
 export const adminRouter = Router();
 
@@ -26,11 +27,19 @@ adminRouter.post('/login', (req, res) => {
   res.json({ token: firmarTokenAdmin() });
 });
 
-adminRouter.get('/mascotas', requireAdmin, async (_req, res) => {
-  const mascotas = await prisma.mascota.findMany({
-    orderBy: { createdAt: 'desc' },
-  });
-  res.json(mascotas);
+adminRouter.get('/mascotas', requireAdmin, async (req, res) => {
+  const paginacion = leerPaginacion(req, 100, 200);
+
+  const [items, total] = await Promise.all([
+    prisma.mascota.findMany({
+      orderBy: { createdAt: 'desc' },
+      skip: paginacion.skip,
+      take: paginacion.take,
+    }),
+    prisma.mascota.count(),
+  ]);
+
+  res.json(envolverPaginado(items, total, paginacion));
 });
 
 adminRouter.delete('/mascotas/:id', requireAdmin, async (req, res) => {
