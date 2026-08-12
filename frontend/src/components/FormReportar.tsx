@@ -4,6 +4,7 @@ import { SelectorUbicacion } from './SelectorUbicacion';
 import { AvisoTratamientoDatos } from './AvisoTratamientoDatos';
 import { crearMascota, guardarEditToken, presignUpload, subirFotoAS3 } from '../api';
 import type { Especie } from '../types';
+import { CameraIcon } from './icons';
 
 const TELEFONO_REGEX = /^(\+?57)?[3][0-9]{9}$/;
 
@@ -194,16 +195,22 @@ export function FormReportar() {
               className="mt-1 w-full u-body text-ink-soft file:mr-3 file:border file:border-brand-600 file:bg-brand-100 file:px-3 file:py-1.5 file:text-[13px] file:font-semibold file:text-brand-700 hover:file:bg-brand-200"
             />
             {errores.foto && <p className={errorClass}>{errores.foto}</p>}
-            {previewFoto && (
-              <div className="mt-3 flex items-center gap-3 border border-line-strong bg-paper p-2">
+            <div className="mt-3 flex items-center gap-3 border border-line-strong bg-paper p-2">
+              {previewFoto ? (
                 <img
                   src={previewFoto}
                   alt="Vista previa de la foto seleccionada"
                   className="h-20 w-20 object-cover"
                 />
-                <p className="u-data text-ink-faint">Vista previa</p>
-              </div>
-            )}
+              ) : (
+                <div className="flex h-20 w-20 items-center justify-center bg-paper-raised text-line-strong">
+                  <CameraIcon className="h-8 w-8" />
+                </div>
+              )}
+              <p className="u-data text-ink-faint">
+                {previewFoto ? 'Vista previa' : 'Aún no has seleccionado una foto'}
+              </p>
+            </div>
           </div>
         </div>
       </Seccion>

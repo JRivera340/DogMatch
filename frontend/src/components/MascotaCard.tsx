@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Mascota } from '../types';
 import { marcarEncontrada, obtenerTokensGuardados } from '../api';
+import { PhoneIcon, PinIcon } from './icons';
 
 interface Props {
   mascota: Mascota;
@@ -43,8 +44,9 @@ function BotonTelefono({ telefono, nombreMascota }: { telefono: string; nombreMa
         href={linkWhatsApp(telefono, nombreMascota)}
         target="_blank"
         rel="noopener noreferrer"
-        className="border border-moss-700 bg-moss-600 px-2.5 py-1.5 text-[13px] font-semibold text-white transition-colors hover:bg-moss-700"
+        className="flex items-center gap-1 border border-moss-700 bg-moss-600 px-2.5 py-1.5 text-[13px] font-semibold text-white transition-colors hover:bg-moss-700"
       >
+        <PhoneIcon className="h-3.5 w-3.5" />
         WhatsApp
       </a>
       <button
@@ -62,6 +64,7 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
   const [marcando, setMarcando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const editToken = obtenerTokensGuardados()[mascota.id];
+  const estaEncontrada = mascota.estado === 'encontrada';
 
   async function handleMarcarEncontrada() {
     if (!editToken) return;
@@ -83,13 +86,13 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
         <img
           src={mascota.fotoUrl}
           alt={mascota.nombre}
-          className="h-full w-full object-cover grayscale-[8%] contrast-[1.03]"
+          className={`h-full w-full object-cover contrast-[1.03] ${estaEncontrada ? 'grayscale-[35%]' : 'grayscale-[8%]'}`}
         />
         <span
-          className="stamp absolute -top-2 -left-2 bg-paper-raised text-brand-600"
+          className={`stamp absolute -top-2 -left-2 bg-paper-raised ${estaEncontrada ? 'text-moss-700' : 'text-brand-600'}`}
           aria-hidden
         >
-          Perdida
+          {estaEncontrada ? 'Encontrada' : 'Perdida'}
         </span>
       </div>
 
@@ -107,11 +110,14 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
         </div>
 
         <dl className="mt-3 space-y-1.5">
-          <div className="u-body">
-            <dt className="inline font-semibold text-ink-soft">Visto por última vez: </dt>
-            <dd className="inline">
-              {formatearFecha(mascota.ultimaVezFecha)} — {mascota.ultimaVezLugarTexto}
-            </dd>
+          <div className="u-body flex gap-1.5">
+            <PinIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-ink-faint" />
+            <span>
+              <dt className="inline font-semibold text-ink-soft">Visto por última vez: </dt>
+              <dd className="inline">
+                {formatearFecha(mascota.ultimaVezFecha)} — {mascota.ultimaVezLugarTexto}
+              </dd>
+            </span>
           </div>
           <div className="u-body">
             <dt className="inline font-semibold text-ink-soft">Residencia del dueño: </dt>

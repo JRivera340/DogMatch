@@ -3,9 +3,16 @@ import { MapaMascotas } from '../components/MapaMascotas';
 import { MascotaCard } from '../components/MascotaCard';
 import { listarMascotas } from '../api';
 import type { Especie, Mascota } from '../types';
+import { CIUDADES_COLOMBIA } from '../data/ciudades';
+import { distanciaKm } from '../utils/geo';
+import { PawIcon, SearchOffIcon } from '../components/icons';
 
 type FiltroEspecie = 'Todas' | Especie;
 type FiltroGenero = 'Todos' | 'Macho' | 'Hembra';
+type FiltroEstado = 'Todas' | 'perdida' | 'encontrada';
+
+// Radio aproximado del área metropolitana usado para "pertenece a esta ciudad"
+const RADIO_CIUDAD_KM = 25;
 
 const selectClass =
   'u-data border border-line-strong bg-paper-raised px-2 py-1.5 text-ink focus:border-brand-600 focus:outline-none';
@@ -18,6 +25,8 @@ export function Inicio() {
   const [filtroEspecie, setFiltroEspecie] = useState<FiltroEspecie>('Todas');
   const [filtroGenero, setFiltroGenero] = useState<FiltroGenero>('Todos');
   const [filtroColor, setFiltroColor] = useState<string>('Todos');
+  const [filtroCiudad, setFiltroCiudad] = useState<string>('Todas');
+  const [filtroEstado, setFiltroEstado] = useState<FiltroEstado>('Todas');
 
   useEffect(() => {
     listarMascotas()
@@ -35,32 +44,45 @@ export function Inicio() {
     [mascotas],
   );
 
+  const ciudadSeleccionada = CIUDADES_COLOMBIA.find((c) => c.nombre === filtroCiudad) ?? null;
+
   const mascotasFiltradas = mascotas.filter((m) => {
+    if (filtroEstado !== 'Todas' && m.estado !== filtroEstado) return false;
     if (filtroEspecie !== 'Todas' && m.especie !== filtroEspecie) return false;
     if (filtroGenero !== 'Todos' && m.genero !== filtroGenero) return false;
     if (filtroColor !== 'Todos' && m.color !== filtroColor) return false;
+    if (ciudadSeleccionada) {
+      const distancia = distanciaKm(m.lat, m.lng, ciudadSeleccionada.lat, ciudadSeleccionada.lng);
+      if (distancia > RADIO_CIUDAD_KM) return false;
+    }
     return true;
   });
 
   const hayFiltrosActivos =
-    filtroEspecie !== 'Todas' || filtroGenero !== 'Todos' || filtroColor !== 'Todos';
+    filtroEstado !== 'Todas' ||
+    filtroEspecie !== 'Todas' ||
+    filtroGenero !== 'Todos' ||
+    filtroColor !== 'Todos' ||
+    filtroCiudad !== 'Todas';
 
   function limpiarFiltros() {
+    setFiltroEstado('Todas');
     setFiltroEspecie('Todas');
     setFiltroGenero('Todos');
     setFiltroColor('Todos');
+    setFiltroCiudad('Todas');
   }
 
   return (
     <div className="flex w-full flex-col md:flex-row">
       <div className="relative h-72 shrink-0 border-b-2 border-brand-700 md:h-full md:w-3/5 md:border-r-2 md:border-b-0">
-        <MapaMascotas mascotas={mascotasFiltradas} />
+        <MapaMascotas mascotas={mascotasFiltradas} ciudadFiltro={ciudadSeleccionada} />
       </div>
       <div className="flex flex-1 flex-col overflow-y-auto bg-paper">
         <div className="sticky top-0 z-[1] border-b-2 border-line bg-paper-raised">
           <div className="flex items-center justify-between px-4 py-3">
             <div>
-              <p className="u-eyebrow text-ink-faint">Casos activos</p>
+              <p className="u-eyebrow text-ink-faint">Casos reportados</p>
               <p className="u-title-section text-brand-700">
                 {cargando ? '—' : mascotasFiltradas.length}
                 {!cargando && hayFiltrosActivos && (
@@ -77,6 +99,29 @@ export function Inicio() {
             <label className="u-label" htmlFor="filtro-especie">
               Filtrar
             </label>
+            <select
+              value={filtroEstado}
+              onChange={(e) => setFiltroEstado(e.target.value as FiltroEstado)}
+              className={selectClass}
+            >
+              <option value="Todas">Estado: todos</option>
+              <option value="perdida">Perdida</option>
+              <option value="encontrada">Encontrada</option>
+            </select>
+
+            <select
+              value={filtroCiudad}
+              onChange={(e) => setFiltroCiudad(e.target.value)}
+              className={selectClass}
+            >
+              <option value="Todas">Ciudad: todas</option>
+              {CIUDADES_COLOMBIA.map((ciudad) => (
+                <option key={ciudad.nombre} value={ciudad.nombre}>
+                  {ciudad.nombre}
+                </option>
+              ))}
+            </select>
+
             <select
               id="filtro-especie"
               value={filtroEspecie}
@@ -130,15 +175,17 @@ export function Inicio() {
             <MascotaCard key={mascota.id} mascota={mascota} onEncontrada={handleEncontrada} />
           ))}
           {!cargando && mascotas.length === 0 && !error && (
-            <div className="border border-dashed border-line-strong p-6 text-center">
-              <p className="u-body text-ink-soft">
+            <div className="border border-dashed border-line-strong p-8 text-center">
+              <PawIcon className="mx-auto h-8 w-8 text-line-strong" />
+              <p className="u-body mt-2 text-ink-soft">
                 Aún no hay mascotas reportadas. Sé el primero en publicar un caso.
               </p>
             </div>
           )}
           {!cargando && mascotas.length > 0 && mascotasFiltradas.length === 0 && (
-            <div className="border border-dashed border-line-strong p-6 text-center">
-              <p className="u-body text-ink-soft">Ningún caso coincide con estos filtros.</p>
+            <div className="border border-dashed border-line-strong p-8 text-center">
+              <SearchOffIcon className="mx-auto h-8 w-8 text-line-strong" />
+              <p className="u-body mt-2 text-ink-soft">Ningún caso coincide con estos filtros.</p>
             </div>
           )}
         </div>

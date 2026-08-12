@@ -1,6 +1,8 @@
-import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
+import { useEffect } from 'react';
+import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import type { Mascota } from '../types';
+import type { Ciudad } from '../data/ciudades';
 import { BuscadorCiudad } from './BuscadorCiudad';
 
 const iconoMascota = L.divIcon({
@@ -11,20 +13,43 @@ const iconoMascota = L.divIcon({
 });
 
 const CENTRO_COLOMBIA: [number, number] = [4.5709, -74.2973];
+const ZOOM_COLOMBIA = 6;
 
 interface Props {
   mascotas: Mascota[];
   onSeleccionar?: (mascota: Mascota) => void;
+  /** Ciudad activa del filtro — si se pasa, recentra el mapa en ella (null = vista completa de Colombia). */
+  ciudadFiltro?: Ciudad | null;
 }
 
-export function MapaMascotas({ mascotas, onSeleccionar }: Props) {
+function RecentrarEnCiudad({ ciudad }: { ciudad: Ciudad | null | undefined }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (ciudad) {
+      map.flyTo([ciudad.lat, ciudad.lng], ciudad.zoom, { duration: 1 });
+    } else {
+      map.flyTo(CENTRO_COLOMBIA, ZOOM_COLOMBIA, { duration: 1 });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ciudad?.nombre]);
+
+  return null;
+}
+
+export function MapaMascotas({ mascotas, onSeleccionar, ciudadFiltro }: Props) {
   return (
-    <MapContainer center={CENTRO_COLOMBIA} zoom={6} style={{ height: '100%', width: '100%' }}>
+    <MapContainer
+      center={CENTRO_COLOMBIA}
+      zoom={ZOOM_COLOMBIA}
+      style={{ height: '100%', width: '100%' }}
+    >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <BuscadorCiudad ayuda="Solo mueve el mapa — no filtra los casos mostrados" />
+      <RecentrarEnCiudad ciudad={ciudadFiltro} />
       {mascotas.map((mascota) => (
         <Marker
           key={mascota.id}

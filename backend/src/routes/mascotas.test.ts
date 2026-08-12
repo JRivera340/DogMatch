@@ -46,17 +46,22 @@ beforeEach(() => {
 });
 
 describe('GET /api/mascotas', () => {
-  it('retorna solo mascotas perdidas', async () => {
-    mockPrisma.mascota.findMany.mockResolvedValue([{ id: '1', estado: 'perdida' }]);
+  it('retorna todas las mascotas (perdidas y encontradas)', async () => {
+    mockPrisma.mascota.findMany.mockResolvedValue([
+      { id: '1', estado: 'perdida' },
+      { id: '2', estado: 'encontrada' },
+    ]);
 
     const res = await request(app).get('/api/mascotas');
 
     expect(res.status).toBe(200);
     expect(mockPrisma.mascota.findMany).toHaveBeenCalledWith({
-      where: { estado: 'perdida' },
       orderBy: { createdAt: 'desc' },
     });
-    expect(res.body).toEqual([{ id: '1', estado: 'perdida' }]);
+    expect(res.body).toEqual([
+      { id: '1', estado: 'perdida' },
+      { id: '2', estado: 'encontrada' },
+    ]);
   });
 });
 

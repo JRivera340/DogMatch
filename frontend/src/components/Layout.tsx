@@ -1,4 +1,5 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
+import { PawIcon } from './icons';
 
 export function Layout() {
   const location = useLocation();
@@ -9,10 +10,10 @@ export function Layout() {
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
           <Link to="/" className="flex items-center gap-3">
             <span
-              className="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-brand-700 font-display text-base font-extrabold text-brand-700"
+              className="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-brand-700 text-brand-700"
               aria-hidden
             >
-              DM
+              <PawIcon className="h-5 w-5" />
             </span>
             <span className="flex flex-col leading-none">
               <span className="font-display text-[1.15rem] font-extrabold tracking-tight text-ink">

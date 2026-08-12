@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useMap } from 'react-leaflet';
 import { CIUDADES_COLOMBIA } from '../data/ciudades';
 
@@ -12,12 +13,19 @@ interface Props {
  * despliega la lista completa de ciudades (se puede elegir sin escribir);
  * al escribir, filtra la lista. Solo mueve el mapa (flyTo) — nunca marca
  * un punto ni filtra los datos mostrados.
+ *
  * Debe usarse como hijo de <MapContainer> para tener acceso a useMap().
+ * El control se pinta vía portal en el elemento padre del mapa: Leaflet
+ * fuerza `overflow: hidden` en `.leaflet-container`, así que si el
+ * dropdown viviera dentro de ese div quedaría recortado e invisible.
  */
 export function BuscadorCiudad({ ayuda }: Props) {
   const map = useMap();
   const [valor, setValor] = useState('');
   const [abierto, setAbierto] = useState(false);
+
+  const contenedorMapa = map.getContainer().parentElement;
+  if (!contenedorMapa) return null;
 
   const opciones = CIUDADES_COLOMBIA.filter((c) =>
     c.nombre.toLowerCase().includes(valor.trim().toLowerCase()),
@@ -29,7 +37,7 @@ export function BuscadorCiudad({ ayuda }: Props) {
     setAbierto(false);
   }
 
-  return (
+  return createPortal(
     <div className="mapa-control absolute top-2 right-2 z-[500] w-44 sm:w-52">
       <div className="relative">
         <input
@@ -74,6 +82,7 @@ export function BuscadorCiudad({ ayuda }: Props) {
         )}
       </div>
       <p className="u-data px-2.5 py-1 text-[10px] text-ink-faint">{ayuda}</p>
-    </div>
+    </div>,
+    contenedorMapa,
   );
 }

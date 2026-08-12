@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ShieldIcon } from './icons';
 
 interface Props {
   checked: boolean;
@@ -10,7 +11,10 @@ export function AvisoTratamientoDatos({ checked, onChange }: Props) {
 
   return (
     <div className="border-l-4 border-brand-600 bg-brand-50 p-4">
-      <p className="u-eyebrow">Ley 1581 de 2012 · Habeas Data</p>
+      <p className="u-eyebrow flex items-center gap-1.5">
+        <ShieldIcon className="h-3.5 w-3.5" />
+        Ley 1581 de 2012 · Habeas Data
+      </p>
       <label className="mt-2 flex items-start gap-3 u-body">
         <input
           type="checkbox"
