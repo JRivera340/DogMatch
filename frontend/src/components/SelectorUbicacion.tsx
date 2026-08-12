@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet';
-import L from 'leaflet';
+import L, { type Map as LeafletMap } from 'leaflet';
 import { BuscadorCiudad } from './BuscadorCiudad';
 
 const iconoSeleccion = L.divIcon({
@@ -55,10 +55,12 @@ function GeolocalizarAlMontar({ yaTieneSeleccion }: { yaTieneSeleccion: boolean 
 
 export function SelectorUbicacion({ lat, lng, onSeleccionar, error }: Props) {
   const tienePunto = lat !== null && lng !== null;
+  const [map, setMap] = useState<LeafletMap | null>(null);
 
   return (
     <div className="relative">
       <MapContainer
+        ref={setMap}
         center={tienePunto ? [lat, lng] : CENTRO_BOGOTA}
         zoom={tienePunto ? ZOOM_PUNTO : ZOOM_DEFECTO}
         style={{ height: '16rem', width: '100%' }}
@@ -69,7 +71,6 @@ export function SelectorUbicacion({ lat, lng, onSeleccionar, error }: Props) {
         />
         <GeolocalizarAlMontar yaTieneSeleccion={tienePunto} />
         <ClickHandler onSeleccionar={onSeleccionar} />
-        <BuscadorCiudad ayuda="Solo navega — el click en el mapa marca el punto" />
         {tienePunto && (
           <Marker
             position={[lat, lng]}
@@ -84,6 +85,8 @@ export function SelectorUbicacion({ lat, lng, onSeleccionar, error }: Props) {
           />
         )}
       </MapContainer>
+
+      <BuscadorCiudad map={map} ayuda="Solo navega — el click en el mapa marca el punto" />
 
       {error && !tienePunto && (
         <div className="pointer-events-none absolute inset-x-0 top-0 z-[500] border-b-2 border-brand-600 bg-brand-50/95 px-3 py-2 text-[13px] font-medium text-brand-800">

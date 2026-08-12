@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
-import L from 'leaflet';
+import L, { type Map as LeafletMap } from 'leaflet';
 import type { Mascota } from '../types';
 import type { Ciudad } from '../data/ciudades';
 import { BuscadorCiudad } from './BuscadorCiudad';
@@ -38,34 +38,40 @@ function RecentrarEnCiudad({ ciudad }: { ciudad: Ciudad | null | undefined }) {
 }
 
 export function MapaMascotas({ mascotas, onSeleccionar, ciudadFiltro }: Props) {
+  const [map, setMap] = useState<LeafletMap | null>(null);
+
   return (
-    <MapContainer
-      center={CENTRO_COLOMBIA}
-      zoom={ZOOM_COLOMBIA}
-      style={{ height: '100%', width: '100%' }}
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      <BuscadorCiudad ayuda="Solo mueve el mapa — no filtra los casos mostrados" />
-      <RecentrarEnCiudad ciudad={ciudadFiltro} />
-      {mascotas.map((mascota) => (
-        <Marker
-          key={mascota.id}
-          position={[mascota.lat, mascota.lng]}
-          icon={iconoMascota}
-          eventHandlers={{ click: () => onSeleccionar?.(mascota) }}
-        >
-          <Popup>
-            <div className="u-body">
-              <p className="u-title-card text-[1rem]">{mascota.nombre}</p>
-              <p className="text-ink-soft">{mascota.raza}</p>
-              <p className="u-data text-ink-faint">{mascota.ultimaVezLugarTexto}</p>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
-    </MapContainer>
+    <div className="relative h-full w-full">
+      <MapContainer
+        ref={setMap}
+        center={CENTRO_COLOMBIA}
+        zoom={ZOOM_COLOMBIA}
+        style={{ height: '100%', width: '100%' }}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <RecentrarEnCiudad ciudad={ciudadFiltro} />
+        {mascotas.map((mascota) => (
+          <Marker
+            key={mascota.id}
+            position={[mascota.lat, mascota.lng]}
+            icon={iconoMascota}
+            eventHandlers={{ click: () => onSeleccionar?.(mascota) }}
+          >
+            <Popup>
+              <div className="u-body">
+                <p className="u-title-card text-[1rem]">{mascota.nombre}</p>
+                <p className="text-ink-soft">{mascota.raza}</p>
+                <p className="u-data text-ink-faint">{mascota.ultimaVezLugarTexto}</p>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+      </MapContainer>
+
+      <BuscadorCiudad map={map} ayuda="Solo mueve el mapa — no filtra los casos mostrados" />
+    </div>
   );
 }
