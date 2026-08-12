@@ -7,7 +7,7 @@ import {
   adminListarMascotas,
 } from '../api';
 import { limpiarTokenAdmin, obtenerTokenAdmin } from '../adminAuth';
-import type { Mascota, Validacion } from '../types';
+import type { Mascota, TipoReporte, Validacion } from '../types';
 import { MapaValidacion } from '../components/MapaValidacion';
 import { DetalleMascotaModal } from '../components/DetalleMascotaModal';
 import { codigoCaso, formatearFecha } from '../utils/mascotaFormato';
@@ -18,6 +18,7 @@ import { distanciaKm } from '../utils/geo';
 const RADIO_CIUDAD_KM = 25;
 
 type FiltroEstado = 'todas' | 'perdida' | 'encontrada';
+type FiltroTipo = 'todas' | TipoReporte;
 type FiltroValidacion = 'pendiente' | 'aprobada' | null;
 type Pestana = 'mapa' | 'validacion';
 
@@ -33,6 +34,7 @@ export function AdminDashboard() {
   const [pagina, setPagina] = useState(1);
   const [total, setTotal] = useState(0);
   const [filtroEstado, setFiltroEstado] = useState<FiltroEstado>('todas');
+  const [filtroTipo, setFiltroTipo] = useState<FiltroTipo>('todas');
   const [filtroValidacion, setFiltroValidacion] = useState<FiltroValidacion>(null);
   const [filtroDepartamento, setFiltroDepartamento] = useState<string>('Todos');
   const [confirmandoId, setConfirmandoId] = useState<string | null>(null);
@@ -147,6 +149,7 @@ export function AdminDashboard() {
   const objetivoMapa = filtroDepartamento !== 'Todos' ? centroDepartamento(filtroDepartamento) : null;
 
   const mascotasFiltradas = mascotas.filter((m) => {
+    if (filtroTipo !== 'todas' && m.tipoReporte !== filtroTipo) return false;
     if (filtroEstado !== 'todas' && m.estado !== filtroEstado) return false;
     if (filtroValidacion && m.validacion !== filtroValidacion) return false;
     if (filtroDepartamento !== 'Todos') {
@@ -230,6 +233,17 @@ export function AdminDashboard() {
           >
             Verificadas ({aprobadasCount})
           </button>
+
+          <span className="u-label ml-4">Tipo</span>
+          <select
+            value={filtroTipo}
+            onChange={(e) => setFiltroTipo(e.target.value as FiltroTipo)}
+            className="u-data border border-line-strong bg-paper-raised px-2 py-1.5 text-ink focus:border-brand-600 focus:outline-none"
+          >
+            <option value="todas">Todos</option>
+            <option value="perdida">Perdida (con dueño)</option>
+            <option value="rescatada">Rescatada (sin dueño)</option>
+          </select>
 
           <span className="u-label ml-4">Estado</span>
           {(['todas', 'perdida', 'encontrada'] as const).map((opcion) => (
@@ -318,7 +332,14 @@ export function AdminDashboard() {
                           className="h-12 w-12 object-cover"
                         />
                       </td>
-                      <td className="u-body px-3 py-2.5 font-semibold">{mascota.nombre}</td>
+                      <td className="u-body px-3 py-2.5">
+                        <span className="font-semibold">{mascota.nombre}</span>
+                        {mascota.tipoReporte === 'rescatada' && (
+                          <span className="u-data mt-0.5 block text-brand-600">
+                            Rescatada · sin dueño
+                          </span>
+                        )}
+                      </td>
                       <td className="px-3 py-2.5">
                         <span
                           className={`u-data border px-2 py-0.5 ${

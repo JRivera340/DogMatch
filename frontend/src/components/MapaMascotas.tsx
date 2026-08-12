@@ -8,8 +8,11 @@ import { DetalleMascotaModal } from './DetalleMascotaModal';
 import { MapaLeyenda } from './MapaLeyenda';
 import { useInvalidarMapaAlRedimensionar } from '../utils/useInvalidarMapa';
 
+// Color = tipo de reporte mientras el caso está activo; una vez resuelto
+// (estado="encontrada", sin importar el tipo) se muestra en gris apagado.
 const COLOR_PERDIDA = '#c81e3a';
-const COLOR_ENCONTRADA = '#4b7040';
+const COLOR_RESCATADA = '#3568b0';
+const COLOR_RESUELTA = '#9c9188';
 
 function crearIcono(color: string) {
   return L.divIcon({
@@ -21,7 +24,13 @@ function crearIcono(color: string) {
 }
 
 const iconoPerdida = crearIcono(COLOR_PERDIDA);
-const iconoEncontrada = crearIcono(COLOR_ENCONTRADA);
+const iconoRescatada = crearIcono(COLOR_RESCATADA);
+const iconoResuelta = crearIcono(COLOR_RESUELTA);
+
+function iconoDe(mascota: Mascota) {
+  if (mascota.estado === 'encontrada') return iconoResuelta;
+  return mascota.tipoReporte === 'rescatada' ? iconoRescatada : iconoPerdida;
+}
 
 const CENTRO_COLOMBIA: [number, number] = [4.5709, -74.2973];
 const ZOOM_COLOMBIA = 6;
@@ -70,12 +79,15 @@ export function MapaMascotas({ mascotas, onSeleccionar, ciudadFiltro }: Props) {
           <Marker
             key={mascota.id}
             position={[mascota.lat, mascota.lng]}
-            icon={mascota.estado === 'encontrada' ? iconoEncontrada : iconoPerdida}
+            icon={iconoDe(mascota)}
             eventHandlers={{ click: () => onSeleccionar?.(mascota) }}
           >
             <Popup>
               <div className="u-body">
                 <p className="u-title-card text-[1rem]">{mascota.nombre}</p>
+                {mascota.tipoReporte === 'rescatada' && (
+                  <p className="u-data text-brand-600">Rescatada · busca dueño</p>
+                )}
                 <p className="text-ink-soft">{mascota.raza}</p>
                 <p className="u-data text-ink-faint">{mascota.ultimaVezLugarTexto}</p>
                 <button
@@ -96,7 +108,8 @@ export function MapaMascotas({ mascotas, onSeleccionar, ciudadFiltro }: Props) {
         className="bottom-2 left-2"
         items={[
           { color: COLOR_PERDIDA, etiqueta: 'Perdida' },
-          { color: COLOR_ENCONTRADA, etiqueta: 'Encontrada' },
+          { color: COLOR_RESCATADA, etiqueta: 'Rescatada' },
+          { color: COLOR_RESUELTA, etiqueta: 'Resuelta' },
         ]}
       />
 

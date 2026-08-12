@@ -1,3 +1,16 @@
+import type { TipoReporte } from '../types';
+
+/** Texto del sello/estado — depende de si es un reporte de mascota perdida o rescatada sin dueño. */
+export function etiquetaEstado(tipoReporte: TipoReporte, estado: 'perdida' | 'encontrada') {
+  if (estado === 'encontrada') return 'Con dueño';
+  return tipoReporte === 'rescatada' ? 'Rescatada' : 'Perdida';
+}
+
+/** Texto del botón que resuelve el caso — distinto según el tipo de reporte. */
+export function etiquetaAccionResolver(tipoReporte: TipoReporte) {
+  return tipoReporte === 'rescatada' ? 'Marcar como adoptada' : 'Marcar como reunida con su dueño';
+}
+
 export function formatearFecha(iso: string) {
   const fecha = new Date(iso);
   return fecha.toLocaleString('es-CO', {

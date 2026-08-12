@@ -4,7 +4,7 @@ import { marcarEncontrada, obtenerTokensGuardados } from '../api';
 import { PinIcon } from './icons';
 import { BotonTelefono } from './BotonTelefono';
 import { DetalleMascotaModal } from './DetalleMascotaModal';
-import { codigoCaso, formatearFecha } from '../utils/mascotaFormato';
+import { codigoCaso, etiquetaAccionResolver, etiquetaEstado, formatearFecha } from '../utils/mascotaFormato';
 
 interface Props {
   mascota: Mascota;
@@ -26,7 +26,7 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
       await marcarEncontrada(mascota.id, editToken);
       onEncontrada?.(mascota.id);
     } catch {
-      setError('No se pudo marcar como encontrada. Intenta de nuevo.');
+      setError('No se pudo actualizar. Intenta de nuevo.');
     } finally {
       setMarcando(false);
     }
@@ -49,7 +49,7 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
           className={`stamp absolute -top-2 -left-2 bg-paper-raised ${estaEncontrada ? 'text-moss-700' : 'text-brand-600'}`}
           aria-hidden
         >
-          {estaEncontrada ? 'Encontrada' : 'Perdida'}
+          {etiquetaEstado(mascota.tipoReporte, mascota.estado)}
         </span>
       </button>
 
@@ -59,6 +59,9 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
         <div className="flex items-start justify-between gap-2">
           <div>
             <h3 className="u-title-card truncate">{mascota.nombre}</h3>
+            {mascota.tipoReporte === 'rescatada' && (
+              <p className="u-data text-brand-600">Mascota rescatada · busca dueño</p>
+            )}
             <p className="u-body text-ink-soft">
               {mascota.especie} · {mascota.raza} · {mascota.genero} · {mascota.color} ·{' '}
               {mascota.tamano} · {mascota.edad}
@@ -104,7 +107,9 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
             </span>
           </div>
           <div className="u-body">
-            <dt className="inline font-semibold text-ink-soft">Residencia del dueño: </dt>
+            <dt className="inline font-semibold text-ink-soft">
+              {mascota.tipoReporte === 'rescatada' ? 'Dónde está ahora: ' : 'Residencia del dueño: '}
+            </dt>
             <dd className="inline">{mascota.lugarResidencia}</dd>
           </div>
         </dl>
@@ -128,7 +133,7 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
             disabled={marcando}
             className="mt-3.5 border border-brand-800 bg-brand-800 px-3 py-1.5 text-[13px] font-semibold text-white transition-colors hover:bg-brand-900 disabled:opacity-50"
           >
-            {marcando ? 'Marcando...' : 'Marcar como encontrada'}
+            {marcando ? 'Marcando...' : etiquetaAccionResolver(mascota.tipoReporte)}
           </button>
         )}
         {error && <p className="mt-2 text-[13px] font-medium text-brand-700">{error}</p>}

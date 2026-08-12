@@ -28,6 +28,7 @@ const mockPrisma = prisma as unknown as {
 
 const mascotaValida = {
   nombre: 'Firulais',
+  tipoReporte: 'perdida',
   especie: 'Perro',
   raza: 'Criollo',
   genero: 'Macho',
@@ -184,6 +185,30 @@ describe('POST /api/mascotas', () => {
           esUrgente: false,
           esAsustadiza: false,
         }),
+      }),
+    );
+  });
+
+  it('rechaza tipoReporte inválido', async () => {
+    const res = await request(app)
+      .post('/api/mascotas')
+      .send({ ...mascotaValida, tipoReporte: 'adoptada' });
+
+    expect(res.status).toBe(400);
+    expect(mockPrisma.mascota.create).not.toHaveBeenCalled();
+  });
+
+  it('acepta tipoReporte "rescatada" (mascota sin dueño)', async () => {
+    mockPrisma.mascota.create.mockResolvedValue({ id: 'mascota-4', editToken: 'token-4' });
+
+    const res = await request(app)
+      .post('/api/mascotas')
+      .send({ ...mascotaValida, tipoReporte: 'rescatada' });
+
+    expect(res.status).toBe(201);
+    expect(mockPrisma.mascota.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ tipoReporte: 'rescatada' }),
       }),
     );
   });

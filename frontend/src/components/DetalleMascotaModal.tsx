@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Mascota } from '../types';
-import { codigoCaso, formatearFecha } from '../utils/mascotaFormato';
+import { codigoCaso, etiquetaEstado, formatearFecha } from '../utils/mascotaFormato';
 import { BotonTelefono } from './BotonTelefono';
 import { ImageLightbox } from './ImageLightbox';
 import { PinIcon } from './icons';
@@ -75,10 +75,14 @@ export function DetalleMascotaModal({ mascota, onClose, admin }: Props) {
                   <span
                     className={`stamp text-[10px] ${estaEncontrada ? 'text-moss-700' : 'text-brand-600'}`}
                   >
-                    {estaEncontrada ? 'Encontrada' : 'Perdida'}
+                    {etiquetaEstado(mascota.tipoReporte, mascota.estado)}
                   </span>
                 </div>
               </div>
+
+              {mascota.tipoReporte === 'rescatada' && (
+                <p className="u-data text-brand-600">Mascota rescatada · busca dueño</p>
+              )}
 
               <p className="u-body mt-1 text-ink-soft">
                 {mascota.especie} · {mascota.raza} · {mascota.genero} · {mascota.color} ·{' '}
@@ -120,14 +124,20 @@ export function DetalleMascotaModal({ mascota, onClose, admin }: Props) {
                 <div className="u-body flex gap-1.5">
                   <PinIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-ink-faint" />
                   <span>
-                    <dt className="inline font-semibold text-ink-soft">Visto por última vez: </dt>
+                    <dt className="inline font-semibold text-ink-soft">
+                      {mascota.tipoReporte === 'rescatada'
+                        ? 'Encontrada el: '
+                        : 'Visto por última vez: '}
+                    </dt>
                     <dd className="inline">
                       {formatearFecha(mascota.ultimaVezFecha)} — {mascota.ultimaVezLugarTexto}
                     </dd>
                   </span>
                 </div>
                 <div className="u-body">
-                  <dt className="inline font-semibold text-ink-soft">Residencia del dueño: </dt>
+                  <dt className="inline font-semibold text-ink-soft">
+                    {mascota.tipoReporte === 'rescatada' ? 'Dónde está ahora: ' : 'Residencia del dueño: '}
+                  </dt>
                   <dd className="inline">{mascota.lugarResidencia}</dd>
                 </div>
                 <div className="u-body">

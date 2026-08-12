@@ -24,6 +24,7 @@ export const SENAS_DISPONIBLES = [
 
 export const crearMascotaSchema = z.object({
   nombre: z.string().trim().min(1, 'Nombre requerido').max(80),
+  tipoReporte: z.enum(['perdida', 'rescatada']),
   especie: z.enum(['Perro', 'Gato']),
   raza: z.string().trim().min(1, 'Raza requerida').max(80),
   genero: z.enum(['Macho', 'Hembra']),

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { SelectorUbicacion } from './SelectorUbicacion';
 import { AvisoTratamientoDatos } from './AvisoTratamientoDatos';
 import { crearMascota, guardarEditToken, presignUpload, subirFotoAS3 } from '../api';
-import type { Edad, Especie, Tamano } from '../types';
+import type { Edad, Especie, Tamano, TipoReporte } from '../types';
 import { SENAS_DISPONIBLES } from '../data/senas';
 import { CameraIcon } from './icons';
 
@@ -33,6 +33,7 @@ interface Errores {
 export function FormReportar() {
   const navigate = useNavigate();
 
+  const [tipoReporte, setTipoReporte] = useState<TipoReporte>('perdida');
   const [nombre, setNombre] = useState('');
   const [especie, setEspecie] = useState<Especie>('Perro');
   const [raza, setRaza] = useState('');
@@ -61,6 +62,7 @@ export function FormReportar() {
   const [errorEnvio, setErrorEnvio] = useState<string | null>(null);
 
   const etiquetaColor = especie === 'Perro' ? 'Color del perro' : 'Color del gato';
+  const esRescatada = tipoReporte === 'rescatada';
 
   useEffect(() => {
     if (!foto) {
@@ -112,6 +114,7 @@ export function FormReportar() {
 
       const { id, editToken } = await crearMascota({
         nombre: nombre.trim(),
+        tipoReporte,
         especie,
         raza: raza.trim(),
         genero,
@@ -149,8 +152,45 @@ export function FormReportar() {
     <form onSubmit={handleSubmit} className="mx-auto max-w-2xl space-y-6 p-4 sm:p-6">
       <div>
         <p className="u-eyebrow">Formulario de reporte</p>
-        <h1 className="u-title-page mt-1">Reportar mascota perdida</h1>
+        <h1 className="u-title-page mt-1">
+          {esRescatada ? 'Reportar mascota rescatada' : 'Reportar mascota perdida'}
+        </h1>
       </div>
+
+      <section className="border border-line bg-paper-raised p-5 shadow-[3px_3px_0_rgba(34,29,26,0.05)] sm:p-6">
+        <label className={labelClass}>¿Eres el dueño de esta mascota?</label>
+        <div className="mt-2 flex gap-2">
+          <button
+            type="button"
+            onClick={() => setTipoReporte('perdida')}
+            aria-pressed={!esRescatada}
+            className={`u-body flex-1 border px-4 py-2.5 font-semibold transition-colors ${
+              !esRescatada
+                ? 'border-brand-600 bg-brand-600 text-white'
+                : 'border-line-strong text-ink-soft hover:border-brand-600 hover:text-brand-700'
+            }`}
+          >
+            Sí, es mi mascota
+          </button>
+          <button
+            type="button"
+            onClick={() => setTipoReporte('rescatada')}
+            aria-pressed={esRescatada}
+            className={`u-body flex-1 border px-4 py-2.5 font-semibold transition-colors ${
+              esRescatada
+                ? 'border-brand-600 bg-brand-600 text-white'
+                : 'border-line-strong text-ink-soft hover:border-brand-600 hover:text-brand-700'
+            }`}
+          >
+            No, la encontré sin dueño
+          </button>
+        </div>
+        <p className="u-data mt-2 text-ink-faint">
+          {esRescatada
+            ? 'Publicamos esta mascota como rescatada, sin dueño conocido, para que su dueño la reconozca o alguien la adopte.'
+            : 'Publicamos tu mascota como perdida para que la reconozcan y te contacten.'}
+        </p>
+      </section>
 
       <Seccion numero="01" titulo="Datos de la mascota">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -330,10 +370,10 @@ export function FormReportar() {
         </label>
       </Seccion>
 
-      <Seccion numero="03" titulo="Última vez vista">
+      <Seccion numero="03" titulo={esRescatada ? 'Cuándo y dónde la encontraste' : 'Última vez vista'}>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className={labelClass}>Fecha y hora</label>
+            <label className={labelClass}>{esRescatada ? 'Fecha y hora en que la encontraste' : 'Fecha y hora'}</label>
             <input
               type="datetime-local"
               value={ultimaVezFecha}
@@ -359,7 +399,9 @@ export function FormReportar() {
 
         <div>
           <label className={labelClass}>
-            Ciudad y punto exacto (busca la ciudad, luego haz click en el mapa)
+            {esRescatada
+              ? 'Ciudad y punto exacto donde la encontraste'
+              : 'Ciudad y punto exacto (busca la ciudad, luego haz click en el mapa)'}
           </label>
           <div className="mt-1 border border-line-strong">
             <SelectorUbicacion
@@ -377,7 +419,11 @@ export function FormReportar() {
 
       <Seccion numero="04" titulo="Contacto y residencia">
         <div>
-          <label className={labelClass}>Lugar de residencia (para saber a dónde ir)</label>
+          <label className={labelClass}>
+            {esRescatada
+              ? 'Dónde está la mascota ahora (para saber a dónde ir a recogerla)'
+              : 'Lugar de residencia (para saber a dónde ir)'}
+          </label>
           <input
             value={lugarResidencia}
             onChange={(e) => setLugarResidencia(e.target.value)}

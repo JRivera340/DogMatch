@@ -11,6 +11,7 @@ vi.mock('../api', () => ({
 const mascota: Mascota = {
   id: '1',
   nombre: 'Firulais',
+  tipoReporte: 'perdida',
   especie: 'Perro',
   raza: 'Criollo',
   genero: 'Macho',

@@ -27,6 +27,7 @@ vi.mock('react-router-dom', async () => {
 const mascota: Mascota = {
   id: 'aaaaaaaa-1111-1111-1111-111111111111',
   nombre: 'Firulais',
+  tipoReporte: 'perdida',
   especie: 'Perro',
   raza: 'Criollo',
   genero: 'Macho',

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { MapaMascotas } from '../components/MapaMascotas';
 import { MascotaCard } from '../components/MascotaCard';
 import { listarMascotas } from '../api';
-import type { Especie, Mascota } from '../types';
+import type { Especie, Mascota, TipoReporte } from '../types';
 import { CIUDADES_COLOMBIA, centroDepartamento, DEPARTAMENTOS_COLOMBIA } from '../data/ciudades';
 import { distanciaKm } from '../utils/geo';
 import { PawIcon, SearchOffIcon } from '../components/icons';
@@ -10,6 +10,7 @@ import { PawIcon, SearchOffIcon } from '../components/icons';
 type FiltroEspecie = 'Todas' | Especie;
 type FiltroGenero = 'Todos' | 'Macho' | 'Hembra';
 type FiltroEstado = 'Todas' | 'perdida' | 'encontrada';
+type FiltroTipo = 'Todas' | TipoReporte;
 
 // Radio aproximado del área metropolitana usado para "pertenece a esta ciudad"
 const RADIO_CIUDAD_KM = 25;
@@ -33,6 +34,7 @@ export function Inicio() {
   const [filtroCiudad, setFiltroCiudad] = useState<string>('Todas');
   const [filtroDepartamento, setFiltroDepartamento] = useState<string>('Todos');
   const [filtroEstado, setFiltroEstado] = useState<FiltroEstado>('Todas');
+  const [filtroTipo, setFiltroTipo] = useState<FiltroTipo>('Todas');
 
   useEffect(() => {
     listarMascotas(1, TAMANO_PAGINA)
@@ -79,6 +81,7 @@ export function Inicio() {
     (filtroDepartamento !== 'Todos' ? centroDepartamento(filtroDepartamento) : null);
 
   const mascotasFiltradas = mascotas.filter((m) => {
+    if (filtroTipo !== 'Todas' && m.tipoReporte !== filtroTipo) return false;
     if (filtroEstado !== 'Todas' && m.estado !== filtroEstado) return false;
     if (filtroEspecie !== 'Todas' && m.especie !== filtroEspecie) return false;
     if (filtroGenero !== 'Todos' && m.genero !== filtroGenero) return false;
@@ -97,6 +100,7 @@ export function Inicio() {
   });
 
   const hayFiltrosActivos =
+    filtroTipo !== 'Todas' ||
     filtroEstado !== 'Todas' ||
     filtroEspecie !== 'Todas' ||
     filtroGenero !== 'Todos' ||
@@ -105,6 +109,7 @@ export function Inicio() {
     filtroDepartamento !== 'Todos';
 
   function limpiarFiltros() {
+    setFiltroTipo('Todas');
     setFiltroEstado('Todas');
     setFiltroEspecie('Todas');
     setFiltroGenero('Todos');
@@ -141,6 +146,16 @@ export function Inicio() {
             <label className="u-label" htmlFor="filtro-especie">
               Filtrar
             </label>
+            <select
+              value={filtroTipo}
+              onChange={(e) => setFiltroTipo(e.target.value as FiltroTipo)}
+              className={selectClass}
+            >
+              <option value="Todas">Tipo: todos</option>
+              <option value="perdida">Perdida (con dueño)</option>
+              <option value="rescatada">Rescatada (sin dueño)</option>
+            </select>
+
             <select
               value={filtroEstado}
               onChange={(e) => setFiltroEstado(e.target.value as FiltroEstado)}

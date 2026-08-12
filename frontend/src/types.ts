@@ -2,10 +2,12 @@ export type Especie = 'Perro' | 'Gato';
 export type Validacion = 'pendiente' | 'aprobada' | 'rechazada';
 export type Tamano = 'Pequeño' | 'Mediano' | 'Grande';
 export type Edad = 'Cachorro' | 'Joven' | 'Adulto' | 'Senior';
+export type TipoReporte = 'perdida' | 'rescatada';
 
 export interface Mascota {
   id: string;
   nombre: string;
+  tipoReporte: TipoReporte;
   especie: Especie;
   raza: string;
   genero: 'Macho' | 'Hembra';
@@ -40,6 +42,7 @@ export interface Paginado<T> {
 
 export interface NuevaMascota {
   nombre: string;
+  tipoReporte: TipoReporte;
   especie: Especie;
   raza: string;
   genero: 'Macho' | 'Hembra';
