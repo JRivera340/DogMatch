@@ -351,8 +351,8 @@ export function FormReportar() {
             className="mt-1 h-4 w-4 shrink-0 accent-brand-600"
           />
           <span>
-            Necesita medicación o tiene una condición de salud.{' '}
-            <span className="font-semibold text-brand-700">Esto la hace urgente.</span>
+            Requiere tratamiento médico o padece alguna enfermedad.{' '}
+            <span className="font-semibold text-brand-700">Por eso este caso es prioritario.</span>
           </span>
         </label>
 
@@ -364,8 +364,8 @@ export function FormReportar() {
             className="mt-1 h-4 w-4 shrink-0 accent-brand-600"
           />
           <span>
-            Es asustadiza o puede reaccionar mal con desconocidos. Avisamos a quien la encuentre
-            para que se acerque con cuidado.
+            Puede ponerse nerviosa o desconfiar de personas extrañas. Le pedimos a quien la
+            encuentre acercarse con calma.
           </span>
         </label>
       </Seccion>
