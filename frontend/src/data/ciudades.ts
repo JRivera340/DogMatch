@@ -25,3 +25,15 @@ export const CIUDADES_COLOMBIA: Ciudad[] = [
 export const DEPARTAMENTOS_COLOMBIA: string[] = Array.from(
   new Set(CIUDADES_COLOMBIA.map((c) => c.departamento)),
 ).sort((a, b) => a.localeCompare(b));
+
+/** Centroide (promedio) de las ciudades conocidas de un departamento, con un zoom más abierto que el de ciudad. */
+export function centroDepartamento(departamento: string): Ciudad | null {
+  const ciudades = CIUDADES_COLOMBIA.filter((c) => c.departamento === departamento);
+  if (ciudades.length === 0) return null;
+
+  const lat = ciudades.reduce((suma, c) => suma + c.lat, 0) / ciudades.length;
+  const lng = ciudades.reduce((suma, c) => suma + c.lng, 0) / ciudades.length;
+  const zoom = Math.min(...ciudades.map((c) => c.zoom)) - 2;
+
+  return { nombre: departamento, departamento, lat, lng, zoom };
+}

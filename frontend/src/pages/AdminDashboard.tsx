@@ -12,7 +12,7 @@ import { MapaValidacion } from '../components/MapaValidacion';
 import { DetalleMascotaModal } from '../components/DetalleMascotaModal';
 import { codigoCaso, formatearFecha } from '../utils/mascotaFormato';
 import { useAlturaDisponible } from '../utils/useAlturaDisponible';
-import { CIUDADES_COLOMBIA, DEPARTAMENTOS_COLOMBIA } from '../data/ciudades';
+import { CIUDADES_COLOMBIA, centroDepartamento, DEPARTAMENTOS_COLOMBIA } from '../data/ciudades';
 import { distanciaKm } from '../utils/geo';
 
 const RADIO_CIUDAD_KM = 25;
@@ -144,6 +144,7 @@ export function AdminDashboard() {
     filtroDepartamento !== 'Todos'
       ? CIUDADES_COLOMBIA.filter((c) => c.departamento === filtroDepartamento)
       : [];
+  const objetivoMapa = filtroDepartamento !== 'Todos' ? centroDepartamento(filtroDepartamento) : null;
 
   const mascotasFiltradas = mascotas.filter((m) => {
     if (filtroEstado !== 'todas' && m.estado !== filtroEstado) return false;
@@ -275,7 +276,11 @@ export function AdminDashboard() {
       >
       {pestana === 'mapa' && (
         <div className="h-full w-full">
-          <MapaValidacion mascotas={mascotasFiltradas} onVerDetalle={(m) => setDetalleId(m.id)} />
+          <MapaValidacion
+            mascotas={mascotasFiltradas}
+            onVerDetalle={(m) => setDetalleId(m.id)}
+            ciudadFiltro={objetivoMapa}
+          />
         </div>
       )}
 

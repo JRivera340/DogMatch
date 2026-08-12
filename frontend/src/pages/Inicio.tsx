@@ -3,7 +3,7 @@ import { MapaMascotas } from '../components/MapaMascotas';
 import { MascotaCard } from '../components/MascotaCard';
 import { listarMascotas } from '../api';
 import type { Especie, Mascota } from '../types';
-import { CIUDADES_COLOMBIA, DEPARTAMENTOS_COLOMBIA } from '../data/ciudades';
+import { CIUDADES_COLOMBIA, centroDepartamento, DEPARTAMENTOS_COLOMBIA } from '../data/ciudades';
 import { distanciaKm } from '../utils/geo';
 import { PawIcon, SearchOffIcon } from '../components/icons';
 
@@ -73,6 +73,10 @@ export function Inicio() {
     filtroDepartamento !== 'Todos'
       ? CIUDADES_COLOMBIA.filter((c) => c.departamento === filtroDepartamento)
       : [];
+  // Si hay ciudad puntual, esa manda; si solo hay departamento, el mapa se va al centro de ese departamento.
+  const objetivoMapa =
+    ciudadSeleccionada ??
+    (filtroDepartamento !== 'Todos' ? centroDepartamento(filtroDepartamento) : null);
 
   const mascotasFiltradas = mascotas.filter((m) => {
     if (filtroEstado !== 'Todas' && m.estado !== filtroEstado) return false;
@@ -112,7 +116,7 @@ export function Inicio() {
   return (
     <div className="flex w-full flex-col md:flex-row">
       <div className="relative h-72 shrink-0 border-b-2 border-brand-700 md:h-full md:w-3/5 md:border-r-2 md:border-b-0">
-        <MapaMascotas mascotas={mascotasFiltradas} ciudadFiltro={ciudadSeleccionada} />
+        <MapaMascotas mascotas={mascotasFiltradas} ciudadFiltro={objetivoMapa} />
       </div>
       <div className="flex flex-1 flex-col overflow-y-auto bg-paper">
         <div className="sticky top-0 z-[1] border-b-2 border-line bg-paper-raised">

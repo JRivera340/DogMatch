@@ -1,5 +1,7 @@
 export type Especie = 'Perro' | 'Gato';
 export type Validacion = 'pendiente' | 'aprobada' | 'rechazada';
+export type Tamano = 'Pequeño' | 'Mediano' | 'Grande';
+export type Edad = 'Cachorro' | 'Joven' | 'Adulto' | 'Senior';
 
 export interface Mascota {
   id: string;
@@ -8,6 +10,13 @@ export interface Mascota {
   raza: string;
   genero: 'Macho' | 'Hembra';
   color: string;
+  tamano: Tamano;
+  edad: Edad;
+  senasParticulares: string;
+  senas: string[];
+  otrasSenas: string;
+  esUrgente: boolean;
+  esAsustadiza: boolean;
   fotoUrl: string;
   ultimaVezFecha: string;
   ultimaVezLugarTexto: string;
@@ -35,6 +44,13 @@ export interface NuevaMascota {
   raza: string;
   genero: 'Macho' | 'Hembra';
   color: string;
+  tamano: Tamano;
+  edad: Edad;
+  senasParticulares: string;
+  senas: string[];
+  otrasSenas: string;
+  esUrgente: boolean;
+  esAsustadiza: boolean;
   fotoUrl: string;
   ultimaVezFecha: string;
   ultimaVezLugarTexto: string;

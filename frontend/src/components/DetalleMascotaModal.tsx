@@ -81,8 +81,24 @@ export function DetalleMascotaModal({ mascota, onClose, admin }: Props) {
               </div>
 
               <p className="u-body mt-1 text-ink-soft">
-                {mascota.especie} · {mascota.raza} · {mascota.genero} · {mascota.color}
+                {mascota.especie} · {mascota.raza} · {mascota.genero} · {mascota.color} ·{' '}
+                {mascota.tamano} · {mascota.edad}
               </p>
+
+              {(mascota.esUrgente || mascota.esAsustadiza) && (
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {mascota.esUrgente && (
+                    <span className="u-data border border-brand-600 bg-brand-50 px-1.5 py-0.5 text-[10px] text-brand-700">
+                      Urgente · condición de salud
+                    </span>
+                  )}
+                  {mascota.esAsustadiza && (
+                    <span className="u-data border border-brand-600 bg-brand-50 px-1.5 py-0.5 text-[10px] text-brand-700">
+                      Acercarse con cuidado
+                    </span>
+                  )}
+                </div>
+              )}
 
               <span
                 className={`u-data mt-2 inline-block border px-1.5 py-0.5 text-[10px] ${
@@ -118,7 +134,32 @@ export function DetalleMascotaModal({ mascota, onClose, admin }: Props) {
                   <dt className="inline font-semibold text-ink-soft">Reportado el: </dt>
                   <dd className="inline">{formatearFecha(mascota.createdAt)}</dd>
                 </div>
+                {mascota.senasParticulares && (
+                  <div className="u-body">
+                    <dt className="inline font-semibold text-ink-soft">Señas particulares: </dt>
+                    <dd className="inline">{mascota.senasParticulares}</dd>
+                  </div>
+                )}
+                {mascota.otrasSenas && (
+                  <div className="u-body">
+                    <dt className="inline font-semibold text-ink-soft">Otras señas: </dt>
+                    <dd className="inline">{mascota.otrasSenas}</dd>
+                  </div>
+                )}
               </dl>
+
+              {mascota.senas.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {mascota.senas.map((sena) => (
+                    <span
+                      key={sena}
+                      className="u-data border border-line-strong px-1.5 py-0.5 text-[10px] text-ink-soft"
+                    >
+                      {sena}
+                    </span>
+                  ))}
+                </div>
+              )}
 
               <div className="mt-4">
                 <p className="u-label mb-1.5">Contacto</p>

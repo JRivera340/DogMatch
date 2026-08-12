@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
+import { useEffect, useState } from 'react';
+import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import L, { type Map as LeafletMap } from 'leaflet';
 import type { Mascota } from '../types';
+import type { Ciudad } from '../data/ciudades';
 import { MapaLeyenda } from './MapaLeyenda';
 import { useInvalidarMapaAlRedimensionar } from '../utils/useInvalidarMapa';
 
@@ -21,10 +22,28 @@ const iconoPendiente = crearIcono(COLOR_PENDIENTE);
 const iconoAprobada = crearIcono(COLOR_APROBADA);
 
 const CENTRO_COLOMBIA: [number, number] = [4.5709, -74.2973];
+const ZOOM_COLOMBIA = 5;
 
 interface Props {
   mascotas: Mascota[];
   onVerDetalle: (mascota: Mascota) => void;
+  /** Departamento/ciudad activo del filtro — si se pasa, recentra el mapa en él. */
+  ciudadFiltro?: Ciudad | null;
+}
+
+function RecentrarEnCiudad({ ciudad }: { ciudad: Ciudad | null | undefined }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (ciudad) {
+      map.flyTo([ciudad.lat, ciudad.lng], ciudad.zoom, { duration: 1 });
+    } else {
+      map.flyTo(CENTRO_COLOMBIA, ZOOM_COLOMBIA, { duration: 1 });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ciudad?.nombre]);
+
+  return null;
 }
 
 /**
@@ -34,7 +53,7 @@ interface Props {
  * ya filtrada por el toggle sin validar/validadas del panel — el mapa
  * siempre refleja lo mismo que la tabla.
  */
-export function MapaValidacion({ mascotas, onVerDetalle }: Props) {
+export function MapaValidacion({ mascotas, onVerDetalle, ciudadFiltro }: Props) {
   const visibles = mascotas.filter((m) => m.validacion !== 'rechazada');
   const [map, setMap] = useState<LeafletMap | null>(null);
   useInvalidarMapaAlRedimensionar(map);
@@ -44,13 +63,14 @@ export function MapaValidacion({ mascotas, onVerDetalle }: Props) {
       <MapContainer
         ref={setMap}
         center={CENTRO_COLOMBIA}
-        zoom={5}
+        zoom={ZOOM_COLOMBIA}
         style={{ height: '100%', width: '100%' }}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        <RecentrarEnCiudad ciudad={ciudadFiltro} />
         {visibles.map((mascota) => (
           <Marker
             key={mascota.id}

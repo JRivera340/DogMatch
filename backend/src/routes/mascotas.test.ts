@@ -32,6 +32,8 @@ const mascotaValida = {
   raza: 'Criollo',
   genero: 'Macho',
   color: 'Café',
+  tamano: 'Mediano',
+  edad: 'Adulto',
   fotoUrl: 'https://bucket.s3.amazonaws.com/mascotas/foto.jpg',
   ultimaVezFecha: new Date(Date.now() - 3600_000).toISOString(),
   ultimaVezLugarTexto: 'Parque principal, Armenia',
@@ -124,6 +126,66 @@ describe('POST /api/mascotas', () => {
     expect(res.body).toHaveProperty('id');
     expect(res.body).toHaveProperty('editToken');
     expect(mockPrisma.mascota.create).toHaveBeenCalledTimes(1);
+  });
+
+  it('rechaza tamaño fuera de las 3 opciones válidas', async () => {
+    const res = await request(app)
+      .post('/api/mascotas')
+      .send({ ...mascotaValida, tamano: 'Extra grande' });
+
+    expect(res.status).toBe(400);
+  });
+
+  it('rechaza una seña que no está en la lista fija', async () => {
+    const res = await request(app)
+      .post('/api/mascotas')
+      .send({ ...mascotaValida, senas: ['Tiene tres colas'] });
+
+    expect(res.status).toBe(400);
+  });
+
+  it('acepta señas de la lista fija y los checkboxes de alerta', async () => {
+    mockPrisma.mascota.create.mockResolvedValue({ id: 'mascota-2', editToken: 'token-2' });
+
+    const res = await request(app)
+      .post('/api/mascotas')
+      .send({
+        ...mascotaValida,
+        senas: ['Lleva collar', 'Cojea'],
+        otrasSenas: 'Mancha en forma de corazón',
+        esUrgente: true,
+        esAsustadiza: true,
+      });
+
+    expect(res.status).toBe(201);
+    expect(mockPrisma.mascota.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          senas: ['Lleva collar', 'Cojea'],
+          esUrgente: true,
+          esAsustadiza: true,
+        }),
+      }),
+    );
+  });
+
+  it('usa valores por defecto cuando no se envían señas ni alertas', async () => {
+    mockPrisma.mascota.create.mockResolvedValue({ id: 'mascota-3', editToken: 'token-3' });
+
+    const res = await request(app).post('/api/mascotas').send(mascotaValida);
+
+    expect(res.status).toBe(201);
+    expect(mockPrisma.mascota.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          senas: [],
+          senasParticulares: '',
+          otrasSenas: '',
+          esUrgente: false,
+          esAsustadiza: false,
+        }),
+      }),
+    );
   });
 });
 

@@ -14,6 +14,13 @@ model Mascota {
   raza                      String
   genero                    String
   color                     String   @default("Sin especificar")
+  tamano                    String   @default("Mediano")
+  edad                      String   @default("Adulto")
+  senasParticulares         String   @default("")
+  senas                     String[] @default([])
+  otrasSenas                String   @default("")
+  esUrgente                 Boolean  @default(false)
+  esAsustadiza              Boolean  @default(false)
   fotoUrl                   String
   ultimaVezFecha            DateTime
   ultimaVezLugarTexto       String

@@ -60,7 +60,8 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
           <div>
             <h3 className="u-title-card truncate">{mascota.nombre}</h3>
             <p className="u-body text-ink-soft">
-              {mascota.especie} · {mascota.raza} · {mascota.genero} · {mascota.color}
+              {mascota.especie} · {mascota.raza} · {mascota.genero} · {mascota.color} ·{' '}
+              {mascota.tamano} · {mascota.edad}
             </p>
           </div>
           <div className="flex shrink-0 flex-col items-end gap-1">
@@ -76,6 +77,21 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
             </span>
           </div>
         </div>
+
+        {(mascota.esUrgente || mascota.esAsustadiza) && (
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {mascota.esUrgente && (
+              <span className="u-data border border-brand-600 bg-brand-50 px-1.5 py-0.5 text-[10px] text-brand-700">
+                Urgente · condición de salud
+              </span>
+            )}
+            {mascota.esAsustadiza && (
+              <span className="u-data border border-brand-600 bg-brand-50 px-1.5 py-0.5 text-[10px] text-brand-700">
+                Acercarse con cuidado
+              </span>
+            )}
+          </div>
+        )}
 
         <dl className="mt-3 space-y-1.5">
           <div className="u-body flex gap-1.5">

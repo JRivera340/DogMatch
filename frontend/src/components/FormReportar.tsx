@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { SelectorUbicacion } from './SelectorUbicacion';
 import { AvisoTratamientoDatos } from './AvisoTratamientoDatos';
 import { crearMascota, guardarEditToken, presignUpload, subirFotoAS3 } from '../api';
-import type { Especie } from '../types';
+import type { Edad, Especie, Tamano } from '../types';
+import { SENAS_DISPONIBLES } from '../data/senas';
 import { CameraIcon } from './icons';
 
 const TELEFONO_REGEX = /^(\+?57)?[3][0-9]{9}$/;
@@ -37,6 +38,13 @@ export function FormReportar() {
   const [raza, setRaza] = useState('');
   const [genero, setGenero] = useState<'Macho' | 'Hembra'>('Macho');
   const [color, setColor] = useState('');
+  const [tamano, setTamano] = useState<Tamano>('Mediano');
+  const [edad, setEdad] = useState<Edad>('Adulto');
+  const [senasParticulares, setSenasParticulares] = useState('');
+  const [senas, setSenas] = useState<string[]>([]);
+  const [otrasSenas, setOtrasSenas] = useState('');
+  const [esUrgente, setEsUrgente] = useState(false);
+  const [esAsustadiza, setEsAsustadiza] = useState(false);
   const [ultimaVezFecha, setUltimaVezFecha] = useState('');
   const [ultimaVezLugarTexto, setUltimaVezLugarTexto] = useState('');
   const [lugarResidencia, setLugarResidencia] = useState('');
@@ -63,6 +71,10 @@ export function FormReportar() {
     setPreviewFoto(url);
     return () => URL.revokeObjectURL(url);
   }, [foto]);
+
+  function alternarSena(sena: string) {
+    setSenas((prev) => (prev.includes(sena) ? prev.filter((s) => s !== sena) : [...prev, sena]));
+  }
 
   function validar(): Errores {
     const nuevos: Errores = {};
@@ -104,6 +116,13 @@ export function FormReportar() {
         raza: raza.trim(),
         genero,
         color: color.trim(),
+        tamano,
+        edad,
+        senasParticulares: senasParticulares.trim(),
+        senas,
+        otrasSenas: otrasSenas.trim(),
+        esUrgente,
+        esAsustadiza,
         fotoUrl: publicUrl,
         ultimaVezFecha: new Date(ultimaVezFecha).toISOString(),
         ultimaVezLugarTexto: ultimaVezLugarTexto.trim(),
@@ -186,6 +205,33 @@ export function FormReportar() {
             {errores.color && <p className={errorClass}>{errores.color}</p>}
           </div>
 
+          <div>
+            <label className={labelClass}>Tamaño</label>
+            <select
+              value={tamano}
+              onChange={(e) => setTamano(e.target.value as Tamano)}
+              className={inputClass}
+            >
+              <option value="Pequeño">Pequeño</option>
+              <option value="Mediano">Mediano</option>
+              <option value="Grande">Grande</option>
+            </select>
+          </div>
+
+          <div>
+            <label className={labelClass}>Edad aproximada</label>
+            <select
+              value={edad}
+              onChange={(e) => setEdad(e.target.value as Edad)}
+              className={inputClass}
+            >
+              <option value="Cachorro">Cachorro</option>
+              <option value="Joven">Joven</option>
+              <option value="Adulto">Adulto</option>
+              <option value="Senior">Senior</option>
+            </select>
+          </div>
+
           <div className="sm:col-span-2">
             <label className={labelClass}>Foto de la mascota</label>
             <input
@@ -215,7 +261,76 @@ export function FormReportar() {
         </div>
       </Seccion>
 
-      <Seccion numero="02" titulo="Última vez vista">
+      <Seccion numero="02" titulo="Señas particulares">
+        <div>
+          <label className={labelClass}>Señas particulares</label>
+          <p className="u-data mt-0.5 text-ink-faint">
+            Lo que la distingue de otra igual de la misma raza y color.
+          </p>
+          <textarea
+            value={senasParticulares}
+            onChange={(e) => setSenasParticulares(e.target.value)}
+            rows={2}
+            placeholder="Ej. tiene una mancha blanca en forma de estrella en el pecho"
+            className={inputClass}
+          />
+        </div>
+
+        <div>
+          <label className={labelClass}>Marca lo que aplique</label>
+          <div className="mt-2 grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2">
+            {SENAS_DISPONIBLES.map((sena) => (
+              <label key={sena} className="flex items-center gap-2 u-body text-ink">
+                <input
+                  type="checkbox"
+                  checked={senas.includes(sena)}
+                  onChange={() => alternarSena(sena)}
+                  className="h-4 w-4 shrink-0 accent-brand-600"
+                />
+                {sena}
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className={labelClass}>Otras señas (opcional)</label>
+          <input
+            value={otrasSenas}
+            onChange={(e) => setOtrasSenas(e.target.value)}
+            placeholder="Cualquier otra característica que ayude a identificarla"
+            className={inputClass}
+          />
+        </div>
+
+        <label className="flex items-start gap-3 border-l-4 border-brand-600 bg-brand-50 p-3 u-body">
+          <input
+            type="checkbox"
+            checked={esUrgente}
+            onChange={(e) => setEsUrgente(e.target.checked)}
+            className="mt-1 h-4 w-4 shrink-0 accent-brand-600"
+          />
+          <span>
+            Necesita medicación o tiene una condición de salud.{' '}
+            <span className="font-semibold text-brand-700">Esto la hace urgente.</span>
+          </span>
+        </label>
+
+        <label className="flex items-start gap-3 border-l-4 border-brand-600 bg-brand-50 p-3 u-body">
+          <input
+            type="checkbox"
+            checked={esAsustadiza}
+            onChange={(e) => setEsAsustadiza(e.target.checked)}
+            className="mt-1 h-4 w-4 shrink-0 accent-brand-600"
+          />
+          <span>
+            Es asustadiza o puede reaccionar mal con desconocidos. Avisamos a quien la encuentre
+            para que se acerque con cuidado.
+          </span>
+        </label>
+      </Seccion>
+
+      <Seccion numero="03" titulo="Última vez vista">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label className={labelClass}>Fecha y hora</label>
@@ -260,7 +375,7 @@ export function FormReportar() {
         </div>
       </Seccion>
 
-      <Seccion numero="03" titulo="Contacto y residencia">
+      <Seccion numero="04" titulo="Contacto y residencia">
         <div>
           <label className={labelClass}>Lugar de residencia (para saber a dónde ir)</label>
           <input

@@ -9,12 +9,32 @@ const LAT_MAX = 13.5;
 const LNG_MIN = -82;
 const LNG_MAX = -66.8;
 
+export const SENAS_DISPONIBLES = [
+  'Lleva collar',
+  'Lleva placa con datos',
+  'Tiene microchip',
+  'Esterilizado',
+  'Cicatriz visible',
+  'Cojea',
+  'Manchas distintivas',
+  'Ojos de distinto color',
+  'Sin cola',
+  'Le falta una pata',
+] as const;
+
 export const crearMascotaSchema = z.object({
   nombre: z.string().trim().min(1, 'Nombre requerido').max(80),
   especie: z.enum(['Perro', 'Gato']),
   raza: z.string().trim().min(1, 'Raza requerida').max(80),
   genero: z.enum(['Macho', 'Hembra']),
   color: z.string().trim().min(1, 'Color requerido').max(60),
+  tamano: z.enum(['Pequeño', 'Mediano', 'Grande']),
+  edad: z.enum(['Cachorro', 'Joven', 'Adulto', 'Senior']),
+  senasParticulares: z.string().trim().max(300).optional().default(''),
+  senas: z.array(z.enum(SENAS_DISPONIBLES)).max(SENAS_DISPONIBLES.length).optional().default([]),
+  otrasSenas: z.string().trim().max(200).optional().default(''),
+  esUrgente: z.boolean().optional().default(false),
+  esAsustadiza: z.boolean().optional().default(false),
   fotoUrl: z.string().trim().url('fotoUrl debe ser una URL válida'),
   ultimaVezFecha: z
     .string()
