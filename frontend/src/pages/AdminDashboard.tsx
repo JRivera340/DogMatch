@@ -191,7 +191,7 @@ export function AdminDashboard() {
       )}
 
       {pestana === 'mapa' && (
-        <div className="min-h-0 flex-1">
+        <div className="h-[75vh] min-h-[420px] w-full">
           <MapaValidacion mascotas={mascotas} onVerDetalle={(m) => setDetalleId(m.id)} />
         </div>
       )}
