@@ -158,8 +158,8 @@ export function AdminDashboard() {
         </button>
       </div>
 
-      <div className="mt-5 h-72 border border-line">
-        <MapaValidacion mascotas={mascotas} />
+      <div className="mx-auto mt-5 aspect-[4/3] w-full max-w-2xl border border-line">
+        <MapaValidacion mascotas={mascotasFiltradas} onVerDetalle={(m) => setDetalleId(m.id)} />
       </div>
       {mascotas.length < total && (
         <p className="u-data mt-1.5 text-ink-faint">

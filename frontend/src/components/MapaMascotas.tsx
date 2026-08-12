@@ -5,13 +5,22 @@ import type { Mascota } from '../types';
 import type { Ciudad } from '../data/ciudades';
 import { BuscadorCiudad } from './BuscadorCiudad';
 import { DetalleMascotaModal } from './DetalleMascotaModal';
+import { MapaLeyenda } from './MapaLeyenda';
 
-const iconoMascota = L.divIcon({
-  className: '',
-  html: `<div style="position:relative"><div style="background:#c81e3a;width:20px;height:20px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.45)"></div><div class="pin-sombra"></div></div>`,
-  iconSize: [20, 20],
-  iconAnchor: [10, 20],
-});
+const COLOR_PERDIDA = '#c81e3a';
+const COLOR_ENCONTRADA = '#4b7040';
+
+function crearIcono(color: string) {
+  return L.divIcon({
+    className: '',
+    html: `<div style="position:relative"><div style="background:${color};width:20px;height:20px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.45)"></div><div class="pin-sombra"></div></div>`,
+    iconSize: [20, 20],
+    iconAnchor: [10, 20],
+  });
+}
+
+const iconoPerdida = crearIcono(COLOR_PERDIDA);
+const iconoEncontrada = crearIcono(COLOR_ENCONTRADA);
 
 const CENTRO_COLOMBIA: [number, number] = [4.5709, -74.2973];
 const ZOOM_COLOMBIA = 6;
@@ -59,7 +68,7 @@ export function MapaMascotas({ mascotas, onSeleccionar, ciudadFiltro }: Props) {
           <Marker
             key={mascota.id}
             position={[mascota.lat, mascota.lng]}
-            icon={iconoMascota}
+            icon={mascota.estado === 'encontrada' ? iconoEncontrada : iconoPerdida}
             eventHandlers={{ click: () => onSeleccionar?.(mascota) }}
           >
             <Popup>
@@ -81,6 +90,13 @@ export function MapaMascotas({ mascotas, onSeleccionar, ciudadFiltro }: Props) {
       </MapContainer>
 
       <BuscadorCiudad map={map} ayuda="Solo mueve el mapa — no filtra los casos mostrados" />
+      <MapaLeyenda
+        className="bottom-2 left-2"
+        items={[
+          { color: COLOR_PERDIDA, etiqueta: 'Perdida' },
+          { color: COLOR_ENCONTRADA, etiqueta: 'Encontrada' },
+        ]}
+      />
 
       {detalle && <DetalleMascotaModal mascota={detalle} onClose={() => setDetalle(null)} />}
     </div>
