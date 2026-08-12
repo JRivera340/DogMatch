@@ -103,7 +103,9 @@ export function MapaMascotas({ mascotas, onSeleccionar, ciudadFiltro }: Props) {
         ))}
       </MapContainer>
 
-      <BuscadorCiudad map={map} ayuda="Solo mueve el mapa — no filtra los casos mostrados" />
+      <div className="absolute top-2 right-2 z-[500]">
+        <BuscadorCiudad map={map} ayuda="Solo mueve el mapa — no filtra los casos mostrados" />
+      </div>
       <MapaLeyenda
         className="bottom-2 left-2"
         items={[

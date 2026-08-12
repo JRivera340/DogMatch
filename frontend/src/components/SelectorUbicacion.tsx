@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet';
 import L, { type Map as LeafletMap } from 'leaflet';
 import { BuscadorCiudad } from './BuscadorCiudad';
+import { DEPARTAMENTOS_COLOMBIA, centroDepartamento } from '../data/ciudades';
 import { useInvalidarMapaAlRedimensionar } from '../utils/useInvalidarMapa';
 
 const iconoSeleccion = L.divIcon({
@@ -54,6 +55,37 @@ function GeolocalizarAlMontar({ yaTieneSeleccion }: { yaTieneSeleccion: boolean 
   return null;
 }
 
+/** Select flotante para saltar al centro de un departamento — mismo criterio que BuscadorCiudad: solo navega, nunca marca el punto. */
+function SelectorDepartamentoMapa({ map }: { map: LeafletMap | null }) {
+  const [valor, setValor] = useState('');
+
+  function irADepartamento(nombre: string) {
+    setValor(nombre);
+    const centro = centroDepartamento(nombre);
+    if (!centro || !map) return;
+    map.flyTo([centro.lat, centro.lng], centro.zoom, { duration: 1.2 });
+  }
+
+  return (
+    <div className="mapa-control w-44 sm:w-52">
+      <select
+        value={valor}
+        onChange={(e) => irADepartamento(e.target.value)}
+        className="u-body w-full bg-transparent px-2.5 py-2 text-ink focus:outline-none"
+      >
+        <option value="" disabled>
+          Ir a departamento...
+        </option>
+        {DEPARTAMENTOS_COLOMBIA.map((departamento) => (
+          <option key={departamento} value={departamento}>
+            {departamento}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
 export function SelectorUbicacion({ lat, lng, onSeleccionar, error }: Props) {
   const tienePunto = lat !== null && lng !== null;
   const [map, setMap] = useState<LeafletMap | null>(null);
@@ -88,7 +120,10 @@ export function SelectorUbicacion({ lat, lng, onSeleccionar, error }: Props) {
         )}
       </MapContainer>
 
-      <BuscadorCiudad map={map} ayuda="Solo navega — el click en el mapa marca el punto" />
+      <div className="absolute top-2 right-2 z-[500] flex flex-col items-end gap-1.5">
+        <BuscadorCiudad map={map} ayuda="Solo navega — el click en el mapa marca el punto" />
+        <SelectorDepartamentoMapa map={map} />
+      </div>
 
       {error && !tienePunto && (
         <div className="pointer-events-none absolute inset-x-0 top-0 z-[500] border-b-2 border-brand-600 bg-brand-50/95 px-3 py-2 text-[13px] font-medium text-brand-800">

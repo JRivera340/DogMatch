@@ -20,6 +20,10 @@ interface Props {
  * el dropdown viviera dentro de ese div quedaría recortado e invisible.
  * Recibe la instancia del mapa por prop (ref de MapContainer) en vez de
  * usar useMap(), justamente para poder vivir fuera de ese árbol.
+ *
+ * Sin posicionamiento propio (no absolute) — quien lo use decide dónde
+ * ubicarlo, para poder apilarlo junto a otros controles del mapa sin
+ * pisarse.
  */
 export function BuscadorCiudad({ map, ayuda }: Props) {
   const [valor, setValor] = useState('');
@@ -36,7 +40,7 @@ export function BuscadorCiudad({ map, ayuda }: Props) {
   }
 
   return (
-    <div className="mapa-control absolute top-2 right-2 z-[500] w-44 sm:w-52">
+    <div className="mapa-control w-44 sm:w-52">
       <div className="relative">
         <input
           value={valor}
