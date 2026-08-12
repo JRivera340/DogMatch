@@ -3,7 +3,7 @@ import { MapaMascotas } from '../components/MapaMascotas';
 import { MascotaCard } from '../components/MascotaCard';
 import { listarMascotas } from '../api';
 import type { Especie, Mascota } from '../types';
-import { CIUDADES_COLOMBIA } from '../data/ciudades';
+import { CIUDADES_COLOMBIA, DEPARTAMENTOS_COLOMBIA } from '../data/ciudades';
 import { distanciaKm } from '../utils/geo';
 import { PawIcon, SearchOffIcon } from '../components/icons';
 
@@ -31,6 +31,7 @@ export function Inicio() {
   const [filtroGenero, setFiltroGenero] = useState<FiltroGenero>('Todos');
   const [filtroColor, setFiltroColor] = useState<string>('Todos');
   const [filtroCiudad, setFiltroCiudad] = useState<string>('Todas');
+  const [filtroDepartamento, setFiltroDepartamento] = useState<string>('Todos');
   const [filtroEstado, setFiltroEstado] = useState<FiltroEstado>('Todas');
 
   useEffect(() => {
@@ -68,6 +69,10 @@ export function Inicio() {
   );
 
   const ciudadSeleccionada = CIUDADES_COLOMBIA.find((c) => c.nombre === filtroCiudad) ?? null;
+  const ciudadesDelDepartamento =
+    filtroDepartamento !== 'Todos'
+      ? CIUDADES_COLOMBIA.filter((c) => c.departamento === filtroDepartamento)
+      : [];
 
   const mascotasFiltradas = mascotas.filter((m) => {
     if (filtroEstado !== 'Todas' && m.estado !== filtroEstado) return false;
@@ -78,6 +83,12 @@ export function Inicio() {
       const distancia = distanciaKm(m.lat, m.lng, ciudadSeleccionada.lat, ciudadSeleccionada.lng);
       if (distancia > RADIO_CIUDAD_KM) return false;
     }
+    if (filtroDepartamento !== 'Todos') {
+      const perteneceAlDepartamento = ciudadesDelDepartamento.some(
+        (c) => distanciaKm(m.lat, m.lng, c.lat, c.lng) <= RADIO_CIUDAD_KM,
+      );
+      if (!perteneceAlDepartamento) return false;
+    }
     return true;
   });
 
@@ -86,7 +97,8 @@ export function Inicio() {
     filtroEspecie !== 'Todas' ||
     filtroGenero !== 'Todos' ||
     filtroColor !== 'Todos' ||
-    filtroCiudad !== 'Todas';
+    filtroCiudad !== 'Todas' ||
+    filtroDepartamento !== 'Todos';
 
   function limpiarFiltros() {
     setFiltroEstado('Todas');
@@ -94,6 +106,7 @@ export function Inicio() {
     setFiltroGenero('Todos');
     setFiltroColor('Todos');
     setFiltroCiudad('Todas');
+    setFiltroDepartamento('Todos');
   }
 
   return (
@@ -132,6 +145,19 @@ export function Inicio() {
               <option value="Todas">Estado: todos</option>
               <option value="perdida">Perdida</option>
               <option value="encontrada">Encontrada</option>
+            </select>
+
+            <select
+              value={filtroDepartamento}
+              onChange={(e) => setFiltroDepartamento(e.target.value)}
+              className={selectClass}
+            >
+              <option value="Todos">Departamento: todos</option>
+              {DEPARTAMENTOS_COLOMBIA.map((departamento) => (
+                <option key={departamento} value={departamento}>
+                  {departamento}
+                </option>
+              ))}
             </select>
 
             <select

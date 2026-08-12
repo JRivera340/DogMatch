@@ -72,7 +72,7 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
                   : 'border-line-strong text-ink-faint'
               }`}
             >
-              {mascota.validacion === 'aprobada' ? 'Validado' : 'Sin validar'}
+              {mascota.validacion === 'aprobada' ? 'Verificado' : 'Sin validar'}
             </span>
           </div>
         </div>

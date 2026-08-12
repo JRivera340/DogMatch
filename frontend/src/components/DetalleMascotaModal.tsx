@@ -94,7 +94,7 @@ export function DetalleMascotaModal({ mascota, onClose, admin }: Props) {
                 }`}
               >
                 {mascota.validacion === 'aprobada'
-                  ? 'Validado por un administrador'
+                  ? 'Verificado por un administrador'
                   : mascota.validacion === 'rechazada'
                     ? 'Rechazado'
                     : 'Sin validar todavía'}

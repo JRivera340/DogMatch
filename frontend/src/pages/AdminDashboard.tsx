@@ -12,6 +12,10 @@ import { MapaValidacion } from '../components/MapaValidacion';
 import { DetalleMascotaModal } from '../components/DetalleMascotaModal';
 import { codigoCaso, formatearFecha } from '../utils/mascotaFormato';
 import { useAlturaDisponible } from '../utils/useAlturaDisponible';
+import { CIUDADES_COLOMBIA, DEPARTAMENTOS_COLOMBIA } from '../data/ciudades';
+import { distanciaKm } from '../utils/geo';
+
+const RADIO_CIUDAD_KM = 25;
 
 type FiltroEstado = 'todas' | 'perdida' | 'encontrada';
 type FiltroValidacion = 'pendiente' | 'aprobada' | null;
@@ -30,6 +34,7 @@ export function AdminDashboard() {
   const [total, setTotal] = useState(0);
   const [filtroEstado, setFiltroEstado] = useState<FiltroEstado>('todas');
   const [filtroValidacion, setFiltroValidacion] = useState<FiltroValidacion>(null);
+  const [filtroDepartamento, setFiltroDepartamento] = useState<string>('Todos');
   const [confirmandoId, setConfirmandoId] = useState<string | null>(null);
   const [procesandoId, setProcesandoId] = useState<string | null>(null);
   const [detalleId, setDetalleId] = useState<string | null>(null);
@@ -135,9 +140,20 @@ export function AdminDashboard() {
     setFiltroValidacion((actual) => (actual === valor ? null : valor));
   }
 
+  const ciudadesDelDepartamento =
+    filtroDepartamento !== 'Todos'
+      ? CIUDADES_COLOMBIA.filter((c) => c.departamento === filtroDepartamento)
+      : [];
+
   const mascotasFiltradas = mascotas.filter((m) => {
     if (filtroEstado !== 'todas' && m.estado !== filtroEstado) return false;
     if (filtroValidacion && m.validacion !== filtroValidacion) return false;
+    if (filtroDepartamento !== 'Todos') {
+      const perteneceAlDepartamento = ciudadesDelDepartamento.some(
+        (c) => distanciaKm(m.lat, m.lng, c.lat, c.lng) <= RADIO_CIUDAD_KM,
+      );
+      if (!perteneceAlDepartamento) return false;
+    }
     return true;
   });
 
@@ -211,7 +227,7 @@ export function AdminDashboard() {
                 : 'border-line-strong text-ink-soft hover:border-moss-600 hover:text-moss-700'
             }`}
           >
-            Validadas ({aprobadasCount})
+            Verificadas ({aprobadasCount})
           </button>
 
           <span className="u-label ml-4">Estado</span>
@@ -229,6 +245,20 @@ export function AdminDashboard() {
               {opcion}
             </button>
           ))}
+
+          <span className="u-label ml-4">Departamento</span>
+          <select
+            value={filtroDepartamento}
+            onChange={(e) => setFiltroDepartamento(e.target.value)}
+            className="u-data border border-line-strong bg-paper-raised px-2 py-1.5 text-ink focus:border-brand-600 focus:outline-none"
+          >
+            <option value="Todos">Todos</option>
+            {DEPARTAMENTOS_COLOMBIA.map((departamento) => (
+              <option key={departamento} value={departamento}>
+                {departamento}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -306,7 +336,7 @@ export function AdminDashboard() {
                           }`}
                         >
                           {mascota.validacion === 'aprobada'
-                            ? 'Validado'
+                            ? 'Verificado'
                             : mascota.validacion === 'rechazada'
                               ? 'Rechazado'
                               : 'Sin validar'}

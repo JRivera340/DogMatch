@@ -62,7 +62,7 @@ export function MapaValidacion({ mascotas, onVerDetalle }: Props) {
                 <p className="u-title-card text-[1rem]">{mascota.nombre}</p>
                 <p className="text-ink-soft">{mascota.raza}</p>
                 <p className="u-data text-ink-faint">
-                  {mascota.validacion === 'aprobada' ? 'Validado' : 'Sin validar'}
+                  {mascota.validacion === 'aprobada' ? 'Verificado' : 'Sin validar'}
                 </p>
                 <button
                   type="button"
@@ -81,7 +81,7 @@ export function MapaValidacion({ mascotas, onVerDetalle }: Props) {
         className="bottom-2 left-2"
         items={[
           { color: COLOR_PENDIENTE, etiqueta: 'Sin validar' },
-          { color: COLOR_APROBADA, etiqueta: 'Validada' },
+          { color: COLOR_APROBADA, etiqueta: 'Verificada' },
         ]}
       />
     </div>
