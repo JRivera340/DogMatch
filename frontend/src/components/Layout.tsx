@@ -46,10 +46,16 @@ export function Layout() {
       <main className="flex min-h-0 flex-1">
         <Outlet />
       </main>
-      <footer className="border-t border-line bg-paper-raised py-3 text-center text-ink-faint">
-        <span className="u-eyebrow">
-          DogMatch · Red de apoyo para reunir mascotas con sus familias
-        </span>
+      <footer className="border-t border-line bg-paper-raised py-3">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-2 px-4 text-center sm:flex-row sm:justify-between">
+          <span className="u-eyebrow">
+            DogMatch · Red de apoyo para reunir mascotas con sus familias
+          </span>
+          <div className="flex items-center gap-1.5 text-ink-faint">
+            <span className="u-data text-[10px]">Desarrollado por</span>
+            <img src="/brand/demodata-logo.png" alt="DemoData" className="h-4 w-auto" />
+          </div>
+        </div>
       </footer>
     </div>
   );
