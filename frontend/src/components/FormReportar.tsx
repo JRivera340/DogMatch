@@ -1,8 +1,9 @@
-import { type FormEvent, type ReactNode, useState } from 'react';
+import { type FormEvent, type ReactNode, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SelectorUbicacion } from './SelectorUbicacion';
 import { AvisoTratamientoDatos } from './AvisoTratamientoDatos';
 import { crearMascota, guardarEditToken, presignUpload, subirFotoAS3 } from '../api';
+import type { Especie } from '../types';
 
 const TELEFONO_REGEX = /^(\+?57)?[3][0-9]{9}$/;
 
@@ -31,8 +32,10 @@ export function FormReportar() {
   const navigate = useNavigate();
 
   const [nombre, setNombre] = useState('');
+  const [especie, setEspecie] = useState<Especie>('Perro');
   const [raza, setRaza] = useState('');
   const [genero, setGenero] = useState<'Macho' | 'Hembra'>('Macho');
+  const [color, setColor] = useState('');
   const [ultimaVezFecha, setUltimaVezFecha] = useState('');
   const [ultimaVezLugarTexto, setUltimaVezLugarTexto] = useState('');
   const [lugarResidencia, setLugarResidencia] = useState('');
@@ -41,16 +44,30 @@ export function FormReportar() {
   const [lat, setLat] = useState<number | null>(null);
   const [lng, setLng] = useState<number | null>(null);
   const [foto, setFoto] = useState<File | null>(null);
+  const [previewFoto, setPreviewFoto] = useState<string | null>(null);
   const [autoriza, setAutoriza] = useState(false);
 
   const [errores, setErrores] = useState<Errores>({});
   const [enviando, setEnviando] = useState(false);
   const [errorEnvio, setErrorEnvio] = useState<string | null>(null);
 
+  const etiquetaColor = especie === 'Perro' ? 'Color del perro' : 'Color del gato';
+
+  useEffect(() => {
+    if (!foto) {
+      setPreviewFoto(null);
+      return;
+    }
+    const url = URL.createObjectURL(foto);
+    setPreviewFoto(url);
+    return () => URL.revokeObjectURL(url);
+  }, [foto]);
+
   function validar(): Errores {
     const nuevos: Errores = {};
     if (!nombre.trim()) nuevos.nombre = 'Nombre requerido';
     if (!raza.trim()) nuevos.raza = 'Raza requerida';
+    if (!color.trim()) nuevos.color = 'Color requerido';
     if (!ultimaVezFecha) nuevos.ultimaVezFecha = 'Fecha y hora requeridas';
     else if (new Date(ultimaVezFecha).getTime() > Date.now())
       nuevos.ultimaVezFecha = 'La fecha no puede ser futura';
@@ -82,8 +99,10 @@ export function FormReportar() {
 
       const { id, editToken } = await crearMascota({
         nombre: nombre.trim(),
+        especie,
         raza: raza.trim(),
         genero,
+        color: color.trim(),
         fotoUrl: publicUrl,
         ultimaVezFecha: new Date(ultimaVezFecha).toISOString(),
         ultimaVezLugarTexto: ultimaVezLugarTexto.trim(),
@@ -116,7 +135,19 @@ export function FormReportar() {
       <Seccion numero="01" titulo="Datos de la mascota">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className={labelClass}>Nombre del perro</label>
+            <label className={labelClass}>Especie</label>
+            <select
+              value={especie}
+              onChange={(e) => setEspecie(e.target.value as Especie)}
+              className={inputClass}
+            >
+              <option value="Perro">Perro</option>
+              <option value="Gato">Gato</option>
+            </select>
+          </div>
+
+          <div>
+            <label className={labelClass}>Nombre de la mascota</label>
             <input
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
@@ -143,6 +174,17 @@ export function FormReportar() {
             </select>
           </div>
 
+          <div>
+            <label className={labelClass}>{etiquetaColor}</label>
+            <input
+              value={color}
+              onChange={(e) => setColor(e.target.value)}
+              placeholder={especie === 'Perro' ? 'Café, negro, blanco...' : 'Gris, atigrado, blanco...'}
+              className={inputClass}
+            />
+            {errores.color && <p className={errorClass}>{errores.color}</p>}
+          </div>
+
           <div className="sm:col-span-2">
             <label className={labelClass}>Foto de la mascota</label>
             <input
@@ -152,6 +194,16 @@ export function FormReportar() {
               className="mt-1 w-full u-body text-ink-soft file:mr-3 file:border file:border-brand-600 file:bg-brand-100 file:px-3 file:py-1.5 file:text-[13px] file:font-semibold file:text-brand-700 hover:file:bg-brand-200"
             />
             {errores.foto && <p className={errorClass}>{errores.foto}</p>}
+            {previewFoto && (
+              <div className="mt-3 flex items-center gap-3 border border-line-strong bg-paper p-2">
+                <img
+                  src={previewFoto}
+                  alt="Vista previa de la foto seleccionada"
+                  className="h-20 w-20 object-cover"
+                />
+                <p className="u-data text-ink-faint">Vista previa</p>
+              </div>
+            )}
           </div>
         </div>
       </Seccion>
@@ -184,7 +236,9 @@ export function FormReportar() {
         </div>
 
         <div>
-          <label className={labelClass}>Punto exacto en el mapa (click para marcar)</label>
+          <label className={labelClass}>
+            Ciudad y punto exacto (busca la ciudad, luego haz click en el mapa)
+          </label>
           <div className="mt-1 border border-line-strong">
             <SelectorUbicacion
               lat={lat}
@@ -240,6 +294,12 @@ export function FormReportar() {
       {errores.autoriza && <p className={errorClass}>{errores.autoriza}</p>}
 
       {errorEnvio && <p className="text-[13px] font-medium text-brand-700">{errorEnvio}</p>}
+
+      <div className="border-l-4 border-moss-600 bg-moss-100 p-3">
+        <p className="u-body text-moss-700">
+          Este servicio es gratuito. Publicar tu reporte y contactar por WhatsApp no tiene costo.
+        </p>
+      </div>
 
       <button
         type="submit"

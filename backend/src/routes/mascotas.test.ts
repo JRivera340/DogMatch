@@ -26,8 +26,10 @@ const mockPrisma = prisma as unknown as {
 
 const mascotaValida = {
   nombre: 'Firulais',
+  especie: 'Perro',
   raza: 'Criollo',
   genero: 'Macho',
+  color: 'Café',
   fotoUrl: 'https://bucket.s3.amazonaws.com/mascotas/foto.jpg',
   ultimaVezFecha: new Date(Date.now() - 3600_000).toISOString(),
   ultimaVezLugarTexto: 'Parque principal, Armenia',

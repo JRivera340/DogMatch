@@ -11,8 +11,10 @@ const LNG_MAX = -66.8;
 
 export const crearMascotaSchema = z.object({
   nombre: z.string().trim().min(1, 'Nombre requerido').max(80),
+  especie: z.enum(['Perro', 'Gato']),
   raza: z.string().trim().min(1, 'Raza requerida').max(80),
   genero: z.enum(['Macho', 'Hembra']),
+  color: z.string().trim().min(1, 'Color requerido').max(60),
   fotoUrl: z.string().trim().url('fotoUrl debe ser una URL válida'),
   ultimaVezFecha: z
     .string()

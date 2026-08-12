@@ -22,8 +22,10 @@ vi.mock('react-router-dom', async () => {
 const mascota: Mascota = {
   id: 'aaaaaaaa-1111-1111-1111-111111111111',
   nombre: 'Firulais',
+  especie: 'Perro',
   raza: 'Criollo',
   genero: 'Macho',
+  color: 'Café',
   fotoUrl: 'https://example.com/foto.jpg',
   ultimaVezFecha: new Date().toISOString(),
   ultimaVezLugarTexto: 'Parque principal',

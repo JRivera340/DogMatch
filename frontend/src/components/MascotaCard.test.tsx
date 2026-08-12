@@ -11,8 +11,10 @@ vi.mock('../api', () => ({
 const mascota: Mascota = {
   id: '1',
   nombre: 'Firulais',
+  especie: 'Perro',
   raza: 'Criollo',
   genero: 'Macho',
+  color: 'Café',
   fotoUrl: 'https://example.com/foto.jpg',
   ultimaVezFecha: new Date().toISOString(),
   ultimaVezLugarTexto: 'Parque principal',

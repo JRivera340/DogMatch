@@ -10,8 +10,10 @@ datasource db {
 model Mascota {
   id                        String   @id @default(uuid())
   nombre                    String
+  especie                   String
   raza                      String
   genero                    String
+  color                     String
   fotoUrl                   String
   ultimaVezFecha            DateTime
   ultimaVezLugarTexto       String

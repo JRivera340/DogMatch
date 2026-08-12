@@ -100,7 +100,7 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
           <div>
             <h3 className="u-title-card truncate">{mascota.nombre}</h3>
             <p className="u-body text-ink-soft">
-              {mascota.raza} · {mascota.genero}
+              {mascota.especie} · {mascota.raza} · {mascota.genero} · {mascota.color}
             </p>
           </div>
           <span className="u-data shrink-0 text-ink-faint">#{codigoCaso(mascota.id)}</span>

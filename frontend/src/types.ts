@@ -1,8 +1,12 @@
+export type Especie = 'Perro' | 'Gato';
+
 export interface Mascota {
   id: string;
   nombre: string;
+  especie: Especie;
   raza: string;
   genero: 'Macho' | 'Hembra';
+  color: string;
   fotoUrl: string;
   ultimaVezFecha: string;
   ultimaVezLugarTexto: string;
@@ -17,8 +21,10 @@ export interface Mascota {
 
 export interface NuevaMascota {
   nombre: string;
+  especie: Especie;
   raza: string;
   genero: 'Macho' | 'Hembra';
+  color: string;
   fotoUrl: string;
   ultimaVezFecha: string;
   ultimaVezLugarTexto: string;
