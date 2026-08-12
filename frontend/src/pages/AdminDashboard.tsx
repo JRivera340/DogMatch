@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   adminActualizarEstado,
@@ -11,6 +11,7 @@ import type { Mascota, Validacion } from '../types';
 import { MapaValidacion } from '../components/MapaValidacion';
 import { DetalleMascotaModal } from '../components/DetalleMascotaModal';
 import { codigoCaso, formatearFecha } from '../utils/mascotaFormato';
+import { useAlturaDisponible } from '../utils/useAlturaDisponible';
 
 type FiltroEstado = 'todas' | 'perdida' | 'encontrada';
 type FiltroValidacion = 'pendiente' | 'aprobada' | null;
@@ -144,6 +145,9 @@ export function AdminDashboard() {
   const aprobadasCount = mascotas.filter((m) => m.validacion === 'aprobada').length;
   const mascotaDetalle = mascotas.find((m) => m.id === detalleId) ?? null;
 
+  const contenidoRef = useRef<HTMLDivElement>(null);
+  const altura = useAlturaDisponible(contenidoRef);
+
   return (
     <div className="flex h-full w-full flex-col">
       <div className="shrink-0 border-b-2 border-line bg-paper-raised">
@@ -234,14 +238,19 @@ export function AdminDashboard() {
         </p>
       )}
 
+      <div
+        ref={contenidoRef}
+        style={altura !== null ? { height: altura } : undefined}
+        className="relative"
+      >
       {pestana === 'mapa' && (
-        <div className="min-h-0 flex-1">
+        <div className="h-full w-full">
           <MapaValidacion mascotas={mascotasFiltradas} onVerDetalle={(m) => setDetalleId(m.id)} />
         </div>
       )}
 
       {pestana === 'validacion' && (
-        <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
+        <div className="h-full overflow-y-auto p-4 sm:p-6">
           {cargando && <p className="u-body text-ink-soft">Cargando casos...</p>}
 
           {!cargando && mascotasFiltradas.length === 0 && (
@@ -396,6 +405,7 @@ export function AdminDashboard() {
           )}
         </div>
       )}
+      </div>
 
       {mascotaDetalle && (
         <DetalleMascotaModal
