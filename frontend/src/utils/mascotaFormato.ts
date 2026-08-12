@@ -27,7 +27,7 @@ export function linkWhatsApp(telefono: string, nombreMascota: string) {
   const numero = telefono.replace(/\D/g, '');
   const conIndicativo = numero.startsWith('57') ? numero : `57${numero}`;
   const mensaje = encodeURIComponent(
-    `Hola, vi el reporte de ${nombreMascota} en DogMatch. Creo que puedo ayudar.`,
+    `Hola, vi el reporte de ${nombreMascota} en Huellas de Regreso. Creo que puedo ayudar.`,
   );
   return `https://wa.me/${conIndicativo}?text=${mensaje}`;
 }

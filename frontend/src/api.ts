@@ -60,7 +60,7 @@ export async function subirFotoAS3(uploadUrl: string, archivo: File): Promise<vo
   }
 }
 
-const MASCOTAS_TOKENS_KEY = 'dogmatch_tokens';
+const MASCOTAS_TOKENS_KEY = 'huellas_tokens';
 
 export function guardarEditToken(id: string, editToken: string) {
   const tokens = obtenerTokensGuardados();

@@ -34,7 +34,7 @@ describe('AdminLogin', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Ingresar' }));
 
     expect(api.adminLogin).toHaveBeenCalledWith('clave-correcta');
-    expect(localStorage.getItem('dogmatch_admin_token')).toBe('token-valido');
+    expect(localStorage.getItem('huellas_admin_token')).toBe('token-valido');
     expect(navigateMock).toHaveBeenCalledWith('/admin/dashboard');
   });
 

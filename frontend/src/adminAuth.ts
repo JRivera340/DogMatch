@@ -1,4 +1,4 @@
-const ADMIN_TOKEN_KEY = 'dogmatch_admin_token';
+const ADMIN_TOKEN_KEY = 'huellas_admin_token';
 
 export function guardarTokenAdmin(token: string) {
   localStorage.setItem(ADMIN_TOKEN_KEY, token);

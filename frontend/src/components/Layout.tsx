@@ -16,8 +16,8 @@ export function Layout() {
               <PawIcon className="h-5 w-5" />
             </span>
             <span className="flex flex-col leading-none">
-              <span className="font-display text-[1.15rem] font-extrabold tracking-tight text-ink">
-                Dog<span className="text-brand-600">Match</span>
+              <span className="font-display text-base font-extrabold tracking-tight text-ink sm:text-[1.15rem]">
+                Huellas de <span className="text-brand-600">Regreso</span>
               </span>
               <span className="u-eyebrow mt-0.5 text-[9px] text-ink-faint">
                 Registro de mascotas perdidas · Colombia
@@ -50,7 +50,7 @@ export function Layout() {
       <footer className="border-t border-line bg-paper-raised py-3">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-2 px-4 text-center sm:flex-row sm:justify-between">
           <span className="u-eyebrow">
-            DogMatch · Red de apoyo para reunir mascotas con sus familias
+            Huellas de Regreso · Red de apoyo para reunir mascotas con sus familias
           </span>
           <div className="flex items-center gap-1.5 text-ink-faint">
             <span className="u-data text-[10px]">Desarrollado por</span>
