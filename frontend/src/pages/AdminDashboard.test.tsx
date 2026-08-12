@@ -71,6 +71,8 @@ describe('AdminDashboard', () => {
       </MemoryRouter>,
     );
 
+    await userEvent.click(await screen.findByRole('button', { name: 'Validación' }));
+
     expect(await screen.findByText('Firulais')).toBeInTheDocument();
     expect(screen.getAllByText('perdida').length).toBeGreaterThan(0);
   });
@@ -86,6 +88,7 @@ describe('AdminDashboard', () => {
       </MemoryRouter>,
     );
 
+    await userEvent.click(await screen.findByRole('button', { name: 'Validación' }));
     await screen.findByText('Firulais');
 
     await userEvent.click(screen.getByRole('button', { name: 'Eliminar' }));
@@ -110,6 +113,7 @@ describe('AdminDashboard', () => {
       </MemoryRouter>,
     );
 
+    await userEvent.click(await screen.findByRole('button', { name: 'Validación' }));
     await screen.findByText('Firulais');
     await userEvent.click(screen.getByRole('button', { name: 'Marcar encontrada' }));
 
@@ -133,6 +137,7 @@ describe('AdminDashboard', () => {
       </MemoryRouter>,
     );
 
+    await userEvent.click(await screen.findByRole('button', { name: 'Validación' }));
     await screen.findByText('Firulais');
     await userEvent.click(screen.getByRole('button', { name: 'Aprobar' }));
 
@@ -155,6 +160,7 @@ describe('AdminDashboard', () => {
       </MemoryRouter>,
     );
 
+    await userEvent.click(await screen.findByRole('button', { name: 'Validación' }));
     await screen.findByText('Firulais');
     const botonFiltro = screen.getByRole('button', { name: /Sin validar/ });
 

@@ -14,11 +14,13 @@ import { codigoCaso, formatearFecha } from '../utils/mascotaFormato';
 
 type FiltroEstado = 'todas' | 'perdida' | 'encontrada';
 type FiltroValidacion = 'pendiente' | 'aprobada' | null;
+type Pestana = 'mapa' | 'validacion';
 
 const TAMANO_PAGINA = 100;
 
 export function AdminDashboard() {
   const navigate = useNavigate();
+  const [pestana, setPestana] = useState<Pestana>('mapa');
   const [mascotas, setMascotas] = useState<Mascota[]>([]);
   const [cargando, setCargando] = useState(true);
   const [cargandoMas, setCargandoMas] = useState(false);
@@ -143,225 +145,254 @@ export function AdminDashboard() {
   const mascotaDetalle = mascotas.find((m) => m.id === detalleId) ?? null;
 
   return (
-    <div className="w-full p-4 sm:p-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="u-eyebrow">Panel administrativo</p>
-          <h1 className="u-title-page mt-1">Validación de reportes</h1>
+    <div className="flex h-full w-full flex-col">
+      <div className="shrink-0 border-b-2 border-line bg-paper-raised">
+        <div className="flex flex-wrap items-end justify-between gap-4 px-4 pt-4 sm:px-6">
+          <div>
+            <p className="u-eyebrow">Panel administrativo</p>
+            <h1 className="u-title-page mt-1">Reportes</h1>
+          </div>
+          <button
+            type="button"
+            onClick={cerrarSesionYRedirigir}
+            className="u-data border border-line-strong px-3 py-1.5 text-ink-soft transition-colors hover:border-brand-600 hover:text-brand-700"
+          >
+            Cerrar sesión
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={cerrarSesionYRedirigir}
-          className="u-data border border-line-strong px-3 py-1.5 text-ink-soft transition-colors hover:border-brand-600 hover:text-brand-700"
-        >
-          Cerrar sesión
-        </button>
+
+        <div className="mt-4 flex px-4 sm:px-6">
+          {(
+            [
+              { id: 'mapa', etiqueta: 'Mapa' },
+              { id: 'validacion', etiqueta: 'Validación' },
+            ] as const
+          ).map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setPestana(tab.id)}
+              className={`u-label border-b-2 px-4 py-2.5 transition-colors ${
+                pestana === tab.id
+                  ? 'border-brand-600 text-brand-700'
+                  : 'border-transparent text-ink-faint hover:text-ink-soft'
+              }`}
+            >
+              {tab.etiqueta}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="mx-auto mt-5 aspect-[4/3] w-full max-w-2xl border border-line">
-        <MapaValidacion mascotas={mascotasFiltradas} onVerDetalle={(m) => setDetalleId(m.id)} />
-      </div>
-      {mascotas.length < total && (
-        <p className="u-data mt-1.5 text-ink-faint">
-          Mapa y tabla muestran {mascotas.length} de {total} casos cargados — usa "Cargar más" al
-          final de la tabla para ver el resto.
+      {error && (
+        <p className="shrink-0 px-4 pt-3 text-[13px] font-medium text-brand-700 sm:px-6">
+          {error}
         </p>
       )}
 
-      <div className="mt-5 flex flex-wrap items-center gap-2">
-        <span className="u-label">Validación</span>
-        <button
-          type="button"
-          onClick={() => alternarFiltroValidacion('pendiente')}
-          aria-pressed={filtroValidacion === 'pendiente'}
-          className={`u-data border px-3 py-1.5 transition-colors ${
-            filtroValidacion === 'pendiente'
-              ? 'border-brand-600 bg-brand-600 text-white'
-              : 'border-line-strong text-ink-soft hover:border-brand-600 hover:text-brand-700'
-          }`}
-        >
-          Sin validar ({pendientesCount})
-        </button>
-        <button
-          type="button"
-          onClick={() => alternarFiltroValidacion('aprobada')}
-          aria-pressed={filtroValidacion === 'aprobada'}
-          className={`u-data border px-3 py-1.5 transition-colors ${
-            filtroValidacion === 'aprobada'
-              ? 'border-moss-600 bg-moss-600 text-white'
-              : 'border-line-strong text-ink-soft hover:border-moss-600 hover:text-moss-700'
-          }`}
-        >
-          Validadas ({aprobadasCount})
-        </button>
-
-        <span className="u-label ml-4">Estado</span>
-        {(['todas', 'perdida', 'encontrada'] as const).map((opcion) => (
-          <button
-            key={opcion}
-            type="button"
-            onClick={() => setFiltroEstado(opcion)}
-            className={`u-data border px-3 py-1.5 capitalize transition-colors ${
-              filtroEstado === opcion
-                ? 'border-brand-600 bg-brand-600 text-white'
-                : 'border-line-strong text-ink-soft hover:border-brand-600 hover:text-brand-700'
-            }`}
-          >
-            {opcion}
-          </button>
-        ))}
-      </div>
-
-      {error && <p className="mt-4 text-[13px] font-medium text-brand-700">{error}</p>}
-      {cargando && <p className="u-body mt-4 text-ink-soft">Cargando casos...</p>}
-
-      {!cargando && mascotasFiltradas.length === 0 && (
-        <div className="mt-4 border border-dashed border-line-strong p-6 text-center">
-          <p className="u-body text-ink-soft">No hay casos con este filtro.</p>
+      {pestana === 'mapa' && (
+        <div className="min-h-0 flex-1">
+          <MapaValidacion mascotas={mascotas} onVerDetalle={(m) => setDetalleId(m.id)} />
         </div>
       )}
 
-      {!cargando && mascotasFiltradas.length > 0 && (
-        <div className="mt-4 overflow-x-auto border border-line bg-paper-raised">
-          <table className="w-full min-w-[960px] border-collapse">
-            <thead>
-              <tr className="border-b-2 border-line text-left">
-                <th className="u-label px-3 py-2.5">Foto</th>
-                <th className="u-label px-3 py-2.5">Nombre</th>
-                <th className="u-label px-3 py-2.5">Estado</th>
-                <th className="u-label px-3 py-2.5">Validación</th>
-                <th className="u-label px-3 py-2.5">Código</th>
-                <th className="u-label px-3 py-2.5">Fecha</th>
-                <th className="u-label px-3 py-2.5">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {mascotasFiltradas.map((mascota) => (
-                <tr key={mascota.id} className="border-b border-line last:border-b-0">
-                  <td className="px-3 py-2.5">
-                    <img
-                      src={mascota.fotoUrl}
-                      alt={mascota.nombre}
-                      className="h-12 w-12 object-cover"
-                    />
-                  </td>
-                  <td className="u-body px-3 py-2.5 font-semibold">{mascota.nombre}</td>
-                  <td className="px-3 py-2.5">
-                    <span
-                      className={`u-data border px-2 py-0.5 ${
-                        mascota.estado === 'perdida'
-                          ? 'border-brand-600 text-brand-700'
-                          : 'border-moss-600 text-moss-700'
-                      }`}
-                    >
-                      {mascota.estado}
-                    </span>
-                  </td>
-                  <td className="px-3 py-2.5">
-                    <span
-                      className={`u-data border px-2 py-0.5 ${
-                        mascota.validacion === 'aprobada'
-                          ? 'border-moss-600 text-moss-700'
-                          : mascota.validacion === 'rechazada'
-                            ? 'border-ink-faint text-ink-faint'
-                            : 'border-brand-600 text-brand-700'
-                      }`}
-                    >
-                      {mascota.validacion === 'aprobada'
-                        ? 'Validado'
-                        : mascota.validacion === 'rechazada'
-                          ? 'Rechazado'
-                          : 'Sin validar'}
-                    </span>
-                  </td>
-                  <td className="u-data px-3 py-2.5 text-ink-faint">
-                    #{codigoCaso(mascota.id)}
-                  </td>
-                  <td className="u-data px-3 py-2.5 text-ink-soft">
-                    {formatearFecha(mascota.createdAt)}
-                  </td>
-                  <td className="px-3 py-2.5">
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => setDetalleId(mascota.id)}
-                        className="u-data border border-brand-600 px-2 py-1 text-brand-700 transition-colors hover:bg-brand-50"
-                      >
-                        Ver detalle
-                      </button>
-
-                      {mascota.validacion !== 'aprobada' && (
-                        <button
-                          type="button"
-                          onClick={() => cambiarValidacion(mascota, 'aprobada')}
-                          disabled={procesandoId === mascota.id}
-                          className="u-data border border-moss-700 bg-moss-600 px-2 py-1 text-white transition-colors hover:bg-moss-700 disabled:opacity-50"
-                        >
-                          Aprobar
-                        </button>
-                      )}
-                      {mascota.validacion !== 'rechazada' && (
-                        <button
-                          type="button"
-                          onClick={() => cambiarValidacion(mascota, 'rechazada')}
-                          disabled={procesandoId === mascota.id}
-                          className="u-data border border-brand-700 px-2 py-1 text-brand-700 transition-colors hover:bg-brand-50 disabled:opacity-50"
-                        >
-                          Rechazar
-                        </button>
-                      )}
-
-                      <button
-                        type="button"
-                        onClick={() => alternarEstado(mascota)}
-                        disabled={procesandoId === mascota.id}
-                        className="u-data border border-line-strong px-2 py-1 text-ink-soft transition-colors hover:border-brand-600 hover:text-brand-700 disabled:opacity-50"
-                      >
-                        Marcar {mascota.estado === 'perdida' ? 'encontrada' : 'perdida'}
-                      </button>
-
-                      {confirmandoId === mascota.id ? (
-                        <>
-                          <button
-                            type="button"
-                            onClick={() => eliminar(mascota.id)}
-                            disabled={procesandoId === mascota.id}
-                            className="u-data border border-brand-700 bg-brand-700 px-2 py-1 text-white disabled:opacity-50"
-                          >
-                            Confirmar
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setConfirmandoId(null)}
-                            className="u-data border border-line-strong px-2 py-1 text-ink-soft"
-                          >
-                            Cancelar
-                          </button>
-                        </>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => setConfirmandoId(mascota.id)}
-                          className="u-data border border-brand-600 px-2 py-1 text-brand-700 transition-colors hover:bg-brand-50"
-                        >
-                          Eliminar
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {mascotas.length < total && (
+      {pestana === 'validacion' && (
+        <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="u-label">Validación</span>
             <button
               type="button"
-              onClick={cargarMas}
-              disabled={cargandoMas}
-              className="u-data w-full border-t border-line py-2.5 text-ink-soft transition-colors hover:border-brand-600 hover:text-brand-700 disabled:opacity-50"
+              onClick={() => alternarFiltroValidacion('pendiente')}
+              aria-pressed={filtroValidacion === 'pendiente'}
+              className={`u-data border px-3 py-1.5 transition-colors ${
+                filtroValidacion === 'pendiente'
+                  ? 'border-brand-600 bg-brand-600 text-white'
+                  : 'border-line-strong text-ink-soft hover:border-brand-600 hover:text-brand-700'
+              }`}
             >
-              {cargandoMas ? 'Cargando...' : `Cargar más (${mascotas.length} de ${total})`}
+              Sin validar ({pendientesCount})
             </button>
+            <button
+              type="button"
+              onClick={() => alternarFiltroValidacion('aprobada')}
+              aria-pressed={filtroValidacion === 'aprobada'}
+              className={`u-data border px-3 py-1.5 transition-colors ${
+                filtroValidacion === 'aprobada'
+                  ? 'border-moss-600 bg-moss-600 text-white'
+                  : 'border-line-strong text-ink-soft hover:border-moss-600 hover:text-moss-700'
+              }`}
+            >
+              Validadas ({aprobadasCount})
+            </button>
+
+            <span className="u-label ml-4">Estado</span>
+            {(['todas', 'perdida', 'encontrada'] as const).map((opcion) => (
+              <button
+                key={opcion}
+                type="button"
+                onClick={() => setFiltroEstado(opcion)}
+                className={`u-data border px-3 py-1.5 capitalize transition-colors ${
+                  filtroEstado === opcion
+                    ? 'border-brand-600 bg-brand-600 text-white'
+                    : 'border-line-strong text-ink-soft hover:border-brand-600 hover:text-brand-700'
+                }`}
+              >
+                {opcion}
+              </button>
+            ))}
+          </div>
+
+          {cargando && <p className="u-body mt-4 text-ink-soft">Cargando casos...</p>}
+
+          {!cargando && mascotasFiltradas.length === 0 && (
+            <div className="mt-4 border border-dashed border-line-strong p-6 text-center">
+              <p className="u-body text-ink-soft">No hay casos con este filtro.</p>
+            </div>
+          )}
+
+          {!cargando && mascotasFiltradas.length > 0 && (
+            <div className="mt-4 overflow-x-auto border border-line bg-paper-raised">
+              <table className="w-full min-w-[960px] border-collapse">
+                <thead>
+                  <tr className="border-b-2 border-line text-left">
+                    <th className="u-label px-3 py-2.5">Foto</th>
+                    <th className="u-label px-3 py-2.5">Nombre</th>
+                    <th className="u-label px-3 py-2.5">Estado</th>
+                    <th className="u-label px-3 py-2.5">Validación</th>
+                    <th className="u-label px-3 py-2.5">Código</th>
+                    <th className="u-label px-3 py-2.5">Fecha</th>
+                    <th className="u-label px-3 py-2.5">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {mascotasFiltradas.map((mascota) => (
+                    <tr key={mascota.id} className="border-b border-line last:border-b-0">
+                      <td className="px-3 py-2.5">
+                        <img
+                          src={mascota.fotoUrl}
+                          alt={mascota.nombre}
+                          className="h-12 w-12 object-cover"
+                        />
+                      </td>
+                      <td className="u-body px-3 py-2.5 font-semibold">{mascota.nombre}</td>
+                      <td className="px-3 py-2.5">
+                        <span
+                          className={`u-data border px-2 py-0.5 ${
+                            mascota.estado === 'perdida'
+                              ? 'border-brand-600 text-brand-700'
+                              : 'border-moss-600 text-moss-700'
+                          }`}
+                        >
+                          {mascota.estado}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2.5">
+                        <span
+                          className={`u-data border px-2 py-0.5 ${
+                            mascota.validacion === 'aprobada'
+                              ? 'border-moss-600 text-moss-700'
+                              : mascota.validacion === 'rechazada'
+                                ? 'border-ink-faint text-ink-faint'
+                                : 'border-brand-600 text-brand-700'
+                          }`}
+                        >
+                          {mascota.validacion === 'aprobada'
+                            ? 'Validado'
+                            : mascota.validacion === 'rechazada'
+                              ? 'Rechazado'
+                              : 'Sin validar'}
+                        </span>
+                      </td>
+                      <td className="u-data px-3 py-2.5 text-ink-faint">
+                        #{codigoCaso(mascota.id)}
+                      </td>
+                      <td className="u-data px-3 py-2.5 text-ink-soft">
+                        {formatearFecha(mascota.createdAt)}
+                      </td>
+                      <td className="px-3 py-2.5">
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setDetalleId(mascota.id)}
+                            className="u-data border border-brand-600 px-2 py-1 text-brand-700 transition-colors hover:bg-brand-50"
+                          >
+                            Ver detalle
+                          </button>
+
+                          {mascota.validacion !== 'aprobada' && (
+                            <button
+                              type="button"
+                              onClick={() => cambiarValidacion(mascota, 'aprobada')}
+                              disabled={procesandoId === mascota.id}
+                              className="u-data border border-moss-700 bg-moss-600 px-2 py-1 text-white transition-colors hover:bg-moss-700 disabled:opacity-50"
+                            >
+                              Aprobar
+                            </button>
+                          )}
+                          {mascota.validacion !== 'rechazada' && (
+                            <button
+                              type="button"
+                              onClick={() => cambiarValidacion(mascota, 'rechazada')}
+                              disabled={procesandoId === mascota.id}
+                              className="u-data border border-brand-700 px-2 py-1 text-brand-700 transition-colors hover:bg-brand-50 disabled:opacity-50"
+                            >
+                              Rechazar
+                            </button>
+                          )}
+
+                          <button
+                            type="button"
+                            onClick={() => alternarEstado(mascota)}
+                            disabled={procesandoId === mascota.id}
+                            className="u-data border border-line-strong px-2 py-1 text-ink-soft transition-colors hover:border-brand-600 hover:text-brand-700 disabled:opacity-50"
+                          >
+                            Marcar {mascota.estado === 'perdida' ? 'encontrada' : 'perdida'}
+                          </button>
+
+                          {confirmandoId === mascota.id ? (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => eliminar(mascota.id)}
+                                disabled={procesandoId === mascota.id}
+                                className="u-data border border-brand-700 bg-brand-700 px-2 py-1 text-white disabled:opacity-50"
+                              >
+                                Confirmar
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setConfirmandoId(null)}
+                                className="u-data border border-line-strong px-2 py-1 text-ink-soft"
+                              >
+                                Cancelar
+                              </button>
+                            </>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => setConfirmandoId(mascota.id)}
+                              className="u-data border border-brand-600 px-2 py-1 text-brand-700 transition-colors hover:bg-brand-50"
+                            >
+                              Eliminar
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {mascotas.length < total && (
+                <button
+                  type="button"
+                  onClick={cargarMas}
+                  disabled={cargandoMas}
+                  className="u-data w-full border-t border-line py-2.5 text-ink-soft transition-colors hover:border-brand-600 hover:text-brand-700 disabled:opacity-50"
+                >
+                  {cargandoMas ? 'Cargando...' : `Cargar más (${mascotas.length} de ${total})`}
+                </button>
+              )}
+            </div>
           )}
         </div>
       )}
