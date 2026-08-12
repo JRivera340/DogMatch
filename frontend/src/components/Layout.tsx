@@ -5,7 +5,7 @@ export function Layout() {
   const location = useLocation();
 
   return (
-    <div className="flex min-h-screen flex-col bg-paper">
+    <div className="flex h-dvh flex-col overflow-hidden bg-paper">
       <header className="border-b-4 border-double border-brand-700 bg-paper-raised">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
           <Link to="/" className="flex items-center gap-3">
@@ -44,7 +44,7 @@ export function Layout() {
           </nav>
         </div>
       </header>
-      <main className="flex min-h-0 flex-1">
+      <main className="flex min-h-0 flex-1 overflow-y-auto">
         <Outlet />
       </main>
       <footer className="border-t border-line bg-paper-raised py-3">
