@@ -29,6 +29,7 @@ export interface Mascota {
   telefono2: string;
   estado: 'perdida' | 'encontrada';
   validacion: Validacion;
+  clicks: number;
   createdAt: string;
 }
 

@@ -318,6 +318,7 @@ export function AdminDashboard() {
                     <th className="u-label px-3 py-2.5">Estado</th>
                     <th className="u-label px-3 py-2.5">Validación</th>
                     <th className="u-label px-3 py-2.5">Código</th>
+                    <th className="u-label px-3 py-2.5">Vistas</th>
                     <th className="u-label px-3 py-2.5">Fecha</th>
                     <th className="u-label px-3 py-2.5">Acciones</th>
                   </tr>
@@ -371,6 +372,7 @@ export function AdminDashboard() {
                       <td className="u-data px-3 py-2.5 text-ink-faint">
                         #{codigoCaso(mascota.id)}
                       </td>
+                      <td className="u-data px-3 py-2.5 text-ink-soft">{mascota.clicks}</td>
                       <td className="u-data px-3 py-2.5 text-ink-soft">
                         {formatearFecha(mascota.createdAt)}
                       </td>

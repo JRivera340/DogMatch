@@ -34,5 +34,6 @@ model Mascota {
   validacion                String   @default("pendiente")
   editToken                 String   @unique
   autorizaTratamientoDatos  Boolean
+  clicks                    Int      @default(0)
   createdAt                 DateTime @default(now())
 }

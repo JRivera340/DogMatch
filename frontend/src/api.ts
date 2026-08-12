@@ -28,6 +28,11 @@ export async function crearMascota(
   return manejarRespuesta(res);
 }
 
+export async function registrarClick(id: string): Promise<void> {
+  // Métrica de interés, no crítica — si falla no interrumpe la experiencia del usuario.
+  await fetch(`${API_URL}/api/mascotas/${id}/click`, { method: 'POST' }).catch(() => {});
+}
+
 export async function marcarEncontrada(id: string, editToken: string): Promise<void> {
   const res = await fetch(`${API_URL}/api/mascotas/${id}/encontrada`, {
     method: 'PATCH',

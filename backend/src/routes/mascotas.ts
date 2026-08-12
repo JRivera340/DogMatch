@@ -46,6 +46,21 @@ mascotasRouter.post('/', async (req, res) => {
   res.status(201).json({ id: mascota.id, editToken });
 });
 
+mascotasRouter.post('/:id/click', async (req, res) => {
+  // Endpoint público sin auth: cuenta cuántas veces se abrió el detalle de un reporte.
+  // Métrica simple de interés, no crítica — si el id no existe simplemente no hace nada.
+  const actualizada = await prisma.mascota
+    .update({ where: { id: req.params.id }, data: { clicks: { increment: 1 } } })
+    .catch(() => null);
+
+  if (!actualizada) {
+    res.status(404).json({ error: 'Mascota no encontrada' });
+    return;
+  }
+
+  res.json({ clicks: actualizada.clicks });
+});
+
 mascotasRouter.patch('/:id/encontrada', async (req, res) => {
   const parsed = marcarEncontradaSchema.safeParse(req.body);
   if (!parsed.success) {

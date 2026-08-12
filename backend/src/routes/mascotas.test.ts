@@ -214,6 +214,29 @@ describe('POST /api/mascotas', () => {
   });
 });
 
+describe('POST /api/mascotas/:id/click', () => {
+  it('incrementa el contador de clicks', async () => {
+    mockPrisma.mascota.update.mockResolvedValue({ id: 'mascota-1', clicks: 4 });
+
+    const res = await request(app).post('/api/mascotas/mascota-1/click');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ clicks: 4 });
+    expect(mockPrisma.mascota.update).toHaveBeenCalledWith({
+      where: { id: 'mascota-1' },
+      data: { clicks: { increment: 1 } },
+    });
+  });
+
+  it('retorna 404 si la mascota no existe', async () => {
+    mockPrisma.mascota.update.mockRejectedValue(new Error('not found'));
+
+    const res = await request(app).post('/api/mascotas/no-existe/click');
+
+    expect(res.status).toBe(404);
+  });
+});
+
 describe('PATCH /api/mascotas/:id/encontrada', () => {
   it('rechaza editToken incorrecto con 403', async () => {
     mockPrisma.mascota.findUnique.mockResolvedValue({

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Mascota } from '../types';
 import { marcarEncontrada, obtenerTokensGuardados } from '../api';
+import { TELEFONOS_FUNCIONARIOS } from '../data/contactoOficial';
 import { PinIcon } from './icons';
 import { BotonTelefono } from './BotonTelefono';
 import { DetalleMascotaModal } from './DetalleMascotaModal';
@@ -115,8 +116,9 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
         </dl>
 
         <div className="mt-3.5 flex flex-wrap items-center gap-1.5">
-          <BotonTelefono telefono={mascota.telefono1} nombreMascota={mascota.nombre} />
-          <BotonTelefono telefono={mascota.telefono2} nombreMascota={mascota.nombre} />
+          {TELEFONOS_FUNCIONARIOS.map((telefono) => (
+            <BotonTelefono key={telefono} telefono={telefono} nombreMascota={mascota.nombre} />
+          ))}
           <button
             type="button"
             onClick={() => setDetalleAbierto(true)}

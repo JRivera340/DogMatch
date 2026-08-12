@@ -49,6 +49,7 @@ const mascota: Mascota = {
   telefono2: '3007654321',
   estado: 'perdida',
   validacion: 'pendiente',
+  clicks: 0,
   createdAt: new Date().toISOString(),
 };
 

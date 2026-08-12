@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { Mascota } from '../types';
+import { registrarClick } from '../api';
 import { codigoCaso, etiquetaEstado, formatearFecha } from '../utils/mascotaFormato';
+import { TELEFONOS_FUNCIONARIOS } from '../data/contactoOficial';
 import { BotonTelefono } from './BotonTelefono';
 import { ImageLightbox } from './ImageLightbox';
 import { PinIcon } from './icons';
@@ -26,6 +28,12 @@ interface Props {
 export function DetalleMascotaModal({ mascota, onClose, admin }: Props) {
   const [lightboxAbierto, setLightboxAbierto] = useState(false);
   const estaEncontrada = mascota.estado === 'encontrada';
+
+  useEffect(() => {
+    // Cuenta vistas del público, no las que hace un admin revisando el panel.
+    if (!admin) registrarClick(mascota.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mascota.id]);
 
   return (
     <>
@@ -174,8 +182,16 @@ export function DetalleMascotaModal({ mascota, onClose, admin }: Props) {
               <div className="mt-4">
                 <p className="u-label mb-1.5">Contacto</p>
                 <div className="flex flex-wrap gap-1.5">
-                  <BotonTelefono telefono={mascota.telefono1} nombreMascota={mascota.nombre} />
-                  <BotonTelefono telefono={mascota.telefono2} nombreMascota={mascota.nombre} />
+                  {admin ? (
+                    <>
+                      <BotonTelefono telefono={mascota.telefono1} nombreMascota={mascota.nombre} />
+                      <BotonTelefono telefono={mascota.telefono2} nombreMascota={mascota.nombre} />
+                    </>
+                  ) : (
+                    TELEFONOS_FUNCIONARIOS.map((telefono) => (
+                      <BotonTelefono key={telefono} telefono={telefono} nombreMascota={mascota.nombre} />
+                    ))
+                  )}
                 </div>
               </div>
 
