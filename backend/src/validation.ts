@@ -73,6 +73,12 @@ export const adminEstadoSchema = z.object({
   estado: z.enum(['perdida', 'encontrada']),
 });
 
+// 'perdida'/'rescatada' fijan el tipoReporte y ponen estado=perdida (caso activo);
+// 'encontrada' solo cambia el estado, sin tocar el tipoReporte (ya está con su familia).
+export const adminTipoSchema = z.object({
+  tipo: z.enum(['perdida', 'rescatada', 'encontrada']),
+});
+
 export const adminValidacionSchema = z.object({
   validacion: z.enum(['pendiente', 'aprobada', 'rechazada']),
 });

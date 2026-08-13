@@ -14,7 +14,7 @@ function paginaDe(items: Mascota[]): Paginado<Mascota> {
 vi.mock('../api', () => ({
   adminListarMascotas: vi.fn(),
   adminEliminarMascota: vi.fn(),
-  adminActualizarEstado: vi.fn(),
+  adminActualizarTipo: vi.fn(),
   adminActualizarValidacion: vi.fn(),
 }));
 
@@ -112,10 +112,13 @@ describe('AdminDashboard', () => {
     await waitFor(() => expect(screen.queryByText('Firulais')).not.toBeInTheDocument());
   });
 
-  it('alterna el estado del caso', async () => {
+  it('cambia el tipo/estado del caso con el selector de 3 opciones', async () => {
     guardarTokenAdmin('token-valido');
     vi.mocked(api.adminListarMascotas).mockResolvedValue(paginaDe([mascota]));
-    vi.mocked(api.adminActualizarEstado).mockResolvedValue(undefined);
+    vi.mocked(api.adminActualizarTipo).mockResolvedValue({
+      tipoReporte: 'perdida',
+      estado: 'encontrada',
+    });
 
     render(
       <MemoryRouter>
@@ -125,10 +128,10 @@ describe('AdminDashboard', () => {
 
     await userEvent.click(await screen.findByRole('button', { name: 'Validación' }));
     await screen.findByText('Firulais');
-    await userEvent.click(screen.getByRole('button', { name: 'Marcar encontrada' }));
+    await userEvent.selectOptions(screen.getByDisplayValue('Perdido'), 'encontrada');
 
     await waitFor(() =>
-      expect(api.adminActualizarEstado).toHaveBeenCalledWith(
+      expect(api.adminActualizarTipo).toHaveBeenCalledWith(
         mascota.id,
         'encontrada',
         'token-valido',

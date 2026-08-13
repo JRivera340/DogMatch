@@ -1,4 +1,4 @@
-import type { Mascota, NuevaMascota, Paginado, Validacion } from './types';
+import type { Mascota, NuevaMascota, Paginado, TipoReporte, Validacion } from './types';
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
 
@@ -133,6 +133,20 @@ export async function adminActualizarEstado(
     body: JSON.stringify({ estado }),
   });
   await manejarRespuesta(res);
+}
+
+/** 'perdida'/'rescatada' fijan el tipo y ponen el caso activo; 'encontrada' solo marca que ya está con su familia. */
+export async function adminActualizarTipo(
+  id: string,
+  tipo: TipoReporte | 'encontrada',
+  token: string,
+): Promise<{ tipoReporte: TipoReporte; estado: 'perdida' | 'encontrada' }> {
+  const res = await fetch(`${API_URL}/api/admin/mascotas/${id}/tipo`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ tipo }),
+  });
+  return manejarRespuesta(res);
 }
 
 export async function adminActualizarValidacion(

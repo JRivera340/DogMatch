@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { prisma } from '../prisma';
-import { adminEstadoSchema, adminLoginSchema, adminValidacionSchema } from '../validation';
+import { adminEstadoSchema, adminLoginSchema, adminTipoSchema, adminValidacionSchema } from '../validation';
 import { firmarTokenAdmin, requireAdmin } from '../adminAuth';
 import { envolverPaginado, leerPaginacion } from '../pagination';
 
@@ -66,6 +66,27 @@ adminRouter.patch('/mascotas/:id/estado', requireAdmin, async (req, res) => {
       data: { estado: parsed.data.estado },
     });
     res.json({ id: mascota.id, estado: mascota.estado });
+  } catch {
+    res.status(404).json({ error: 'Mascota no encontrada' });
+  }
+});
+
+adminRouter.patch('/mascotas/:id/tipo', requireAdmin, async (req, res) => {
+  const parsed = adminTipoSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.flatten() });
+    return;
+  }
+
+  const id = String(req.params.id);
+  const data =
+    parsed.data.tipo === 'encontrada'
+      ? { estado: 'encontrada' as const }
+      : { tipoReporte: parsed.data.tipo, estado: 'perdida' as const };
+
+  try {
+    const mascota = await prisma.mascota.update({ where: { id }, data });
+    res.json({ id: mascota.id, tipoReporte: mascota.tipoReporte, estado: mascota.estado });
   } catch {
     res.status(404).json({ error: 'Mascota no encontrada' });
   }

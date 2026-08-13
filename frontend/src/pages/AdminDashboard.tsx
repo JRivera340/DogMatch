@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ApiError,
-  adminActualizarEstado,
+  adminActualizarTipo,
   adminActualizarValidacion,
   adminEliminarMascota,
   adminListarMascotas,
@@ -114,18 +114,21 @@ export function AdminDashboard() {
     }
   }
 
-  async function alternarEstado(mascota: Mascota) {
+  async function cambiarTipo(mascota: Mascota, tipo: TipoReporte | 'encontrada') {
     const token = obtenerTokenAdmin();
     if (!token) return cerrarSesionYRedirigir();
-    const nuevoEstado = mascota.estado === 'perdida' ? 'encontrada' : 'perdida';
     setProcesandoId(mascota.id);
     try {
-      await adminActualizarEstado(mascota.id, nuevoEstado, token);
+      const actualizada = await adminActualizarTipo(mascota.id, tipo, token);
       setMascotas((prev) =>
-        prev.map((m) => (m.id === mascota.id ? { ...m, estado: nuevoEstado } : m)),
+        prev.map((m) =>
+          m.id === mascota.id
+            ? { ...m, tipoReporte: actualizada.tipoReporte, estado: actualizada.estado }
+            : m,
+        ),
       );
     } catch {
-      setError('No se pudo actualizar el estado.');
+      setError('No se pudo actualizar el tipo.');
     } finally {
       setProcesandoId(null);
     }
@@ -345,7 +348,7 @@ export function AdminDashboard() {
                   <tr className="border-b-2 border-line text-left">
                     <th className="u-label px-3 py-2.5">Foto</th>
                     <th className="u-label px-3 py-2.5">Nombre</th>
-                    <th className="u-label px-3 py-2.5">Estado</th>
+                    <th className="u-label px-3 py-2.5">Tipo</th>
                     <th className="u-label px-3 py-2.5">Validación</th>
                     <th className="u-label px-3 py-2.5">Código</th>
                     <th className="u-label px-3 py-2.5">Vistas</th>
@@ -435,14 +438,18 @@ export function AdminDashboard() {
                             </button>
                           )}
 
-                          <button
-                            type="button"
-                            onClick={() => alternarEstado(mascota)}
+                          <select
+                            value={mascota.estado === 'encontrada' ? 'encontrada' : mascota.tipoReporte}
+                            onChange={(e) =>
+                              cambiarTipo(mascota, e.target.value as TipoReporte | 'encontrada')
+                            }
                             disabled={procesandoId === mascota.id}
-                            className="u-data border border-line-strong px-2 py-1 text-ink-soft transition-colors hover:border-brand-600 hover:text-brand-700 disabled:opacity-50"
+                            className="u-data border border-line-strong bg-paper-raised px-2 py-1 text-ink-soft focus:border-brand-600 focus:outline-none disabled:opacity-50"
                           >
-                            Marcar {mascota.estado === 'perdida' ? 'encontrada' : 'perdida'}
-                          </button>
+                            <option value="perdida">Perdido</option>
+                            <option value="rescatada">Busca su dueño</option>
+                            <option value="encontrada">Está con su familia</option>
+                          </select>
 
                           {confirmandoId === mascota.id ? (
                             <>

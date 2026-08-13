@@ -138,6 +138,55 @@ describe('rutas admin protegidas', () => {
     expect(mockPrisma.mascota.update).not.toHaveBeenCalled();
   });
 
+  it('PATCH /api/admin/mascotas/:id/tipo fija rescatada y estado=perdida', async () => {
+    mockPrisma.mascota.update.mockResolvedValue({
+      id: '1',
+      tipoReporte: 'rescatada',
+      estado: 'perdida',
+    });
+
+    const res = await request(app)
+      .patch('/api/admin/mascotas/1/tipo')
+      .set('Authorization', `Bearer ${tokenValido()}`)
+      .send({ tipo: 'rescatada' });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ id: '1', tipoReporte: 'rescatada', estado: 'perdida' });
+    expect(mockPrisma.mascota.update).toHaveBeenCalledWith({
+      where: { id: '1' },
+      data: { tipoReporte: 'rescatada', estado: 'perdida' },
+    });
+  });
+
+  it('PATCH /api/admin/mascotas/:id/tipo con encontrada solo cambia el estado', async () => {
+    mockPrisma.mascota.update.mockResolvedValue({
+      id: '1',
+      tipoReporte: 'rescatada',
+      estado: 'encontrada',
+    });
+
+    const res = await request(app)
+      .patch('/api/admin/mascotas/1/tipo')
+      .set('Authorization', `Bearer ${tokenValido()}`)
+      .send({ tipo: 'encontrada' });
+
+    expect(res.status).toBe(200);
+    expect(mockPrisma.mascota.update).toHaveBeenCalledWith({
+      where: { id: '1' },
+      data: { estado: 'encontrada' },
+    });
+  });
+
+  it('PATCH /api/admin/mascotas/:id/tipo rechaza valor inválido con 400', async () => {
+    const res = await request(app)
+      .patch('/api/admin/mascotas/1/tipo')
+      .set('Authorization', `Bearer ${tokenValido()}`)
+      .send({ tipo: 'algo-invalido' });
+
+    expect(res.status).toBe(400);
+    expect(mockPrisma.mascota.update).not.toHaveBeenCalled();
+  });
+
   it('PATCH /api/admin/mascotas/:id/validacion aprueba un caso', async () => {
     mockPrisma.mascota.update.mockResolvedValue({ id: '1', validacion: 'aprobada' });
 
