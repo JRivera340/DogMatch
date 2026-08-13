@@ -64,7 +64,7 @@ export const DEPARTAMENTOS_COLOMBIA: string[] = Array.from(
 
 // Departamentos priorizados por la campaña del desastre temporal — usados para
 // acotar los filtros de departamento/ciudad en los mapas (público y admin).
-export const DEPARTAMENTOS_AFECTADOS: string[] = ['Caldas', 'Quindío', 'Risaralda', 'Chocó'];
+export const DEPARTAMENTOS_AFECTADOS: string[] = ['Caldas', 'Chocó', 'Quindío', 'Risaralda'];
 
 export const CIUDADES_AFECTADAS: Ciudad[] = CIUDADES_COLOMBIA.filter((c) =>
   DEPARTAMENTOS_AFECTADOS.includes(c.departamento),

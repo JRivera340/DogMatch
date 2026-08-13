@@ -10,9 +10,9 @@ import { useInvalidarMapaAlRedimensionar } from '../utils/useInvalidarMapa';
 
 // Color = tipo de reporte mientras el caso está activo; una vez resuelto
 // (estado="encontrada", sin importar el tipo) se muestra en gris apagado.
-const COLOR_PERDIDA = '#c81e3a';
-const COLOR_RESCATADA = '#3568b0';
-const COLOR_RESUELTA = '#9c9188';
+const COLOR_PERDIDA = '#eab308'; // Amarillo
+const COLOR_RESCATADA = '#3b82f6'; // Azul
+const COLOR_RESUELTA = '#ef4444'; // Rojo
 
 function crearIcono(color: string) {
   return L.divIcon({
@@ -23,9 +23,18 @@ function crearIcono(color: string) {
   });
 }
 
+function crearIconoEmoji(emoji: string) {
+  return L.divIcon({
+    className: '',
+    html: `<div style="font-size: 22px; line-height: 1; text-align: center; filter: drop-shadow(0px 2px 3px rgba(0,0,0,0.4));">${emoji}</div>`,
+    iconSize: [22, 22],
+    iconAnchor: [11, 11],
+  });
+}
+
 const iconoPerdida = crearIcono(COLOR_PERDIDA);
 const iconoRescatada = crearIcono(COLOR_RESCATADA);
-const iconoResuelta = crearIcono(COLOR_RESUELTA);
+const iconoResuelta = crearIconoEmoji('❤️');
 
 function iconoDe(mascota: Mascota) {
   if (mascota.estado === 'encontrada') return iconoResuelta;

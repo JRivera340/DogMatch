@@ -85,13 +85,6 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
           </span>
         </p>
 
-        <p className="mt-0.5 truncate text-[11px] text-ink-soft sm:u-body">
-          <span className="font-semibold text-ink-soft">
-            {mascota.tipoReporte === 'rescatada' ? 'Dónde está ahora: ' : 'Residencia: '}
-          </span>
-          {mascota.lugarResidencia}
-        </p>
-
         <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
           {TELEFONOS_FUNCIONARIOS.map((telefono) => (
             <BotonTelefono key={telefono} telefono={telefono} nombreMascota={mascota.nombre} compacto />
