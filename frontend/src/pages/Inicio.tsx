@@ -78,8 +78,17 @@ export function Inicio() {
     setCargandoMas(true);
     try {
       const resp = await listarMascotas(pagina + 1, TAMANO_PAGINA);
-      setMascotas((prev) => [...prev, ...resp.items]);
-      setTotal(resp.total);
+      setMascotas((prev) => {
+        // Si la página no trae nada nuevo (ya se habían cargado todos, aunque el
+        // contador dijera lo contrario), el total se autocorrige al tamaño real
+        // para que el botón desaparezca en vez de quedar pegado sin hacer nada.
+        if (resp.items.length === 0) {
+          setTotal(prev.length);
+          return prev;
+        }
+        setTotal(resp.total);
+        return [...prev, ...resp.items];
+      });
       setPagina((p) => p + 1);
     } catch {
       setError('No se pudieron cargar más casos.');
