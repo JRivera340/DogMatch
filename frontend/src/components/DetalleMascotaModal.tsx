@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Mascota } from '../types';
 import { registrarClick } from '../api';
-import { codigoCaso, etiquetaEstadoCorta, formatearFecha } from '../utils/mascotaFormato';
+import { codigoCaso, etiquetaEstado, formatearFecha } from '../utils/mascotaFormato';
 import { TELEFONOS_FUNCIONARIOS } from '../data/contactoOficial';
 import { BotonTelefono } from './BotonTelefono';
 import { ImageLightbox } from './ImageLightbox';
@@ -83,7 +83,7 @@ export function DetalleMascotaModal({ mascota, onClose, admin }: Props) {
                   <span
                     className={`stamp text-[10px] ${estaEncontrada ? 'text-moss-700' : 'text-brand-600'}`}
                   >
-                    {etiquetaEstadoCorta(mascota.tipoReporte, mascota.estado, mascota.genero)}
+                    {etiquetaEstado(mascota.tipoReporte, mascota.estado, mascota.genero)}
                   </span>
                 </div>
               </div>

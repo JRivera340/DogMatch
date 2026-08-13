@@ -11,17 +11,6 @@ export function etiquetaEstado(
   return genero === 'Macho' ? 'Perdido' : 'Perdida';
 }
 
-/** Versión corta para el sello decorativo (.stamp): su forma recortada no
- * aguanta una frase de 4 palabras — "Está con su familia" queda invisible. */
-export function etiquetaEstadoCorta(
-  tipoReporte: TipoReporte,
-  estado: 'perdida' | 'encontrada',
-  genero: 'Macho' | 'Hembra',
-) {
-  if (estado === 'encontrada') return 'En casa';
-  return etiquetaEstado(tipoReporte, estado, genero);
-}
-
 /** Texto del botón que resuelve el caso — distinto según el tipo de reporte. */
 export function etiquetaAccionResolver(tipoReporte: TipoReporte) {
   return tipoReporte === 'rescatada' ? 'Marcar como adoptada' : 'Marcar como reunida con su dueño';
