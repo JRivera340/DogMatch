@@ -276,7 +276,7 @@ export function Inicio() {
             </div>
           </div>
 
-          <div className="flex-1 space-y-8 overflow-y-auto border-t border-line px-4 py-3">{listaCasos}</div>
+          <div className="flex-1 space-y-10 overflow-y-auto border-t border-line px-4 py-3">{listaCasos}</div>
         </div>
 
         {filtrosAbiertos && (
@@ -504,7 +504,7 @@ export function Inicio() {
           </div>
         </div>
 
-        <div className="flex-1 space-y-8 p-4">{listaCasos}</div>
+        <div className="flex-1 space-y-10 p-4">{listaCasos}</div>
       </div>
     </div>
   );
