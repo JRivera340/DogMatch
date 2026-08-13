@@ -56,6 +56,11 @@ export const CIUDADES_COLOMBIA: Ciudad[] = [
   { nombre: 'Nuquí', departamento: 'Chocó', lat: 5.7108, lng: -77.2686, zoom: 13 },
   { nombre: 'Bahía Solano', departamento: 'Chocó', lat: 6.2202, lng: -77.4056, zoom: 13 },
   { nombre: 'Riosucio (Chocó)', departamento: 'Chocó', lat: 7.4372, lng: -77.1103, zoom: 13 },
+  { nombre: 'Palmira', departamento: 'Valle del Cauca', lat: 3.5322, lng: -76.3039, zoom: 14 },
+  { nombre: 'Buenaventura', departamento: 'Valle del Cauca', lat: 3.8801, lng: -77.0312, zoom: 13 },
+  { nombre: 'Tuluá', departamento: 'Valle del Cauca', lat: 4.0847, lng: -76.1954, zoom: 14 },
+  { nombre: 'Cartago', departamento: 'Valle del Cauca', lat: 4.7455, lng: -75.9096, zoom: 14 },
+  { nombre: 'Buga', departamento: 'Valle del Cauca', lat: 3.9009, lng: -76.2983, zoom: 14 },
 ];
 
 export const DEPARTAMENTOS_COLOMBIA: string[] = Array.from(
@@ -64,7 +69,7 @@ export const DEPARTAMENTOS_COLOMBIA: string[] = Array.from(
 
 // Departamentos priorizados por la campaña del desastre temporal — usados para
 // acotar los filtros de departamento/ciudad en los mapas (público y admin).
-export const DEPARTAMENTOS_AFECTADOS: string[] = ['Caldas', 'Chocó', 'Quindío', 'Risaralda'];
+export const DEPARTAMENTOS_AFECTADOS: string[] = ['Caldas', 'Chocó', 'Quindío', 'Risaralda', 'Valle del Cauca'];
 
 export const CIUDADES_AFECTADAS: Ciudad[] = CIUDADES_COLOMBIA.filter((c) =>
   DEPARTAMENTOS_AFECTADOS.includes(c.departamento),
