@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
+  ApiError,
   adminActualizarEstado,
   adminActualizarValidacion,
   adminEliminarMascota,
@@ -71,7 +72,7 @@ export function AdminDashboard() {
       setTotal(resp.total);
       setPagina(1);
     } catch (e) {
-      if (e instanceof Error && e.message.includes('401')) {
+      if (e instanceof ApiError && e.status === 401) {
         cerrarSesionYRedirigir();
         return;
       }

@@ -2,12 +2,21 @@ import type { Mascota, NuevaMascota, Paginado, Validacion } from './types';
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
 
+/** Error de API que conserva el status HTTP — el mensaje del backend no siempre incluye el código. */
+export class ApiError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+  }
+}
+
 async function manejarRespuesta<T>(res: Response): Promise<T> {
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     const mensaje =
       typeof body.error === 'string' ? body.error : body.error ? JSON.stringify(body.error) : null;
-    throw new Error(mensaje ?? `Error ${res.status}`);
+    throw new ApiError(mensaje ?? `Error ${res.status}`, res.status);
   }
   return res.json() as Promise<T>;
 }
@@ -108,9 +117,8 @@ export async function adminEliminarMascota(id: string, token: string): Promise<v
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` },
   });
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(body.error ? JSON.stringify(body.error) : `Error ${res.status}`);
+  if (res.status !== 204) {
+    await manejarRespuesta(res);
   }
 }
 
