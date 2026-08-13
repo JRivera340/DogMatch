@@ -34,7 +34,7 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
   }
 
   return (
-    <article className="flex h-[150px] overflow-hidden border border-line bg-paper-raised sm:h-auto sm:min-h-0">
+    <article className="flex h-[150px] border border-line bg-paper-raised sm:h-auto sm:min-h-0">
       <button
         type="button"
         onClick={() => setDetalleAbierto(true)}
