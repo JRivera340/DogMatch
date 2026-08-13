@@ -16,7 +16,7 @@ type FiltroTipo = 'Todas' | TipoReporte;
 const RADIO_CIUDAD_KM = 25;
 
 const selectClass =
-  'u-data border border-line-strong bg-paper-raised px-2 py-1.5 text-ink focus:border-brand-600 focus:outline-none';
+  'u-data shrink-0 border border-line-strong bg-paper-raised px-2 py-1.5 text-ink focus:border-brand-600 focus:outline-none';
 
 const TAMANO_PAGINA = 50;
 
@@ -142,8 +142,8 @@ export function Inicio() {
             </span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 border-t border-line px-4 py-2.5">
-            <label className="u-label" htmlFor="filtro-especie">
+          <div className="flex items-center gap-2 overflow-x-auto border-t border-line px-4 py-2.5 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible [&::-webkit-scrollbar]:hidden">
+            <label className="u-label shrink-0" htmlFor="filtro-especie">
               Filtrar
             </label>
             <select
@@ -230,7 +230,7 @@ export function Inicio() {
               <button
                 type="button"
                 onClick={limpiarFiltros}
-                className="u-data text-brand-700 underline underline-offset-2"
+                className="u-data shrink-0 text-brand-700 underline underline-offset-2"
               >
                 Limpiar filtros
               </button>

@@ -58,7 +58,7 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
 
       <div className="min-w-0 flex-1 p-4">
         <div className="flex items-start justify-between gap-2">
-          <div>
+          <div className="min-w-0">
             <h3 className="u-title-card truncate">{mascota.nombre}</h3>
             {mascota.tipoReporte === 'rescatada' && (
               <p className="u-data text-brand-600">Mascota rescatada · busca dueño</p>

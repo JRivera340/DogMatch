@@ -207,13 +207,13 @@ export function AdminDashboard() {
           ))}
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 border-t border-line px-4 py-2.5 sm:px-6">
-          <span className="u-label">Validación</span>
+        <div className="flex items-center gap-2 overflow-x-auto border-t border-line px-4 py-2.5 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:px-6 [&::-webkit-scrollbar]:hidden">
+          <span className="u-label shrink-0">Validación</span>
           <button
             type="button"
             onClick={() => alternarFiltroValidacion('pendiente')}
             aria-pressed={filtroValidacion === 'pendiente'}
-            className={`u-data border px-3 py-1.5 transition-colors ${
+            className={`u-data shrink-0 border px-3 py-1.5 transition-colors ${
               filtroValidacion === 'pendiente'
                 ? 'border-brand-600 bg-brand-600 text-white'
                 : 'border-line-strong text-ink-soft hover:border-brand-600 hover:text-brand-700'
@@ -225,7 +225,7 @@ export function AdminDashboard() {
             type="button"
             onClick={() => alternarFiltroValidacion('aprobada')}
             aria-pressed={filtroValidacion === 'aprobada'}
-            className={`u-data border px-3 py-1.5 transition-colors ${
+            className={`u-data shrink-0 border px-3 py-1.5 transition-colors ${
               filtroValidacion === 'aprobada'
                 ? 'border-moss-600 bg-moss-600 text-white'
                 : 'border-line-strong text-ink-soft hover:border-moss-600 hover:text-moss-700'
@@ -234,24 +234,24 @@ export function AdminDashboard() {
             Verificadas ({aprobadasCount})
           </button>
 
-          <span className="u-label ml-4">Tipo</span>
+          <span className="u-label ml-4 shrink-0">Tipo</span>
           <select
             value={filtroTipo}
             onChange={(e) => setFiltroTipo(e.target.value as FiltroTipo)}
-            className="u-data border border-line-strong bg-paper-raised px-2 py-1.5 text-ink focus:border-brand-600 focus:outline-none"
+            className="u-data shrink-0 border border-line-strong bg-paper-raised px-2 py-1.5 text-ink focus:border-brand-600 focus:outline-none"
           >
             <option value="todas">Todos</option>
             <option value="perdida">Perdida (con dueño)</option>
             <option value="rescatada">Rescatada (sin dueño)</option>
           </select>
 
-          <span className="u-label ml-4">Estado</span>
+          <span className="u-label ml-4 shrink-0">Estado</span>
           {(['todas', 'perdida', 'encontrada'] as const).map((opcion) => (
             <button
               key={opcion}
               type="button"
               onClick={() => setFiltroEstado(opcion)}
-              className={`u-data border px-3 py-1.5 capitalize transition-colors ${
+              className={`u-data shrink-0 border px-3 py-1.5 capitalize transition-colors ${
                 filtroEstado === opcion
                   ? 'border-brand-600 bg-brand-600 text-white'
                   : 'border-line-strong text-ink-soft hover:border-brand-600 hover:text-brand-700'
@@ -261,11 +261,11 @@ export function AdminDashboard() {
             </button>
           ))}
 
-          <span className="u-label ml-4">Departamento</span>
+          <span className="u-label ml-4 shrink-0">Departamento</span>
           <select
             value={filtroDepartamento}
             onChange={(e) => setFiltroDepartamento(e.target.value)}
-            className="u-data border border-line-strong bg-paper-raised px-2 py-1.5 text-ink focus:border-brand-600 focus:outline-none"
+            className="u-data shrink-0 border border-line-strong bg-paper-raised px-2 py-1.5 text-ink focus:border-brand-600 focus:outline-none"
           >
             <option value="Todos">Todos</option>
             {DEPARTAMENTOS_COLOMBIA.map((departamento) => (

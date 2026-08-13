@@ -5,7 +5,7 @@ import { codigoCaso, etiquetaEstado, formatearFecha } from '../utils/mascotaForm
 import { TELEFONOS_FUNCIONARIOS } from '../data/contactoOficial';
 import { BotonTelefono } from './BotonTelefono';
 import { ImageLightbox } from './ImageLightbox';
-import { PinIcon } from './icons';
+import { EyeIcon, PinIcon } from './icons';
 
 export interface AccionesAdmin {
   onAprobar: () => void;
@@ -112,25 +112,28 @@ export function DetalleMascotaModal({ mascota, onClose, admin }: Props) {
                 </div>
               )}
 
-              <span
-                className={`u-data mt-2 inline-block border px-1.5 py-0.5 text-[10px] ${
-                  mascota.validacion === 'aprobada'
-                    ? 'border-moss-600 text-moss-700'
+              <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                <span
+                  className={`u-data inline-block border px-1.5 py-0.5 text-[10px] ${
+                    mascota.validacion === 'aprobada'
+                      ? 'border-moss-600 text-moss-700'
+                      : mascota.validacion === 'rechazada'
+                        ? 'border-ink-faint text-ink-faint'
+                        : 'border-line-strong text-ink-faint'
+                  }`}
+                >
+                  {mascota.validacion === 'aprobada'
+                    ? 'Verificado por un administrador'
                     : mascota.validacion === 'rechazada'
-                      ? 'border-ink-faint text-ink-faint'
-                      : 'border-line-strong text-ink-faint'
-                }`}
-              >
-                {mascota.validacion === 'aprobada'
-                  ? 'Verificado por un administrador'
-                  : mascota.validacion === 'rechazada'
-                    ? 'Rechazado'
-                    : 'Sin validar todavía'}
-              </span>
+                      ? 'Rechazado'
+                      : 'Sin validar todavía'}
+                </span>
 
-              <p className="u-data mt-2 text-ink-faint">
-                {mascota.clicks} {mascota.clicks === 1 ? 'vista' : 'vistas'}
-              </p>
+                <span className="u-data inline-flex items-center gap-1 border border-brand-600 bg-brand-50 px-1.5 py-0.5 text-[10px] font-semibold text-brand-700">
+                  <EyeIcon className="h-3 w-3" />
+                  {mascota.clicks} {mascota.clicks === 1 ? 'vista' : 'vistas'}
+                </span>
+              </div>
 
               <dl className="mt-4 space-y-2">
                 <div className="u-body flex gap-1.5">
