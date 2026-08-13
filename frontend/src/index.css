@@ -289,3 +289,14 @@ body {
   line-height: var(--lh-step-0);
   color: var(--color-ink);
 }
+
+/* Safari en iOS hace zoom automático al enfocar un input con font-size
+   menor a 16px, lo que mueve toda la vista. Se fuerza 16px en pantallas
+   chicas para que llenar el formulario no salte de posición. */
+@media (max-width: 639px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
