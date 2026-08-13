@@ -46,7 +46,8 @@ export const crearMascotaSchema = z.object({
   ultimaVezLugarTexto: z.string().trim().min(1).max(200),
   lat: z.number().min(LAT_MIN).max(LAT_MAX),
   lng: z.number().min(LNG_MIN).max(LNG_MAX),
-  lugarResidencia: z.string().trim().min(1).max(200),
+  nombreContacto: z.string().trim().min(1).max(100),
+  emailContacto: z.string().trim().email().max(100),
   telefono1: z.string().trim().regex(telefonoRegex, 'telefono1 inválido, use formato colombiano'),
   telefono2: z
     .string()

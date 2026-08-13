@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Mascota" ADD COLUMN     "clicks" INTEGER NOT NULL DEFAULT 0,
+ALTER COLUMN "telefono2" SET DEFAULT '';

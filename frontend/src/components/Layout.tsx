@@ -17,10 +17,10 @@ export function Layout() {
             </span>
             <span className="flex min-w-0 flex-col leading-none">
               <span className="font-display truncate text-sm font-extrabold tracking-tight text-ink sm:text-base md:text-[1.15rem]">
-                Huellas de <span className="text-brand-600">Regreso</span>
+                Huellas <span className="text-brand-600">S.O.S.</span>
               </span>
               <span className="u-eyebrow mt-0.5 hidden text-[9px] text-ink-faint sm:block">
-                Registro de mascotas perdidas · Colombia · Marco del desastre temporal
+                Buscamos su huella, encontramos su hogar
               </span>
             </span>
           </Link>
@@ -51,11 +51,11 @@ export function Layout() {
       <footer className="border-t border-line bg-paper-raised py-1.5 sm:py-3">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-1 px-4 text-center">
           <span className="u-eyebrow text-[8px] text-brand-700 sm:text-[9px]">
-            Mensaje de donativo al mundo de parte de DemoData
+            Una iniciativa de DemoData para proteger y reunir a nuestras mascotas en momentos de emergencia. 🐾
           </span>
           <div className="flex flex-col items-center justify-center gap-1 sm:flex-row sm:justify-between sm:gap-2">
             <span className="u-eyebrow text-[8px] sm:text-[9px]">
-              Huellas de Regreso · Red de apoyo para reunir mascotas con sus familias
+              Huellas S.O.S. · Buscamos. Rescatamos. Reencontramos.
             </span>
             <div className="flex items-center gap-1.5 text-ink-faint">
               <span className="u-data text-[9px] sm:text-[10px]">Desarrollado por</span>

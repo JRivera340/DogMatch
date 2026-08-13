@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet';
 import L, { type Map as LeafletMap } from 'leaflet';
 import { BuscadorCiudad } from './BuscadorCiudad';
-import { DEPARTAMENTOS_COLOMBIA, centroDepartamento } from '../data/ciudades';
+import { DEPARTAMENTOS_COLOMBIA, DEPARTAMENTOS_AFECTADOS, centroDepartamento } from '../data/ciudades';
 import { useInvalidarMapaAlRedimensionar } from '../utils/useInvalidarMapa';
 
 const iconoSeleccion = L.divIcon({
@@ -76,7 +76,7 @@ function SelectorDepartamentoMapa({ map }: { map: LeafletMap | null }) {
         <option value="" disabled>
           Ir a departamento...
         </option>
-        {DEPARTAMENTOS_COLOMBIA.map((departamento) => (
+        {DEPARTAMENTOS_AFECTADOS.map((departamento) => (
           <option key={departamento} value={departamento}>
             {departamento}
           </option>

@@ -89,7 +89,7 @@ export function DetalleMascotaModal({ mascota, onClose, admin }: Props) {
               </div>
 
               {mascota.tipoReporte === 'rescatada' && (
-                <p className="u-data text-brand-600">Mascota rescatada · busca dueño</p>
+                <p className="u-data text-brand-600">Encontrado sin dueño conocido</p>
               )}
 
               <p className="u-body mt-1 text-ink-soft">
@@ -149,12 +149,12 @@ export function DetalleMascotaModal({ mascota, onClose, admin }: Props) {
                     </dd>
                   </span>
                 </div>
-                <div className="u-body">
-                  <dt className="inline font-semibold text-ink-soft">
-                    {mascota.tipoReporte === 'rescatada' ? 'Dónde está ahora: ' : 'Residencia del dueño: '}
-                  </dt>
-                  <dd className="inline">{mascota.lugarResidencia}</dd>
-                </div>
+                {admin && (
+                  <div className="u-body">
+                    <dt className="inline font-semibold text-ink-soft">Reportado por: </dt>
+                    <dd className="inline">{mascota.nombreContacto} ({mascota.emailContacto})</dd>
+                  </div>
+                )}
                 <div className="u-body">
                   <dt className="inline font-semibold text-ink-soft">Reportado el: </dt>
                   <dd className="inline">{formatearFecha(mascota.createdAt)}</dd>
@@ -165,12 +165,7 @@ export function DetalleMascotaModal({ mascota, onClose, admin }: Props) {
                     <dd className="inline">{mascota.senasParticulares}</dd>
                   </div>
                 )}
-                {mascota.otrasSenas && (
-                  <div className="u-body">
-                    <dt className="inline font-semibold text-ink-soft">Otras señas: </dt>
-                    <dd className="inline">{mascota.otrasSenas}</dd>
-                  </div>
-                )}
+
               </dl>
 
               {mascota.senas.length > 0 && (
@@ -187,7 +182,7 @@ export function DetalleMascotaModal({ mascota, onClose, admin }: Props) {
               )}
 
               <div className="mt-4">
-                <p className="u-label mb-1.5">Contacto</p>
+                <p className="u-label mb-1.5">Tengo información / Tengo una Pista</p>
                 <div className="flex flex-wrap gap-1.5">
                   {admin ? (
                     <>
@@ -197,9 +192,10 @@ export function DetalleMascotaModal({ mascota, onClose, admin }: Props) {
                       )}
                     </>
                   ) : (
-                    TELEFONOS_FUNCIONARIOS.map((telefono) => (
-                      <BotonTelefono key={telefono} telefono={telefono} nombreMascota={mascota.nombre} />
-                    ))
+                    <BotonTelefono
+                      telefono={TELEFONOS_FUNCIONARIOS[mascota.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % TELEFONOS_FUNCIONARIOS.length]}
+                      nombreMascota={mascota.nombre}
+                    />
                   )}
                 </div>
               </div>

@@ -62,7 +62,7 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
             <h3 className="u-title-card truncate text-[13px] sm:text-base">{mascota.nombre}</h3>
             <p className="truncate text-[11px] text-ink-soft sm:u-body">
               {mascota.tipoReporte === 'rescatada' && (
-                <span className="text-brand-600">Rescatada · </span>
+                <span className="text-brand-600">Encontrado sin dueño conocido · </span>
               )}
               {mascota.especie} · {mascota.raza} · {mascota.genero} · {mascota.color}
             </p>
@@ -85,17 +85,14 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
           </span>
         </p>
 
-        <p className="mt-0.5 truncate text-[11px] text-ink-soft sm:u-body">
-          <span className="font-semibold text-ink-soft">
-            {mascota.tipoReporte === 'rescatada' ? 'Dónde está ahora: ' : 'Residencia: '}
-          </span>
-          {mascota.lugarResidencia}
-        </p>
+
 
         <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-          {TELEFONOS_FUNCIONARIOS.map((telefono) => (
-            <BotonTelefono key={telefono} telefono={telefono} nombreMascota={mascota.nombre} compacto />
-          ))}
+          <BotonTelefono
+            telefono={TELEFONOS_FUNCIONARIOS[mascota.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % TELEFONOS_FUNCIONARIOS.length]}
+            nombreMascota={mascota.nombre}
+            compacto
+          />
           <button
             type="button"
             onClick={() => setDetalleAbierto(true)}
@@ -105,16 +102,7 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
           </button>
         </div>
 
-        {editToken && mascota.estado === 'perdida' && (
-          <button
-            type="button"
-            onClick={handleMarcarEncontrada}
-            disabled={marcando}
-            className="mt-1.5 border border-brand-800 bg-brand-800 px-3 py-1.5 text-[13px] font-semibold text-white transition-colors hover:bg-brand-900 disabled:opacity-50"
-          >
-            {marcando ? 'Marcando...' : etiquetaAccionResolver(mascota.tipoReporte)}
-          </button>
-        )}
+
         {error && <p className="mt-1.5 text-[13px] font-medium text-brand-700">{error}</p>}
       </div>
 

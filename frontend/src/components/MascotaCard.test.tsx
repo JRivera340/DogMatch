@@ -28,7 +28,8 @@ const mascota: Mascota = {
   ultimaVezLugarTexto: 'Parque principal',
   lat: 4.5,
   lng: -74.2,
-  lugarResidencia: 'Cra 10 #5-20',
+  nombreContacto: 'Juan Pérez',
+  emailContacto: 'juan@ejemplo.com',
   telefono1: '3001234567',
   telefono2: '3007654321',
   estado: 'perdida',
@@ -51,13 +52,13 @@ describe('MascotaCard', () => {
     expect(screen.getByText('Sin validar')).toBeInTheDocument();
   });
 
-  it('muestra botones de contacto con los números de funcionarios, no el del reportante', () => {
+  it('muestra botones de contacto con un número de funcionario asignado, no el del reportante', () => {
     render(<MascotaCard mascota={mascota} />);
 
-    const botonWhatsApp1 = screen.getByRole('link', { name: /Contáctanos por WhatsApp — 3103393247/ });
-    const botonWhatsApp2 = screen.getByRole('link', { name: /Contáctanos por WhatsApp — 3113440504/ });
-    expect(botonWhatsApp1).toHaveAttribute('href', expect.stringContaining('573103393247'));
-    expect(botonWhatsApp2).toHaveAttribute('href', expect.stringContaining('573113440504'));
+    // Since mascota.id is '1', '1'.charCodeAt(0) % 2 === 49 % 2 === 1.
+    // TELEFONOS_FUNCIONARIOS[1] is '3113440504'.
+    const botonWhatsApp = screen.getByRole('link', { name: /Contáctanos por WhatsApp/i });
+    expect(botonWhatsApp).toHaveAttribute('href', expect.stringContaining('573113440504'));
     expect(screen.queryByText('3001234567')).not.toBeInTheDocument();
   });
 

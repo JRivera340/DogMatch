@@ -48,7 +48,8 @@ export function FormReportar() {
   const [esAsustadiza, setEsAsustadiza] = useState(false);
   const [ultimaVezFecha, setUltimaVezFecha] = useState('');
   const [ultimaVezLugarTexto, setUltimaVezLugarTexto] = useState('');
-  const [lugarResidencia, setLugarResidencia] = useState('');
+  const [nombreContacto, setNombreContacto] = useState('');
+  const [emailContacto, setEmailContacto] = useState('');
   const [telefono1, setTelefono1] = useState('');
   const [telefono2, setTelefono2] = useState('');
   const [lat, setLat] = useState<number | null>(null);
@@ -87,7 +88,9 @@ export function FormReportar() {
     else if (new Date(ultimaVezFecha).getTime() > Date.now())
       nuevos.ultimaVezFecha = 'La fecha no puede ser futura';
     if (!ultimaVezLugarTexto.trim()) nuevos.ultimaVezLugarTexto = 'Lugar requerido';
-    if (!lugarResidencia.trim()) nuevos.lugarResidencia = 'Lugar de residencia requerido';
+    if (!nombreContacto.trim()) nuevos.nombreContacto = 'Nombre requerido';
+    if (!emailContacto.trim()) nuevos.emailContacto = 'Correo requerido';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailContacto.trim())) nuevos.emailContacto = 'Correo inválido';
     if (!TELEFONO_REGEX.test(telefono1.trim()))
       nuevos.telefono1 = 'Teléfono inválido (formato colombiano, ej. 3001234567)';
     if (telefono2.trim() && !TELEFONO_REGEX.test(telefono2.trim()))
@@ -104,7 +107,28 @@ export function FormReportar() {
     e.preventDefault();
     const nuevosErrores = validar();
     setErrores(nuevosErrores);
-    if (Object.keys(nuevosErrores).length > 0 || !foto || lat === null || lng === null) return;
+    
+    const camposConError = Object.keys(nuevosErrores);
+    if (camposConError.length > 0 || !foto || lat === null || lng === null) {
+      const mapaNombres: Record<string, string> = {
+        nombre: 'Nombre de la mascota',
+        raza: 'Raza',
+        color: etiquetaColor,
+        ultimaVezFecha: 'Fecha y hora',
+        ultimaVezLugarTexto: 'Lugar (descripción)',
+        ubicacion: 'Ubicación en el mapa',
+        nombreContacto: 'Nombre de quien reporta',
+        emailContacto: 'Correo electrónico',
+        telefono1: 'Teléfono de contacto 1',
+        telefono2: 'Teléfono de contacto 2',
+        foto: 'Foto de la mascota',
+        autoriza: 'Autorización de tratamiento de datos',
+      };
+      
+      const faltantes = camposConError.map(campo => mapaNombres[campo] || campo);
+      alert(`Por favor revisa y completa los siguientes espacios requeridos:\n\n- ${faltantes.join('\n- ')}`);
+      return;
+    }
 
     setEnviando(true);
     setErrorEnvio(null);
@@ -131,7 +155,8 @@ export function FormReportar() {
         ultimaVezLugarTexto: ultimaVezLugarTexto.trim(),
         lat,
         lng,
-        lugarResidencia: lugarResidencia.trim(),
+        nombreContacto: nombreContacto.trim(),
+        emailContacto: emailContacto.trim(),
         telefono1: telefono1.trim(),
         telefono2: telefono2.trim(),
         autorizaTratamientoDatos: autoriza,
@@ -193,7 +218,7 @@ export function FormReportar() {
         </div>
         <p className="u-data mt-2 text-ink-faint">
           {esRescatada
-            ? 'Publicamos esta mascota como rescatada, sin dueño conocido, para que su dueño la reconozca o alguien la adopte.'
+            ? 'Publicamos esta mascota como encontrada, sin dueño conocido, para que su dueño la reconozca o alguien la adopte.'
             : 'Publicamos tu mascota como perdida para que la reconozcan y te contacten.'}
         </p>
       </section>
@@ -339,41 +364,24 @@ export function FormReportar() {
           </div>
         </div>
 
-        <div>
-          <label className={labelClass}>Otras señas (opcional)</label>
-          <input
-            value={otrasSenas}
-            onChange={(e) => setOtrasSenas(e.target.value)}
-            placeholder="Cualquier otra característica que ayude a identificarla"
-            className={inputClass}
-          />
-        </div>
 
-        <label className="flex items-start gap-3 border-l-4 border-brand-600 bg-brand-50 p-3 u-body">
-          <input
-            type="checkbox"
-            checked={esUrgente}
-            onChange={(e) => setEsUrgente(e.target.checked)}
-            className="mt-1 h-4 w-4 shrink-0 accent-brand-600"
-          />
-          <span>
-            Requiere tratamiento médico o padece alguna enfermedad.{' '}
-            <span className="font-semibold text-brand-700">Por eso este caso es prioritario.</span>
-          </span>
-        </label>
 
-        <label className="flex items-start gap-3 border-l-4 border-brand-600 bg-brand-50 p-3 u-body">
-          <input
-            type="checkbox"
-            checked={esAsustadiza}
-            onChange={(e) => setEsAsustadiza(e.target.checked)}
-            className="mt-1 h-4 w-4 shrink-0 accent-brand-600"
-          />
-          <span>
-            Puede ponerse nerviosa o desconfiar de personas extrañas. Le pedimos a quien la
-            encuentre acercarse con calma.
-          </span>
-        </label>
+        {!esRescatada && (
+          <label className="flex items-start gap-3 border-l-4 border-brand-600 bg-brand-50 p-3 u-body">
+            <input
+              type="checkbox"
+              checked={esUrgente}
+              onChange={(e) => setEsUrgente(e.target.checked)}
+              className="mt-1 h-4 w-4 shrink-0 accent-brand-600"
+            />
+            <span>
+              Requiere tratamiento médico o padece alguna enfermedad.{' '}
+              <span className="font-semibold text-brand-700">Por eso este caso es prioritario.</span>
+            </span>
+          </label>
+        )}
+
+
       </Seccion>
 
       <Seccion numero="03" titulo={esRescatada ? 'Cuándo y dónde la encontraste' : 'Última vez vista'}>
@@ -423,20 +431,36 @@ export function FormReportar() {
         </div>
       </Seccion>
 
-      <Seccion numero="04" titulo="Contacto y residencia">
+      <Seccion numero="04" titulo="Contacto">
+        <div className="mb-2 rounded border border-brand-200 bg-brand-50 p-3 u-body text-brand-800">
+          Tus datos de contacto <strong>no serán públicos</strong>, solo el equipo de Demodata podrá verlos. Seremos tus intermediarios de forma segura para evitar suplantaciones y asegurarnos de que todo sea confiable.
+        </div>
+        
         <div>
           <label className={labelClass}>
-            {esRescatada
-              ? 'Dónde está la mascota ahora (para saber a dónde ir a recogerla)'
-              : 'Lugar de residencia (para saber a dónde ir)'}
+            Nombre de quien reporta
           </label>
           <input
-            value={lugarResidencia}
-            onChange={(e) => setLugarResidencia(e.target.value)}
-            placeholder="Cra 10 #5-20, barrio Centro, Armenia"
+            value={nombreContacto}
+            onChange={(e) => setNombreContacto(e.target.value)}
+            placeholder="Ej. Juan Pérez"
             className={inputClass}
           />
-          {errores.lugarResidencia && <p className={errorClass}>{errores.lugarResidencia}</p>}
+          {errores.nombreContacto && <p className={errorClass}>{errores.nombreContacto}</p>}
+        </div>
+
+        <div>
+          <label className={labelClass}>
+            Correo electrónico
+          </label>
+          <input
+            type="email"
+            value={emailContacto}
+            onChange={(e) => setEmailContacto(e.target.value)}
+            placeholder="ejemplo@correo.com"
+            className={inputClass}
+          />
+          {errores.emailContacto && <p className={errorClass}>{errores.emailContacto}</p>}
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -474,7 +498,7 @@ export function FormReportar() {
 
       <div className="border-l-4 border-moss-600 bg-moss-100 p-3">
         <p className="u-body text-moss-700">
-          Este servicio es gratuito. Publicar tu reporte y contactar por WhatsApp no tiene costo.
+          Este servicio es gratuito. Publicar tu reporte y contactar por WhatsApp no tiene costo. El equipo voluntario de Demodata servira de intermediario para ayudar a reencontrarte con tu animalito.
         </p>
       </div>
 

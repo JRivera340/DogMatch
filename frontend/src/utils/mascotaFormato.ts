@@ -6,9 +6,9 @@ export function etiquetaEstado(
   estado: 'perdida' | 'encontrada',
   genero: 'Macho' | 'Hembra',
 ) {
-  if (estado === 'encontrada') return 'Con dueño';
+  if (estado === 'encontrada') return 'De vuelta con su familia';
   const masculino = genero === 'Macho';
-  if (tipoReporte === 'rescatada') return masculino ? 'Rescatado' : 'Rescatada';
+  if (tipoReporte === 'rescatada') return 'Encontrado sin dueño conocido';
   return masculino ? 'Perdido' : 'Perdida';
 }
 

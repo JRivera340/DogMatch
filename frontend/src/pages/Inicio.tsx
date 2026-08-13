@@ -9,8 +9,7 @@ import { ChevronIcon, FilterIcon, PawIcon, SearchOffIcon } from '../components/i
 
 type FiltroEspecie = 'Todas' | Especie;
 type FiltroGenero = 'Todos' | 'Macho' | 'Hembra';
-type FiltroEstado = 'Todas' | 'perdida' | 'encontrada';
-type FiltroTipo = 'Todas' | TipoReporte;
+type FiltroEstado = 'Todas' | 'perdida' | 'encontrada_sin_dueno' | 'final_feliz';
 
 // Radio aproximado del área metropolitana usado para "pertenece a esta ciudad"
 const RADIO_CIUDAD_KM = 25;
@@ -52,11 +51,9 @@ export function Inicio() {
 
   const [filtroEspecie, setFiltroEspecie] = useState<FiltroEspecie>('Todas');
   const [filtroGenero, setFiltroGenero] = useState<FiltroGenero>('Todos');
-  const [filtroColor, setFiltroColor] = useState<string>('Todos');
   const [filtroCiudad, setFiltroCiudad] = useState<string>('Todas');
   const [filtroDepartamento, setFiltroDepartamento] = useState<string>('Todos');
   const [filtroEstado, setFiltroEstado] = useState<FiltroEstado>('Todas');
-  const [filtroTipo, setFiltroTipo] = useState<FiltroTipo>('Todas');
 
   // Solo mobile: panel de casos colapsado por defecto (el mapa ocupa toda la pantalla),
   // y modal aparte para los filtros (no caben cómodos en una barra angosta).
@@ -92,10 +89,7 @@ export function Inicio() {
     setMascotas((prev) => prev.filter((m) => m.id !== id));
   }
 
-  const coloresDisponibles = useMemo(
-    () => Array.from(new Set(mascotas.map((m) => m.color))).sort((a, b) => a.localeCompare(b)),
-    [mascotas],
-  );
+
 
   const ciudadSeleccionada = CIUDADES_COLOMBIA.find((c) => c.nombre === filtroCiudad) ?? null;
   const ciudadesDelDepartamento =
@@ -108,11 +102,13 @@ export function Inicio() {
     (filtroDepartamento !== 'Todos' ? centroDepartamento(filtroDepartamento) : null);
 
   const mascotasFiltradas = mascotas.filter((m) => {
-    if (filtroTipo !== 'Todas' && m.tipoReporte !== filtroTipo) return false;
-    if (filtroEstado !== 'Todas' && m.estado !== filtroEstado) return false;
+    if (filtroEstado !== 'Todas') {
+      if (filtroEstado === 'perdida' && (m.tipoReporte !== 'perdida' || m.estado !== 'perdida')) return false;
+      if (filtroEstado === 'encontrada_sin_dueno' && (m.tipoReporte !== 'rescatada' || m.estado !== 'perdida')) return false;
+      if (filtroEstado === 'final_feliz' && m.estado !== 'encontrada') return false;
+    }
     if (filtroEspecie !== 'Todas' && m.especie !== filtroEspecie) return false;
     if (filtroGenero !== 'Todos' && m.genero !== filtroGenero) return false;
-    if (filtroColor !== 'Todos' && m.color !== filtroColor) return false;
     if (ciudadSeleccionada) {
       const distancia = distanciaKm(m.lat, m.lng, ciudadSeleccionada.lat, ciudadSeleccionada.lng);
       if (distancia > RADIO_CIUDAD_KM) return false;
@@ -127,22 +123,18 @@ export function Inicio() {
   });
 
   const cantidadFiltrosActivos = [
-    filtroTipo !== 'Todas',
     filtroEstado !== 'Todas',
     filtroEspecie !== 'Todas',
     filtroGenero !== 'Todos',
-    filtroColor !== 'Todos',
     filtroCiudad !== 'Todas',
     filtroDepartamento !== 'Todos',
   ].filter(Boolean).length;
   const hayFiltrosActivos = cantidadFiltrosActivos > 0;
 
   function limpiarFiltros() {
-    setFiltroTipo('Todas');
     setFiltroEstado('Todas');
     setFiltroEspecie('Todas');
     setFiltroGenero('Todos');
-    setFiltroColor('Todos');
     setFiltroCiudad('Todas');
     setFiltroDepartamento('Todos');
   }
@@ -224,7 +216,7 @@ export function Inicio() {
                 className={`h-4 w-4 shrink-0 text-ink-faint transition-transform duration-300 ${listaAbierta ? 'rotate-180' : ''}`}
               />
               <span className="u-label">
-                Casos reportados ({cargando ? '—' : mascotasFiltradas.length})
+                Casos reportados por terremoto de 10 de agosto de 2026 ({cargando ? '—' : mascotasFiltradas.length})
               </span>
             </button>
             <div className="flex shrink-0 items-center gap-1.5">
@@ -271,23 +263,14 @@ export function Inicio() {
               </div>
               <div className="space-y-3 overflow-y-auto p-4">
                 <select
-                  value={filtroTipo}
-                  onChange={(e) => setFiltroTipo(e.target.value as FiltroTipo)}
-                  className={selectClassApilado}
-                >
-                  <option value="Todas">Tipo: todos</option>
-                  <option value="perdida">Perdida (con dueño)</option>
-                  <option value="rescatada">Rescatada (sin dueño)</option>
-                </select>
-
-                <select
                   value={filtroEstado}
                   onChange={(e) => setFiltroEstado(e.target.value as FiltroEstado)}
                   className={selectClassApilado}
                 >
                   <option value="Todas">Estado: todos</option>
                   <option value="perdida">Perdida</option>
-                  <option value="encontrada">Encontrada</option>
+                  <option value="encontrada_sin_dueno">Encontrada sin dueño</option>
+                  <option value="final_feliz">De vuelta con su familia</option>
                 </select>
 
                 <select
@@ -336,18 +319,7 @@ export function Inicio() {
                   <option value="Hembra">Hembra</option>
                 </select>
 
-                <select
-                  value={filtroColor}
-                  onChange={(e) => setFiltroColor(e.target.value)}
-                  className={selectClassApilado}
-                >
-                  <option value="Todos">Color: todos</option>
-                  {coloresDisponibles.map((color) => (
-                    <option key={color} value={color}>
-                      {color}
-                    </option>
-                  ))}
-                </select>
+
 
                 {hayFiltrosActivos && (
                   <button
@@ -383,7 +355,7 @@ export function Inicio() {
         <div className="sticky top-0 z-[1] border-b-2 border-line bg-paper-raised">
           <div className="flex items-center justify-between px-4 py-3">
             <div>
-              <p className="u-eyebrow text-ink-faint">Casos reportados</p>
+              <p className="u-eyebrow text-ink-faint">Casos reportados por terremoto de 10 de agosto de 2026</p>
               <p className="u-title-section text-brand-700">
                 {cargando ? '—' : mascotasFiltradas.length}
                 {!cargando && (
@@ -403,23 +375,14 @@ export function Inicio() {
               Filtrar
             </label>
             <select
-              value={filtroTipo}
-              onChange={(e) => setFiltroTipo(e.target.value as FiltroTipo)}
-              className={selectClass}
-            >
-              <option value="Todas">Tipo: todos</option>
-              <option value="perdida">Perdida (con dueño)</option>
-              <option value="rescatada">Rescatada (sin dueño)</option>
-            </select>
-
-            <select
               value={filtroEstado}
               onChange={(e) => setFiltroEstado(e.target.value as FiltroEstado)}
               className={selectClass}
             >
               <option value="Todas">Estado: todos</option>
               <option value="perdida">Perdida</option>
-              <option value="encontrada">Encontrada</option>
+              <option value="encontrada_sin_dueno">Encontrada sin dueño</option>
+              <option value="final_feliz">De vuelta con su familia</option>
             </select>
 
             <select
@@ -469,18 +432,7 @@ export function Inicio() {
               <option value="Hembra">Hembra</option>
             </select>
 
-            <select
-              value={filtroColor}
-              onChange={(e) => setFiltroColor(e.target.value)}
-              className={selectClass}
-            >
-              <option value="Todos">Color: todos</option>
-              {coloresDisponibles.map((color) => (
-                <option key={color} value={color}>
-                  {color}
-                </option>
-              ))}
-            </select>
+
 
             {hayFiltrosActivos && (
               <button

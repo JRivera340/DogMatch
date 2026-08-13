@@ -24,7 +24,8 @@ export interface Mascota {
   ultimaVezLugarTexto: string;
   lat: number;
   lng: number;
-  lugarResidencia: string;
+  nombreContacto: string;
+  emailContacto: string;
   telefono1: string;
   telefono2: string;
   estado: 'perdida' | 'encontrada';
@@ -60,7 +61,8 @@ export interface NuevaMascota {
   ultimaVezLugarTexto: string;
   lat: number;
   lng: number;
-  lugarResidencia: string;
+  nombreContacto: string;
+  emailContacto: string;
   telefono1: string;
   telefono2: string;
   autorizaTratamientoDatos: boolean;

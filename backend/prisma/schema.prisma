@@ -26,7 +26,8 @@ model Mascota {
   ultimaVezLugarTexto       String
   lat                       Float
   lng                       Float
-  lugarResidencia           String
+  nombreContacto            String   @default("")
+  emailContacto             String   @default("")
   telefono1                 String
   telefono2                 String   @default("")
   estado                    String   @default("perdida")
