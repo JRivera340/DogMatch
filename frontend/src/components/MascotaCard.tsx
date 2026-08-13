@@ -38,7 +38,7 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
       <button
         type="button"
         onClick={() => setDetalleAbierto(true)}
-        className="relative w-24 shrink-0 overflow-visible sm:w-28"
+        className="relative w-20 shrink-0 overflow-visible sm:w-28"
         aria-label={`Ver detalle de ${mascota.nombre}`}
       >
         <img
@@ -56,7 +56,7 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
 
       <div className="perforation bg-paper-raised" aria-hidden />
 
-      <div className="min-w-0 flex-1 p-4">
+      <div className="min-w-0 flex-1 p-3 sm:p-4">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <h3 className="u-title-card truncate">{mascota.nombre}</h3>

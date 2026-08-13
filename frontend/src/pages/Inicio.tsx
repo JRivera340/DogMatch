@@ -185,10 +185,18 @@ export function Inicio() {
     return (
       <div className="relative h-full w-full">
         <div className="absolute inset-0">
-          <MapaMascotas mascotas={mascotasFiltradas} ciudadFiltro={objetivoMapa} />
+          <MapaMascotas
+            mascotas={mascotasFiltradas}
+            ciudadFiltro={objetivoMapa}
+            zoomControl={false}
+            leyendaClassName="bottom-16 left-2"
+          />
         </div>
 
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-[550] flex items-start justify-between gap-2 p-2">
+        {/* Todo en la esquina izquierda a propósito: la derecha la ocupa el buscador
+            de ciudad del mapa (BuscadorCiudad), y el zoom +/- de Leaflet va apagado
+            en mobile (se usa pellizco) para no competir por espacio con nada de esto. */}
+        <div className="pointer-events-none absolute top-0 left-0 z-[550] flex flex-col items-start gap-1.5 p-2">
           <div className="pointer-events-auto border border-line bg-paper-raised/95 px-3 py-1.5 shadow-[2px_2px_0_rgba(34,29,26,0.15)]">
             <p className="u-eyebrow text-[9px] text-ink-faint">Casos</p>
             <p className="u-title-section text-base text-brand-700">
@@ -200,7 +208,7 @@ export function Inicio() {
             <button
               type="button"
               onClick={() => setFiltrosAbiertos(true)}
-              className="u-data flex items-center gap-1.5 border border-line-strong bg-paper-raised px-3 py-2 text-ink-soft shadow-[2px_2px_0_rgba(34,29,26,0.15)]"
+              className="u-data flex items-center gap-1.5 border-2 border-brand-700 bg-brand-600 px-3 py-2 font-semibold text-white shadow-[2px_2px_0_rgba(74,14,23,0.35)]"
             >
               <FilterIcon className="h-3.5 w-3.5" />
               Filtros{hayFiltrosActivos ? ` (${cantidadFiltrosActivos})` : ''}
@@ -236,7 +244,7 @@ export function Inicio() {
             </span>
           </button>
 
-          <div className="flex-1 space-y-3 overflow-y-auto border-t border-line p-3">{listaCasos}</div>
+          <div className="flex-1 space-y-3 overflow-y-auto border-t border-line px-4 py-3">{listaCasos}</div>
         </div>
 
         {filtrosAbiertos && (

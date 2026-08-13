@@ -40,6 +40,10 @@ interface Props {
   onSeleccionar?: (mascota: Mascota) => void;
   /** Ciudad activa del filtro — si se pasa, recentra el mapa en ella (null = vista completa de Colombia). */
   ciudadFiltro?: Ciudad | null;
+  /** false oculta los botones +/- de Leaflet — útil en mobile, donde chocan con los controles flotantes y el pellizco ya permite hacer zoom. */
+  zoomControl?: boolean;
+  /** Posición de la leyenda de colores — por defecto pegada a la esquina inferior izquierda. */
+  leyendaClassName?: string;
 }
 
 function RecentrarEnCiudad({ ciudad }: { ciudad: Ciudad | null | undefined }) {
@@ -57,7 +61,13 @@ function RecentrarEnCiudad({ ciudad }: { ciudad: Ciudad | null | undefined }) {
   return null;
 }
 
-export function MapaMascotas({ mascotas, onSeleccionar, ciudadFiltro }: Props) {
+export function MapaMascotas({
+  mascotas,
+  onSeleccionar,
+  ciudadFiltro,
+  zoomControl = true,
+  leyendaClassName = 'bottom-2 left-2',
+}: Props) {
   const [map, setMap] = useState<LeafletMap | null>(null);
   const [detalle, setDetalle] = useState<Mascota | null>(null);
   useInvalidarMapaAlRedimensionar(map);
@@ -68,6 +78,7 @@ export function MapaMascotas({ mascotas, onSeleccionar, ciudadFiltro }: Props) {
         ref={setMap}
         center={CENTRO_COLOMBIA}
         zoom={ZOOM_COLOMBIA}
+        zoomControl={zoomControl}
         style={{ height: '100%', width: '100%' }}
       >
         <TileLayer
@@ -107,7 +118,7 @@ export function MapaMascotas({ mascotas, onSeleccionar, ciudadFiltro }: Props) {
         <BuscadorCiudad map={map} ayuda="Solo mueve el mapa — no filtra los casos mostrados" />
       </div>
       <MapaLeyenda
-        className="bottom-2 left-2"
+        className={leyendaClassName}
         items={[
           { color: COLOR_PERDIDA, etiqueta: 'Perdida' },
           { color: COLOR_RESCATADA, etiqueta: 'Rescatada' },
