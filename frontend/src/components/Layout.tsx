@@ -48,14 +48,14 @@ export function Layout() {
       <main className="flex min-h-0 flex-1 overflow-y-auto">
         <Outlet />
       </main>
-      <footer className="border-t border-line bg-paper-raised py-3">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-2 px-4 text-center sm:flex-row sm:justify-between">
-          <span className="u-eyebrow">
+      <footer className="border-t border-line bg-paper-raised py-1.5 sm:py-3">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-1 px-4 text-center sm:flex-row sm:justify-between sm:gap-2">
+          <span className="u-eyebrow text-[8px] sm:text-[9px]">
             Huellas de Regreso · Red de apoyo para reunir mascotas con sus familias
           </span>
           <div className="flex items-center gap-1.5 text-ink-faint">
-            <span className="u-data text-[10px]">Desarrollado por</span>
-            <img src="/brand/demodata-logo.png" alt="DemoData" className="h-4 w-auto" />
+            <span className="u-data text-[9px] sm:text-[10px]">Desarrollado por</span>
+            <img src="/brand/demodata-logo.png" alt="DemoData" className="h-3 w-auto sm:h-4" />
           </div>
         </div>
       </footer>

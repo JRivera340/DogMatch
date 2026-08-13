@@ -5,7 +5,7 @@ import { listarMascotas } from '../api';
 import type { Especie, Mascota, TipoReporte } from '../types';
 import { CIUDADES_COLOMBIA, centroDepartamento, DEPARTAMENTOS_COLOMBIA } from '../data/ciudades';
 import { distanciaKm } from '../utils/geo';
-import { PawIcon, PinIcon, SearchOffIcon } from '../components/icons';
+import { ChevronIcon, FilterIcon, PawIcon, SearchOffIcon } from '../components/icons';
 
 type FiltroEspecie = 'Todas' | Especie;
 type FiltroGenero = 'Todos' | 'Macho' | 'Hembra';
@@ -14,13 +14,35 @@ type FiltroTipo = 'Todas' | TipoReporte;
 
 // Radio aproximado del área metropolitana usado para "pertenece a esta ciudad"
 const RADIO_CIUDAD_KM = 25;
+// Debajo de este ancho se usa el layout mobile (mapa de fondo + panel deslizable).
+const BREAKPOINT_MOBILE = 768;
 
 const selectClass =
   'u-data shrink-0 border border-line-strong bg-paper-raised px-2 py-1.5 text-ink focus:border-brand-600 focus:outline-none';
+const selectClassApilado =
+  'u-body w-full border border-line-strong bg-paper-raised px-3 py-2.5 text-ink focus:border-brand-600 focus:outline-none';
 
 const TAMANO_PAGINA = 50;
 
+/** true por debajo del breakpoint mobile — se recalcula en cambios de tamaño/orientación. */
+function useEsMobile() {
+  const [esMobile, setEsMobile] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth < BREAKPOINT_MOBILE,
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${BREAKPOINT_MOBILE - 1}px)`);
+    const actualizar = () => setEsMobile(mq.matches);
+    actualizar();
+    mq.addEventListener('change', actualizar);
+    return () => mq.removeEventListener('change', actualizar);
+  }, []);
+
+  return esMobile;
+}
+
 export function Inicio() {
+  const esMobile = useEsMobile();
   const [mascotas, setMascotas] = useState<Mascota[]>([]);
   const [cargando, setCargando] = useState(true);
   const [cargandoMas, setCargandoMas] = useState(false);
@@ -35,7 +57,11 @@ export function Inicio() {
   const [filtroDepartamento, setFiltroDepartamento] = useState<string>('Todos');
   const [filtroEstado, setFiltroEstado] = useState<FiltroEstado>('Todas');
   const [filtroTipo, setFiltroTipo] = useState<FiltroTipo>('Todas');
-  const [mapaAbierto, setMapaAbierto] = useState(false);
+
+  // Solo mobile: panel de casos colapsado por defecto (el mapa ocupa toda la pantalla),
+  // y modal aparte para los filtros (no caben cómodos en una barra angosta).
+  const [listaAbierta, setListaAbierta] = useState(false);
+  const [filtrosAbiertos, setFiltrosAbiertos] = useState(false);
 
   useEffect(() => {
     listarMascotas(1, TAMANO_PAGINA)
@@ -100,14 +126,16 @@ export function Inicio() {
     return true;
   });
 
-  const hayFiltrosActivos =
-    filtroTipo !== 'Todas' ||
-    filtroEstado !== 'Todas' ||
-    filtroEspecie !== 'Todas' ||
-    filtroGenero !== 'Todos' ||
-    filtroColor !== 'Todos' ||
-    filtroCiudad !== 'Todas' ||
-    filtroDepartamento !== 'Todos';
+  const cantidadFiltrosActivos = [
+    filtroTipo !== 'Todas',
+    filtroEstado !== 'Todas',
+    filtroEspecie !== 'Todas',
+    filtroGenero !== 'Todos',
+    filtroColor !== 'Todos',
+    filtroCiudad !== 'Todas',
+    filtroDepartamento !== 'Todos',
+  ].filter(Boolean).length;
+  const hayFiltrosActivos = cantidadFiltrosActivos > 0;
 
   function limpiarFiltros() {
     setFiltroTipo('Todas');
@@ -119,9 +147,224 @@ export function Inicio() {
     setFiltroDepartamento('Todos');
   }
 
+  const listaCasos = (
+    <>
+      {cargando && <p className="u-body text-ink-soft">Cargando reportes...</p>}
+      {error && <p className="u-body text-brand-700">{error}</p>}
+      {mascotasFiltradas.map((mascota) => (
+        <MascotaCard key={mascota.id} mascota={mascota} onEncontrada={handleEncontrada} />
+      ))}
+      {!cargando && mascotas.length === 0 && !error && (
+        <div className="border border-dashed border-line-strong p-8 text-center">
+          <PawIcon className="mx-auto h-8 w-8 text-line-strong" />
+          <p className="u-body mt-2 text-ink-soft">
+            Aún no hay mascotas reportadas. Sé el primero en publicar un caso.
+          </p>
+        </div>
+      )}
+      {!cargando && mascotas.length > 0 && mascotasFiltradas.length === 0 && (
+        <div className="border border-dashed border-line-strong p-8 text-center">
+          <SearchOffIcon className="mx-auto h-8 w-8 text-line-strong" />
+          <p className="u-body mt-2 text-ink-soft">Ningún caso coincide con estos filtros.</p>
+        </div>
+      )}
+      {!cargando && mascotas.length < total && (
+        <button
+          type="button"
+          onClick={cargarMas}
+          disabled={cargandoMas}
+          className="u-data w-full border border-line-strong py-2.5 text-ink-soft transition-colors hover:border-brand-600 hover:text-brand-700 disabled:opacity-50"
+        >
+          {cargandoMas ? 'Cargando...' : `Cargar más (${mascotas.length} de ${total})`}
+        </button>
+      )}
+    </>
+  );
+
+  if (esMobile) {
+    return (
+      <div className="relative h-full w-full">
+        <div className="absolute inset-0">
+          <MapaMascotas mascotas={mascotasFiltradas} ciudadFiltro={objetivoMapa} />
+        </div>
+
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-[550] flex items-start justify-between gap-2 p-2">
+          <div className="pointer-events-auto border border-line bg-paper-raised/95 px-3 py-1.5 shadow-[2px_2px_0_rgba(34,29,26,0.15)]">
+            <p className="u-eyebrow text-[9px] text-ink-faint">Casos</p>
+            <p className="u-title-section text-base text-brand-700">
+              {cargando ? '—' : mascotasFiltradas.length}
+              <span className="u-data ml-1 text-[10px] text-ink-faint">/ {total}</span>
+            </p>
+          </div>
+          <div className="pointer-events-auto flex gap-1.5">
+            <button
+              type="button"
+              onClick={() => setFiltrosAbiertos(true)}
+              className="u-data flex items-center gap-1.5 border border-line-strong bg-paper-raised px-3 py-2 text-ink-soft shadow-[2px_2px_0_rgba(34,29,26,0.15)]"
+            >
+              <FilterIcon className="h-3.5 w-3.5" />
+              Filtros{hayFiltrosActivos ? ` (${cantidadFiltrosActivos})` : ''}
+            </button>
+            {hayFiltrosActivos && (
+              <button
+                type="button"
+                onClick={limpiarFiltros}
+                className="u-data border border-line-strong bg-paper-raised px-3 py-2 text-brand-700 shadow-[2px_2px_0_rgba(34,29,26,0.15)]"
+              >
+                Limpiar
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div
+          className={`absolute inset-x-0 bottom-0 z-[600] flex flex-col border-t-2 border-brand-700 bg-paper-raised shadow-[0_-4px_16px_rgba(34,29,26,0.25)] transition-[height] duration-300 ease-out ${
+            listaAbierta ? 'h-[70vh]' : 'h-14'
+          }`}
+        >
+          <button
+            type="button"
+            onClick={() => setListaAbierta((v) => !v)}
+            aria-expanded={listaAbierta}
+            className="flex shrink-0 items-center justify-center gap-2 py-2.5"
+          >
+            <ChevronIcon
+              className={`h-4 w-4 text-ink-faint transition-transform duration-300 ${listaAbierta ? 'rotate-180' : ''}`}
+            />
+            <span className="u-label">
+              Casos reportados ({cargando ? '—' : mascotasFiltradas.length})
+            </span>
+          </button>
+
+          <div className="flex-1 space-y-3 overflow-y-auto border-t border-line p-3">{listaCasos}</div>
+        </div>
+
+        {filtrosAbiertos && (
+          <div className="fixed inset-0 z-[800]">
+            <div
+              className="absolute inset-0 bg-ink/50"
+              onClick={() => setFiltrosAbiertos(false)}
+              aria-hidden
+            />
+            <div className="absolute inset-x-0 bottom-0 flex max-h-[85vh] flex-col border-t-2 border-brand-700 bg-paper-raised">
+              <div className="flex shrink-0 items-center justify-between border-b border-line px-4 py-3">
+                <p className="u-label">Filtrar casos</p>
+                <button
+                  type="button"
+                  onClick={() => setFiltrosAbiertos(false)}
+                  className="u-data border border-line-strong px-2.5 py-1 text-ink-soft"
+                >
+                  Cerrar
+                </button>
+              </div>
+              <div className="space-y-3 overflow-y-auto p-4">
+                <select
+                  value={filtroTipo}
+                  onChange={(e) => setFiltroTipo(e.target.value as FiltroTipo)}
+                  className={selectClassApilado}
+                >
+                  <option value="Todas">Tipo: todos</option>
+                  <option value="perdida">Perdida (con dueño)</option>
+                  <option value="rescatada">Rescatada (sin dueño)</option>
+                </select>
+
+                <select
+                  value={filtroEstado}
+                  onChange={(e) => setFiltroEstado(e.target.value as FiltroEstado)}
+                  className={selectClassApilado}
+                >
+                  <option value="Todas">Estado: todos</option>
+                  <option value="perdida">Perdida</option>
+                  <option value="encontrada">Encontrada</option>
+                </select>
+
+                <select
+                  value={filtroDepartamento}
+                  onChange={(e) => setFiltroDepartamento(e.target.value)}
+                  className={selectClassApilado}
+                >
+                  <option value="Todos">Departamento: todos</option>
+                  {DEPARTAMENTOS_COLOMBIA.map((departamento) => (
+                    <option key={departamento} value={departamento}>
+                      {departamento}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  value={filtroCiudad}
+                  onChange={(e) => setFiltroCiudad(e.target.value)}
+                  className={selectClassApilado}
+                >
+                  <option value="Todas">Ciudad: todas</option>
+                  {CIUDADES_COLOMBIA.map((ciudad) => (
+                    <option key={ciudad.nombre} value={ciudad.nombre}>
+                      {ciudad.nombre}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  value={filtroEspecie}
+                  onChange={(e) => setFiltroEspecie(e.target.value as FiltroEspecie)}
+                  className={selectClassApilado}
+                >
+                  <option value="Todas">Especie: todas</option>
+                  <option value="Perro">Perro</option>
+                  <option value="Gato">Gato</option>
+                </select>
+
+                <select
+                  value={filtroGenero}
+                  onChange={(e) => setFiltroGenero(e.target.value as FiltroGenero)}
+                  className={selectClassApilado}
+                >
+                  <option value="Todos">Género: todos</option>
+                  <option value="Macho">Macho</option>
+                  <option value="Hembra">Hembra</option>
+                </select>
+
+                <select
+                  value={filtroColor}
+                  onChange={(e) => setFiltroColor(e.target.value)}
+                  className={selectClassApilado}
+                >
+                  <option value="Todos">Color: todos</option>
+                  {coloresDisponibles.map((color) => (
+                    <option key={color} value={color}>
+                      {color}
+                    </option>
+                  ))}
+                </select>
+
+                {hayFiltrosActivos && (
+                  <button
+                    type="button"
+                    onClick={limpiarFiltros}
+                    className="u-data w-full border border-line-strong py-2.5 text-brand-700"
+                  >
+                    Limpiar filtros
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => setFiltrosAbiertos(false)}
+                  className="w-full border-2 border-brand-600 bg-brand-600 py-2.5 text-sm font-semibold text-white"
+                >
+                  Ver {mascotasFiltradas.length} casos
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
-    <div className="flex w-full flex-col md:flex-row">
-      <div className="relative hidden shrink-0 border-b-2 border-brand-700 md:block md:h-full md:w-3/5 md:border-r-2 md:border-b-0">
+    <div className="flex h-full w-full flex-row">
+      <div className="relative h-full w-3/5 shrink-0 border-r-2 border-brand-700">
         <MapaMascotas mascotas={mascotasFiltradas} ciudadFiltro={objetivoMapa} />
       </div>
       <div className="flex flex-1 flex-col overflow-y-auto bg-paper">
@@ -143,8 +386,8 @@ export function Inicio() {
             </span>
           </div>
 
-          <div className="flex items-center gap-2 overflow-x-auto border-t border-line px-4 py-2.5 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible [&::-webkit-scrollbar]:hidden">
-            <label className="u-label shrink-0" htmlFor="filtro-especie">
+          <div className="flex flex-wrap items-center gap-2 border-t border-line px-4 py-2.5">
+            <label className="u-label" htmlFor="filtro-especie">
               Filtrar
             </label>
             <select
@@ -231,7 +474,7 @@ export function Inicio() {
               <button
                 type="button"
                 onClick={limpiarFiltros}
-                className="u-data shrink-0 text-brand-700 underline underline-offset-2"
+                className="u-data text-brand-700 underline underline-offset-2"
               >
                 Limpiar filtros
               </button>
@@ -239,72 +482,8 @@ export function Inicio() {
           </div>
         </div>
 
-        <div className="flex-1 space-y-4 p-4">
-          {cargando && <p className="u-body text-ink-soft">Cargando reportes...</p>}
-          {error && <p className="u-body text-brand-700">{error}</p>}
-          {mascotasFiltradas.map((mascota) => (
-            <MascotaCard key={mascota.id} mascota={mascota} onEncontrada={handleEncontrada} />
-          ))}
-          {!cargando && mascotas.length === 0 && !error && (
-            <div className="border border-dashed border-line-strong p-8 text-center">
-              <PawIcon className="mx-auto h-8 w-8 text-line-strong" />
-              <p className="u-body mt-2 text-ink-soft">
-                Aún no hay mascotas reportadas. Sé el primero en publicar un caso.
-              </p>
-            </div>
-          )}
-          {!cargando && mascotas.length > 0 && mascotasFiltradas.length === 0 && (
-            <div className="border border-dashed border-line-strong p-8 text-center">
-              <SearchOffIcon className="mx-auto h-8 w-8 text-line-strong" />
-              <p className="u-body mt-2 text-ink-soft">Ningún caso coincide con estos filtros.</p>
-            </div>
-          )}
-          {!cargando && mascotas.length < total && (
-            <button
-              type="button"
-              onClick={cargarMas}
-              disabled={cargandoMas}
-              className="u-data w-full border border-line-strong py-2.5 text-ink-soft transition-colors hover:border-brand-600 hover:text-brand-700 disabled:opacity-50"
-            >
-              {cargandoMas ? 'Cargando...' : `Cargar más (${mascotas.length} de ${total})`}
-            </button>
-          )}
-        </div>
+        <div className="flex-1 space-y-4 p-4">{listaCasos}</div>
       </div>
-
-      <button
-        type="button"
-        onClick={() => setMapaAbierto(true)}
-        className="fixed bottom-4 left-1/2 z-[600] flex -translate-x-1/2 items-center gap-1.5 border-2 border-brand-700 bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-[3px_3px_0_rgba(74,14,23,0.35)] transition-colors hover:bg-brand-700 md:hidden"
-      >
-        <PinIcon className="h-4 w-4" />
-        Ver mapa
-      </button>
-
-      {mapaAbierto && (
-        <div className="fixed inset-0 z-[700] md:hidden">
-          <div
-            className="absolute inset-0 bg-ink/50"
-            onClick={() => setMapaAbierto(false)}
-            aria-hidden
-          />
-          <div className="absolute inset-x-0 bottom-0 flex h-[78vh] flex-col border-t-2 border-brand-700 bg-paper-raised shadow-[0_-4px_16px_rgba(34,29,26,0.25)]">
-            <div className="flex shrink-0 items-center justify-between border-b border-line px-4 py-2.5">
-              <p className="u-label">Mapa de casos</p>
-              <button
-                type="button"
-                onClick={() => setMapaAbierto(false)}
-                className="u-data border border-line-strong px-2.5 py-1 text-ink-soft transition-colors hover:border-brand-600 hover:text-brand-700"
-              >
-                Cerrar
-              </button>
-            </div>
-            <div className="relative flex-1">
-              <MapaMascotas mascotas={mascotasFiltradas} ciudadFiltro={objetivoMapa} />
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
