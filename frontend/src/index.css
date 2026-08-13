@@ -130,10 +130,10 @@ body {
   display: inline-block;
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: var(--text-step--1);
-  letter-spacing: 0.16em;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  padding: 0.3rem 0.7rem 0.32rem;
+  padding: 0.25rem 0.55rem 0.28rem;
   color: var(--stamp-color);
   transform: rotate(-7deg);
   clip-path: polygon(
@@ -141,6 +141,14 @@ body {
     100% 22%, 96% 40%, 100% 58%, 95% 76%, 99% 92%, 84% 97%, 70% 100%,
     54% 95%, 40% 100%, 24% 96%, 10% 100%, 4% 84%, 0% 66%, 3% 48%, 0% 30%
   );
+}
+
+@media (min-width: 640px) {
+  .stamp {
+    font-size: var(--text-step--1);
+    letter-spacing: 0.16em;
+    padding: 0.3rem 0.7rem 0.32rem;
+  }
 }
 
 .stamp::before {
