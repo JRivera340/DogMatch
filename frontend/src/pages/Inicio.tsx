@@ -106,6 +106,18 @@ export function Inicio() {
     [mascotas],
   );
 
+  // Si hay un departamento elegido, el select de ciudad solo ofrece sus municipios.
+  const ciudadesDisponibles =
+    filtroDepartamento === 'Todos'
+      ? CIUDADES_AFECTADAS
+      : CIUDADES_AFECTADAS.filter((c) => c.departamento === filtroDepartamento);
+
+  function elegirDepartamento(valor: string) {
+    setFiltroDepartamento(valor);
+    // La ciudad elegida puede no pertenecer al nuevo departamento — se limpia.
+    setFiltroCiudad('Todas');
+  }
+
   const ciudadSeleccionada = CIUDADES_COLOMBIA.find((c) => c.nombre === filtroCiudad) ?? null;
   const ciudadesDelDepartamento =
     filtroDepartamento !== 'Todos'
@@ -301,7 +313,7 @@ export function Inicio() {
 
                 <select
                   value={filtroDepartamento}
-                  onChange={(e) => setFiltroDepartamento(e.target.value)}
+                  onChange={(e) => elegirDepartamento(e.target.value)}
                   className={selectClassApilado}
                 >
                   <option value="Todos">Departamento: todos</option>
@@ -318,7 +330,7 @@ export function Inicio() {
                   className={selectClassApilado}
                 >
                   <option value="Todas">Ciudad: todas</option>
-                  {CIUDADES_AFECTADAS.map((ciudad) => (
+                  {ciudadesDisponibles.map((ciudad) => (
                     <option key={ciudad.nombre} value={ciudad.nombre}>
                       {ciudad.nombre}
                     </option>
@@ -433,7 +445,7 @@ export function Inicio() {
 
             <select
               value={filtroDepartamento}
-              onChange={(e) => setFiltroDepartamento(e.target.value)}
+              onChange={(e) => elegirDepartamento(e.target.value)}
               className={selectClass}
             >
               <option value="Todos">Departamento: todos</option>
@@ -450,7 +462,7 @@ export function Inicio() {
               className={selectClass}
             >
               <option value="Todas">Ciudad: todas</option>
-              {CIUDADES_AFECTADAS.map((ciudad) => (
+              {ciudadesDisponibles.map((ciudad) => (
                 <option key={ciudad.nombre} value={ciudad.nombre}>
                   {ciudad.nombre}
                 </option>

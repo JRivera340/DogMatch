@@ -50,16 +50,19 @@ export function Layout() {
       </main>
       <footer className="border-t border-line bg-paper-raised py-1.5 sm:py-3">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-1 px-4 text-center">
-          <div className="flex items-center justify-center gap-1.5">
-            <img src="/brand/demodata-logo.png" alt="DemoData" className="h-3.5 w-auto sm:h-4" />
-            <span className="u-eyebrow text-[8px] text-brand-700 sm:text-[9px]">
-              DemoData S.A.S. dona esta plataforma como aporte solidario para reunir familias con
-              sus mascotas
-            </span>
-          </div>
-          <span className="u-eyebrow text-[8px] text-ink-faint sm:text-[9px]">
-            Huellas de Regreso · Red de apoyo para reunir mascotas con sus familias
+          <span className="u-eyebrow text-[8px] text-brand-700 sm:text-[9px]">
+            Una iniciativa de DemoData para proteger y reunir a nuestras mascotas en momentos de
+            emergencia. 🐾
           </span>
+          <div className="flex flex-col items-center justify-center gap-1 sm:flex-row sm:justify-between sm:gap-2">
+            <span className="u-eyebrow text-[8px] sm:text-[9px]">
+              Huellas de Regreso · Red de apoyo para reunir mascotas con sus familias
+            </span>
+            <div className="flex items-center gap-1.5 text-ink-faint">
+              <span className="u-data text-[9px] sm:text-[10px]">Desarrollado por</span>
+              <img src="/brand/demodata-logo.png" alt="DemoData" className="h-3 w-auto sm:h-4" />
+            </div>
+          </div>
         </div>
       </footer>
     </div>

@@ -149,6 +149,18 @@ export function AdminDashboard() {
     setFiltroValidacion((actual) => (actual === valor ? null : valor));
   }
 
+  // Si hay un departamento elegido, el select de ciudad solo ofrece sus municipios.
+  const ciudadesDisponibles =
+    filtroDepartamento === 'Todos'
+      ? CIUDADES_AFECTADAS
+      : CIUDADES_AFECTADAS.filter((c) => c.departamento === filtroDepartamento);
+
+  function elegirDepartamento(valor: string) {
+    setFiltroDepartamento(valor);
+    // La ciudad elegida puede no pertenecer al nuevo departamento — se limpia.
+    setFiltroCiudad('Todas');
+  }
+
   const ciudadSeleccionada = CIUDADES_COLOMBIA.find((c) => c.nombre === filtroCiudad) ?? null;
   const ciudadesDelDepartamento =
     filtroDepartamento !== 'Todos'
@@ -279,7 +291,7 @@ export function AdminDashboard() {
           <span className="u-label ml-4 shrink-0">Departamento</span>
           <select
             value={filtroDepartamento}
-            onChange={(e) => setFiltroDepartamento(e.target.value)}
+            onChange={(e) => elegirDepartamento(e.target.value)}
             className="u-data shrink-0 border border-line-strong bg-paper-raised px-2 py-1.5 text-ink focus:border-brand-600 focus:outline-none"
           >
             <option value="Todos">Todos</option>
@@ -297,7 +309,7 @@ export function AdminDashboard() {
             className="u-data shrink-0 border border-line-strong bg-paper-raised px-2 py-1.5 text-ink focus:border-brand-600 focus:outline-none"
           >
             <option value="Todas">Todos</option>
-            {CIUDADES_AFECTADAS.map((ciudad) => (
+            {ciudadesDisponibles.map((ciudad) => (
               <option key={ciudad.nombre} value={ciudad.nombre}>
                 {ciudad.nombre}
               </option>
