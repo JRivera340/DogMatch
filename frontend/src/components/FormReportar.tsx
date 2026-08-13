@@ -162,7 +162,10 @@ export function FormReportar() {
         <div className="mt-2 flex gap-2">
           <button
             type="button"
-            onClick={() => setTipoReporte('perdida')}
+            onClick={() => {
+              setTipoReporte('perdida');
+              if (nombre === 'N/A') setNombre('');
+            }}
             aria-pressed={!esRescatada}
             className={`u-body flex-1 border px-4 py-2.5 font-semibold transition-colors ${
               !esRescatada
@@ -174,7 +177,10 @@ export function FormReportar() {
           </button>
           <button
             type="button"
-            onClick={() => setTipoReporte('rescatada')}
+            onClick={() => {
+              setTipoReporte('rescatada');
+              if (!nombre.trim()) setNombre('N/A');
+            }}
             aria-pressed={esRescatada}
             className={`u-body flex-1 border px-4 py-2.5 font-semibold transition-colors ${
               esRescatada
