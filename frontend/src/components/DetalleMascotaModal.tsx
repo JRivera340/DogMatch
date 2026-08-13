@@ -192,7 +192,9 @@ export function DetalleMascotaModal({ mascota, onClose, admin }: Props) {
                   {admin ? (
                     <>
                       <BotonTelefono telefono={mascota.telefono1} nombreMascota={mascota.nombre} />
-                      <BotonTelefono telefono={mascota.telefono2} nombreMascota={mascota.nombre} />
+                      {mascota.telefono2 && (
+                        <BotonTelefono telefono={mascota.telefono2} nombreMascota={mascota.nombre} />
+                      )}
                     </>
                   ) : (
                     TELEFONOS_FUNCIONARIOS.map((telefono) => (

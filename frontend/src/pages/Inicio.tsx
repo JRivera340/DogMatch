@@ -3,7 +3,7 @@ import { MapaMascotas } from '../components/MapaMascotas';
 import { MascotaCard } from '../components/MascotaCard';
 import { listarMascotas } from '../api';
 import type { Especie, Mascota, TipoReporte } from '../types';
-import { CIUDADES_COLOMBIA, centroDepartamento, DEPARTAMENTOS_COLOMBIA } from '../data/ciudades';
+import { CIUDADES_COLOMBIA, CIUDADES_AFECTADAS, centroDepartamento, DEPARTAMENTOS_AFECTADOS } from '../data/ciudades';
 import { distanciaKm } from '../utils/geo';
 import { ChevronIcon, FilterIcon, PawIcon, SearchOffIcon } from '../components/icons';
 
@@ -296,7 +296,7 @@ export function Inicio() {
                   className={selectClassApilado}
                 >
                   <option value="Todos">Departamento: todos</option>
-                  {DEPARTAMENTOS_COLOMBIA.map((departamento) => (
+                  {DEPARTAMENTOS_AFECTADOS.map((departamento) => (
                     <option key={departamento} value={departamento}>
                       {departamento}
                     </option>
@@ -309,7 +309,7 @@ export function Inicio() {
                   className={selectClassApilado}
                 >
                   <option value="Todas">Ciudad: todas</option>
-                  {CIUDADES_COLOMBIA.map((ciudad) => (
+                  {CIUDADES_AFECTADAS.map((ciudad) => (
                     <option key={ciudad.nombre} value={ciudad.nombre}>
                       {ciudad.nombre}
                     </option>
@@ -428,7 +428,7 @@ export function Inicio() {
               className={selectClass}
             >
               <option value="Todos">Departamento: todos</option>
-              {DEPARTAMENTOS_COLOMBIA.map((departamento) => (
+              {DEPARTAMENTOS_AFECTADOS.map((departamento) => (
                 <option key={departamento} value={departamento}>
                   {departamento}
                 </option>
@@ -441,7 +441,7 @@ export function Inicio() {
               className={selectClass}
             >
               <option value="Todas">Ciudad: todas</option>
-              {CIUDADES_COLOMBIA.map((ciudad) => (
+              {CIUDADES_AFECTADAS.map((ciudad) => (
                 <option key={ciudad.nombre} value={ciudad.nombre}>
                   {ciudad.nombre}
                 </option>

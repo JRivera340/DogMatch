@@ -48,7 +48,13 @@ export const crearMascotaSchema = z.object({
   lng: z.number().min(LNG_MIN).max(LNG_MAX),
   lugarResidencia: z.string().trim().min(1).max(200),
   telefono1: z.string().trim().regex(telefonoRegex, 'telefono1 inválido, use formato colombiano'),
-  telefono2: z.string().trim().regex(telefonoRegex, 'telefono2 inválido, use formato colombiano'),
+  telefono2: z
+    .string()
+    .trim()
+    .regex(telefonoRegex, 'telefono2 inválido, use formato colombiano')
+    .optional()
+    .or(z.literal(''))
+    .default(''),
   autorizaTratamientoDatos: z.literal(true, {
     message: 'Debe autorizar el tratamiento de datos personales',
   }),

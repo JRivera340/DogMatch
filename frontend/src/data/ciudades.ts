@@ -41,11 +41,34 @@ export const CIUDADES_COLOMBIA: Ciudad[] = [
   { nombre: 'Sincelejo', departamento: 'Sucre', lat: 9.3047, lng: -75.3978, zoom: 13 },
   { nombre: 'Mitú', departamento: 'Vaupés', lat: 1.1983, lng: -70.1733, zoom: 13 },
   { nombre: 'Puerto Carreño', departamento: 'Vichada', lat: 6.1891, lng: -67.4859, zoom: 13 },
+
+  // Municipios adicionales del Eje Cafetero + Chocó — zona del desastre temporal.
+  { nombre: 'Dosquebradas', departamento: 'Risaralda', lat: 4.8355, lng: -75.6704, zoom: 14 },
+  { nombre: 'Santa Rosa de Cabal', departamento: 'Risaralda', lat: 4.8703, lng: -75.6216, zoom: 14 },
+  { nombre: 'Marsella', departamento: 'Risaralda', lat: 4.9377, lng: -75.7376, zoom: 14 },
+  { nombre: 'Calarcá', departamento: 'Quindío', lat: 4.5292, lng: -75.6436, zoom: 14 },
+  { nombre: 'Montenegro', departamento: 'Quindío', lat: 4.5675, lng: -75.7513, zoom: 14 },
+  { nombre: 'La Tebaida', departamento: 'Quindío', lat: 4.453, lng: -75.797, zoom: 14 },
+  { nombre: 'Chinchiná', departamento: 'Caldas', lat: 4.9836, lng: -75.6069, zoom: 14 },
+  { nombre: 'Villamaría', departamento: 'Caldas', lat: 5.05, lng: -75.5083, zoom: 14 },
+  { nombre: 'Riosucio (Caldas)', departamento: 'Caldas', lat: 5.4257, lng: -75.7014, zoom: 14 },
+  { nombre: 'Istmina', departamento: 'Chocó', lat: 5.1546, lng: -76.6845, zoom: 14 },
+  { nombre: 'Nuquí', departamento: 'Chocó', lat: 5.7108, lng: -77.2686, zoom: 13 },
+  { nombre: 'Bahía Solano', departamento: 'Chocó', lat: 6.2202, lng: -77.4056, zoom: 13 },
+  { nombre: 'Riosucio (Chocó)', departamento: 'Chocó', lat: 7.4372, lng: -77.1103, zoom: 13 },
 ];
 
 export const DEPARTAMENTOS_COLOMBIA: string[] = Array.from(
   new Set(CIUDADES_COLOMBIA.map((c) => c.departamento)),
 ).sort((a, b) => a.localeCompare(b));
+
+// Departamentos priorizados por la campaña del desastre temporal — usados para
+// acotar los filtros de departamento/ciudad en los mapas (público y admin).
+export const DEPARTAMENTOS_AFECTADOS: string[] = ['Caldas', 'Quindío', 'Risaralda', 'Chocó'];
+
+export const CIUDADES_AFECTADAS: Ciudad[] = CIUDADES_COLOMBIA.filter((c) =>
+  DEPARTAMENTOS_AFECTADOS.includes(c.departamento),
+).sort((a, b) => a.nombre.localeCompare(b.nombre));
 
 /** Centroide (promedio) de las ciudades conocidas de un departamento, con un zoom más abierto que el de ciudad. */
 export function centroDepartamento(departamento: string): Ciudad | null {

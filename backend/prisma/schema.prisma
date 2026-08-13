@@ -28,7 +28,7 @@ model Mascota {
   lng                       Float
   lugarResidencia           String
   telefono1                 String
-  telefono2                 String
+  telefono2                 String   @default("")
   estado                    String   @default("perdida")
   tipoReporte               String   @default("perdida")
   validacion                String   @default("pendiente")

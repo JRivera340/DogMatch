@@ -12,7 +12,7 @@ import { MapaValidacion } from '../components/MapaValidacion';
 import { DetalleMascotaModal } from '../components/DetalleMascotaModal';
 import { codigoCaso, formatearFecha } from '../utils/mascotaFormato';
 import { useAlturaDisponible } from '../utils/useAlturaDisponible';
-import { CIUDADES_COLOMBIA, centroDepartamento, DEPARTAMENTOS_COLOMBIA } from '../data/ciudades';
+import { CIUDADES_COLOMBIA, centroDepartamento, DEPARTAMENTOS_AFECTADOS } from '../data/ciudades';
 import { distanciaKm } from '../utils/geo';
 
 const RADIO_CIUDAD_KM = 25;
@@ -268,7 +268,7 @@ export function AdminDashboard() {
             className="u-data shrink-0 border border-line-strong bg-paper-raised px-2 py-1.5 text-ink focus:border-brand-600 focus:outline-none"
           >
             <option value="Todos">Todos</option>
-            {DEPARTAMENTOS_COLOMBIA.map((departamento) => (
+            {DEPARTAMENTOS_AFECTADOS.map((departamento) => (
               <option key={departamento} value={departamento}>
                 {departamento}
               </option>

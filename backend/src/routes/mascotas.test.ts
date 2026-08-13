@@ -129,6 +129,23 @@ describe('POST /api/mascotas', () => {
     expect(mockPrisma.mascota.create).toHaveBeenCalledTimes(1);
   });
 
+  it('acepta la publicación sin telefono2 (opcional)', async () => {
+    const { telefono2, ...sinTelefono2 } = mascotaValida;
+    mockPrisma.mascota.create.mockResolvedValue({ id: 'mascota-3', editToken: 'token-3' });
+
+    const res = await request(app).post('/api/mascotas').send(sinTelefono2);
+
+    expect(res.status).toBe(201);
+  });
+
+  it('rechaza telefono2 con formato inválido cuando sí se envía', async () => {
+    const res = await request(app)
+      .post('/api/mascotas')
+      .send({ ...mascotaValida, telefono2: '123' });
+
+    expect(res.status).toBe(400);
+  });
+
   it('rechaza tamaño fuera de las 3 opciones válidas', async () => {
     const res = await request(app)
       .post('/api/mascotas')

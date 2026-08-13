@@ -24,11 +24,11 @@ export function BotonTelefono({ telefono, nombreMascota, compacto = false }: Pro
         href={linkWhatsApp(telefono, nombreMascota)}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label={`WhatsApp ${telefono}`}
+        aria-label={`Contáctanos por WhatsApp — ${telefono}`}
         className="flex items-center gap-1 border border-moss-700 bg-moss-600 px-1.5 py-1 text-white transition-colors hover:bg-moss-700"
       >
         <PhoneIcon className="h-3 w-3 shrink-0" />
-        <span className="font-mono text-[10px] leading-none">{telefono}</span>
+        <span className="text-[10px] leading-none font-semibold">Contáctanos</span>
       </a>
     );
   }

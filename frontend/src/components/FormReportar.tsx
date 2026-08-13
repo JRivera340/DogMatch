@@ -90,9 +90,9 @@ export function FormReportar() {
     if (!lugarResidencia.trim()) nuevos.lugarResidencia = 'Lugar de residencia requerido';
     if (!TELEFONO_REGEX.test(telefono1.trim()))
       nuevos.telefono1 = 'Teléfono inválido (formato colombiano, ej. 3001234567)';
-    if (!TELEFONO_REGEX.test(telefono2.trim()))
+    if (telefono2.trim() && !TELEFONO_REGEX.test(telefono2.trim()))
       nuevos.telefono2 = 'Teléfono inválido (formato colombiano, ej. 3001234567)';
-    if (telefono1.trim() && telefono1.trim() === telefono2.trim())
+    if (telefono2.trim() && telefono1.trim() === telefono2.trim())
       nuevos.telefono2 = 'Debe ser un número diferente al primero';
     if (lat === null || lng === null) nuevos.ubicacion = 'Selecciona un punto en el mapa';
     if (!foto) nuevos.foto = 'La foto es obligatoria';
@@ -452,7 +452,10 @@ export function FormReportar() {
           </div>
 
           <div>
-            <label className={labelClass}>Teléfono de contacto 2</label>
+            <label className={labelClass}>
+              Teléfono de contacto 2{' '}
+              <span className="text-ink-faint normal-case">(opcional)</span>
+            </label>
             <input
               value={telefono2}
               onChange={(e) => setTelefono2(e.target.value)}

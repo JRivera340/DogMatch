@@ -54,8 +54,8 @@ describe('MascotaCard', () => {
   it('muestra botones de contacto con los números de funcionarios, no el del reportante', () => {
     render(<MascotaCard mascota={mascota} />);
 
-    const botonWhatsApp1 = screen.getByRole('link', { name: 'WhatsApp 3103393247' });
-    const botonWhatsApp2 = screen.getByRole('link', { name: 'WhatsApp 3113440504' });
+    const botonWhatsApp1 = screen.getByRole('link', { name: /Contáctanos por WhatsApp — 3103393247/ });
+    const botonWhatsApp2 = screen.getByRole('link', { name: /Contáctanos por WhatsApp — 3113440504/ });
     expect(botonWhatsApp1).toHaveAttribute('href', expect.stringContaining('573103393247'));
     expect(botonWhatsApp2).toHaveAttribute('href', expect.stringContaining('573113440504'));
     expect(screen.queryByText('3001234567')).not.toBeInTheDocument();

@@ -20,7 +20,7 @@ export function Layout() {
                 Huellas de <span className="text-brand-600">Regreso</span>
               </span>
               <span className="u-eyebrow mt-0.5 hidden text-[9px] text-ink-faint sm:block">
-                Registro de mascotas perdidas · Colombia
+                Registro de mascotas perdidas · Colombia · Marco del desastre temporal
               </span>
             </span>
           </Link>
@@ -49,13 +49,18 @@ export function Layout() {
         <Outlet />
       </main>
       <footer className="border-t border-line bg-paper-raised py-1.5 sm:py-3">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-1 px-4 text-center sm:flex-row sm:justify-between sm:gap-2">
-          <span className="u-eyebrow text-[8px] sm:text-[9px]">
-            Huellas de Regreso · Red de apoyo para reunir mascotas con sus familias
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-1 px-4 text-center">
+          <span className="u-eyebrow text-[8px] text-brand-700 sm:text-[9px]">
+            Mensaje de donativo al mundo de parte de DemoData
           </span>
-          <div className="flex items-center gap-1.5 text-ink-faint">
-            <span className="u-data text-[9px] sm:text-[10px]">Desarrollado por</span>
-            <img src="/brand/demodata-logo.png" alt="DemoData" className="h-3 w-auto sm:h-4" />
+          <div className="flex flex-col items-center justify-center gap-1 sm:flex-row sm:justify-between sm:gap-2">
+            <span className="u-eyebrow text-[8px] sm:text-[9px]">
+              Huellas de Regreso · Red de apoyo para reunir mascotas con sus familias
+            </span>
+            <div className="flex items-center gap-1.5 text-ink-faint">
+              <span className="u-data text-[9px] sm:text-[10px]">Desarrollado por</span>
+              <img src="/brand/demodata-logo.png" alt="DemoData" className="h-3 w-auto sm:h-4" />
+            </div>
           </div>
         </div>
       </footer>
