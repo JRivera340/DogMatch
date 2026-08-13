@@ -494,7 +494,7 @@ export function Inicio() {
           </div>
         </div>
 
-        <div className="flex-1 space-y-4 p-4">{listaCasos}</div>
+        <div className="flex-1 space-y-6 p-4">{listaCasos}</div>
       </div>
     </div>
   );
