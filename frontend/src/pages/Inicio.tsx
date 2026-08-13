@@ -5,7 +5,7 @@ import { listarMascotas } from '../api';
 import type { Especie, Mascota, TipoReporte } from '../types';
 import { CIUDADES_COLOMBIA, centroDepartamento, DEPARTAMENTOS_COLOMBIA } from '../data/ciudades';
 import { distanciaKm } from '../utils/geo';
-import { PawIcon, SearchOffIcon } from '../components/icons';
+import { PawIcon, PinIcon, SearchOffIcon } from '../components/icons';
 
 type FiltroEspecie = 'Todas' | Especie;
 type FiltroGenero = 'Todos' | 'Macho' | 'Hembra';
@@ -35,6 +35,7 @@ export function Inicio() {
   const [filtroDepartamento, setFiltroDepartamento] = useState<string>('Todos');
   const [filtroEstado, setFiltroEstado] = useState<FiltroEstado>('Todas');
   const [filtroTipo, setFiltroTipo] = useState<FiltroTipo>('Todas');
+  const [mapaAbierto, setMapaAbierto] = useState(false);
 
   useEffect(() => {
     listarMascotas(1, TAMANO_PAGINA)
@@ -120,7 +121,7 @@ export function Inicio() {
 
   return (
     <div className="flex w-full flex-col md:flex-row">
-      <div className="relative h-72 shrink-0 border-b-2 border-brand-700 md:h-full md:w-3/5 md:border-r-2 md:border-b-0">
+      <div className="relative hidden shrink-0 border-b-2 border-brand-700 md:block md:h-full md:w-3/5 md:border-r-2 md:border-b-0">
         <MapaMascotas mascotas={mascotasFiltradas} ciudadFiltro={objetivoMapa} />
       </div>
       <div className="flex flex-1 flex-col overflow-y-auto bg-paper">
@@ -270,6 +271,40 @@ export function Inicio() {
           )}
         </div>
       </div>
+
+      <button
+        type="button"
+        onClick={() => setMapaAbierto(true)}
+        className="fixed bottom-4 left-1/2 z-[600] flex -translate-x-1/2 items-center gap-1.5 border-2 border-brand-700 bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-[3px_3px_0_rgba(74,14,23,0.35)] transition-colors hover:bg-brand-700 md:hidden"
+      >
+        <PinIcon className="h-4 w-4" />
+        Ver mapa
+      </button>
+
+      {mapaAbierto && (
+        <div className="fixed inset-0 z-[700] md:hidden">
+          <div
+            className="absolute inset-0 bg-ink/50"
+            onClick={() => setMapaAbierto(false)}
+            aria-hidden
+          />
+          <div className="absolute inset-x-0 bottom-0 flex h-[78vh] flex-col border-t-2 border-brand-700 bg-paper-raised shadow-[0_-4px_16px_rgba(34,29,26,0.25)]">
+            <div className="flex shrink-0 items-center justify-between border-b border-line px-4 py-2.5">
+              <p className="u-label">Mapa de casos</p>
+              <button
+                type="button"
+                onClick={() => setMapaAbierto(false)}
+                className="u-data border border-line-strong px-2.5 py-1 text-ink-soft transition-colors hover:border-brand-600 hover:text-brand-700"
+              >
+                Cerrar
+              </button>
+            </div>
+            <div className="relative flex-1">
+              <MapaMascotas mascotas={mascotasFiltradas} ciudadFiltro={objetivoMapa} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

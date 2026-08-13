@@ -92,44 +92,49 @@ export function SelectorUbicacion({ lat, lng, onSeleccionar, error }: Props) {
   useInvalidarMapaAlRedimensionar(map);
 
   return (
-    <div className="relative">
-      <MapContainer
-        ref={setMap}
-        center={tienePunto ? [lat, lng] : CENTRO_BOGOTA}
-        zoom={tienePunto ? ZOOM_PUNTO : ZOOM_DEFECTO}
-        style={{ height: '16rem', width: '100%' }}
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <GeolocalizarAlMontar yaTieneSeleccion={tienePunto} />
-        <ClickHandler onSeleccionar={onSeleccionar} />
-        {tienePunto && (
-          <Marker
-            position={[lat, lng]}
-            icon={iconoSeleccion}
-            draggable
-            eventHandlers={{
-              dragend: (e) => {
-                const posicion = e.target.getLatLng();
-                onSeleccionar(posicion.lat, posicion.lng);
-              },
-            }}
-          />
-        )}
-      </MapContainer>
-
-      <div className="absolute top-2 right-2 z-[500] flex flex-col items-end gap-1.5">
+    <div>
+      {/* Controles fuera del mapa, en flujo normal: en el form (pantalla chica) no hay
+          espacio de sobra para flotar buscadores encima del área donde hay que tocar
+          para marcar el punto. Aquí siempre van arriba, nunca tapan el mapa. */}
+      <div className="flex flex-wrap items-start gap-1.5 border-b border-line-strong bg-paper p-2">
         <BuscadorCiudad map={map} ayuda="Solo navega — el click en el mapa marca el punto" />
         <SelectorDepartamentoMapa map={map} />
       </div>
 
       {error && !tienePunto && (
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-[500] border-b-2 border-brand-600 bg-brand-50/95 px-3 py-2 text-[13px] font-medium text-brand-800">
+        <div className="border-b-2 border-brand-600 bg-brand-50 px-3 py-2 text-[13px] font-medium text-brand-800">
           {error}
         </div>
       )}
+
+      <div className="relative">
+        <MapContainer
+          ref={setMap}
+          center={tienePunto ? [lat, lng] : CENTRO_BOGOTA}
+          zoom={tienePunto ? ZOOM_PUNTO : ZOOM_DEFECTO}
+          style={{ height: '20rem', width: '100%' }}
+        >
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          <GeolocalizarAlMontar yaTieneSeleccion={tienePunto} />
+          <ClickHandler onSeleccionar={onSeleccionar} />
+          {tienePunto && (
+            <Marker
+              position={[lat, lng]}
+              icon={iconoSeleccion}
+              draggable
+              eventHandlers={{
+                dragend: (e) => {
+                  const posicion = e.target.getLatLng();
+                  onSeleccionar(posicion.lat, posicion.lng);
+                },
+              }}
+            />
+          )}
+        </MapContainer>
+      </div>
 
       <div className="flex items-center justify-between border-t border-line-strong bg-paper-raised px-3 py-1.5">
         <span className="u-data text-ink-faint">
