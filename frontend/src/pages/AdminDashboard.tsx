@@ -23,8 +23,9 @@ import { distanciaKm } from '../utils/geo';
 
 const RADIO_CIUDAD_KM = 25;
 
-type FiltroEstado = 'todas' | 'perdida' | 'encontrada';
-type FiltroTipo = 'todas' | TipoReporte;
+// 'perdida'/'rescatada' filtran por tipoReporte (casos activos); 'encontrada' filtra por
+// estado, sin importar el tipo — son las que ya están de vuelta con su familia.
+type FiltroTipo = 'todas' | TipoReporte | 'encontrada';
 type FiltroValidacion = 'pendiente' | 'aprobada' | null;
 type Pestana = 'mapa' | 'validacion';
 
@@ -39,7 +40,6 @@ export function AdminDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [pagina, setPagina] = useState(1);
   const [total, setTotal] = useState(0);
-  const [filtroEstado, setFiltroEstado] = useState<FiltroEstado>('todas');
   const [filtroTipo, setFiltroTipo] = useState<FiltroTipo>('todas');
   const [filtroValidacion, setFiltroValidacion] = useState<FiltroValidacion>(null);
   const [filtroDepartamento, setFiltroDepartamento] = useState<string>('Todos');
@@ -172,8 +172,12 @@ export function AdminDashboard() {
     (filtroDepartamento !== 'Todos' ? centroDepartamento(filtroDepartamento) : null);
 
   const mascotasFiltradas = mascotas.filter((m) => {
-    if (filtroTipo !== 'todas' && m.tipoReporte !== filtroTipo) return false;
-    if (filtroEstado !== 'todas' && m.estado !== filtroEstado) return false;
+    if (filtroTipo === 'encontrada') {
+      if (m.estado !== 'encontrada') return false;
+    } else if (filtroTipo !== 'todas') {
+      if (m.estado === 'encontrada') return false;
+      if (m.tipoReporte !== filtroTipo) return false;
+    }
     if (filtroValidacion && m.validacion !== filtroValidacion) return false;
     if (ciudadSeleccionada) {
       const distancia = distanciaKm(m.lat, m.lng, ciudadSeleccionada.lat, ciudadSeleccionada.lng);
@@ -270,23 +274,8 @@ export function AdminDashboard() {
             <option value="todas">Todos</option>
             <option value="perdida">Perdida (con dueño)</option>
             <option value="rescatada">Busca su dueño</option>
+            <option value="encontrada">Está con su familia</option>
           </select>
-
-          <span className="u-label ml-4 shrink-0">Estado</span>
-          {(['todas', 'perdida', 'encontrada'] as const).map((opcion) => (
-            <button
-              key={opcion}
-              type="button"
-              onClick={() => setFiltroEstado(opcion)}
-              className={`u-data shrink-0 border px-3 py-1.5 capitalize transition-colors ${
-                filtroEstado === opcion
-                  ? 'border-brand-600 bg-brand-600 text-white'
-                  : 'border-line-strong text-ink-soft hover:border-brand-600 hover:text-brand-700'
-              }`}
-            >
-              {opcion}
-            </button>
-          ))}
 
           <span className="u-label ml-4 shrink-0">Departamento</span>
           <select

@@ -18,7 +18,10 @@ export function MapaLeyenda({ items, className = '' }: Props) {
         {items.map((item) => (
           <li key={item.etiqueta} className="flex items-center gap-1.5">
             {item.emoji ? (
-              <span className="w-2.5 shrink-0 text-center text-[10px] leading-none" aria-hidden>
+              <span
+                className="inline-flex h-2.5 w-2.5 shrink-0 items-center justify-center text-[9px] leading-none"
+                aria-hidden
+              >
                 {item.emoji}
               </span>
             ) : (
