@@ -14,7 +14,7 @@ import { DetalleMascotaModal } from '../components/DetalleMascotaModal';
 import { codigoCaso, formatearFecha } from '../utils/mascotaFormato';
 import { useAlturaDisponible } from '../utils/useAlturaDisponible';
 import {
-  CIUDADES_COLOMBIA,
+  TODAS_LAS_CIUDADES,
   CIUDADES_AFECTADAS,
   centroDepartamento,
   DEPARTAMENTOS_AFECTADOS,
@@ -161,10 +161,10 @@ export function AdminDashboard() {
     setFiltroCiudad('Todas');
   }
 
-  const ciudadSeleccionada = CIUDADES_COLOMBIA.find((c) => c.nombre === filtroCiudad) ?? null;
+  const ciudadSeleccionada = TODAS_LAS_CIUDADES.find((c) => c.nombre === filtroCiudad) ?? null;
   const ciudadesDelDepartamento =
     filtroDepartamento !== 'Todos'
-      ? CIUDADES_COLOMBIA.filter((c) => c.departamento === filtroDepartamento)
+      ? TODAS_LAS_CIUDADES.filter((c) => c.departamento === filtroDepartamento)
       : [];
   // Si hay ciudad puntual, esa manda; si solo hay departamento, el mapa se va al centro de ese departamento.
   const objetivoMapa =

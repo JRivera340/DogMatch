@@ -3,14 +3,20 @@ import { MapaMascotas } from '../components/MapaMascotas';
 import { MascotaCard } from '../components/MascotaCard';
 import { listarMascotas } from '../api';
 import type { Especie, Mascota, TipoReporte } from '../types';
-import { CIUDADES_COLOMBIA, CIUDADES_AFECTADAS, centroDepartamento, DEPARTAMENTOS_AFECTADOS } from '../data/ciudades';
+import {
+  TODAS_LAS_CIUDADES,
+  CIUDADES_AFECTADAS,
+  centroDepartamento,
+  DEPARTAMENTOS_AFECTADOS,
+} from '../data/ciudades';
 import { distanciaKm } from '../utils/geo';
 import { ChevronIcon, FilterIcon, PawIcon, SearchOffIcon } from '../components/icons';
 
 type FiltroEspecie = 'Todas' | Especie;
 type FiltroGenero = 'Todos' | 'Macho' | 'Hembra';
-type FiltroEstado = 'Todas' | 'perdida' | 'encontrada';
-type FiltroTipo = 'Todas' | TipoReporte;
+// 'perdida'/'rescatada' filtran por tipoReporte (casos activos); 'encontrada' filtra por
+// estado, sin importar el tipo — son las que ya están de vuelta con su familia.
+type FiltroTipo = 'Todas' | TipoReporte | 'encontrada';
 
 // Radio aproximado del área metropolitana usado para "pertenece a esta ciudad"
 const RADIO_CIUDAD_KM = 25;
@@ -55,7 +61,6 @@ export function Inicio() {
   const [filtroColor, setFiltroColor] = useState<string>('Todos');
   const [filtroCiudad, setFiltroCiudad] = useState<string>('Todas');
   const [filtroDepartamento, setFiltroDepartamento] = useState<string>('Todos');
-  const [filtroEstado, setFiltroEstado] = useState<FiltroEstado>('Todas');
   const [filtroTipo, setFiltroTipo] = useState<FiltroTipo>('Todas');
 
   // Solo mobile: panel de casos colapsado por defecto (el mapa ocupa toda la pantalla),
@@ -118,10 +123,10 @@ export function Inicio() {
     setFiltroCiudad('Todas');
   }
 
-  const ciudadSeleccionada = CIUDADES_COLOMBIA.find((c) => c.nombre === filtroCiudad) ?? null;
+  const ciudadSeleccionada = TODAS_LAS_CIUDADES.find((c) => c.nombre === filtroCiudad) ?? null;
   const ciudadesDelDepartamento =
     filtroDepartamento !== 'Todos'
-      ? CIUDADES_COLOMBIA.filter((c) => c.departamento === filtroDepartamento)
+      ? TODAS_LAS_CIUDADES.filter((c) => c.departamento === filtroDepartamento)
       : [];
   // Si hay ciudad puntual, esa manda; si solo hay departamento, el mapa se va al centro de ese departamento.
   const objetivoMapa =
@@ -129,8 +134,12 @@ export function Inicio() {
     (filtroDepartamento !== 'Todos' ? centroDepartamento(filtroDepartamento) : null);
 
   const mascotasFiltradas = mascotas.filter((m) => {
-    if (filtroTipo !== 'Todas' && m.tipoReporte !== filtroTipo) return false;
-    if (filtroEstado !== 'Todas' && m.estado !== filtroEstado) return false;
+    if (filtroTipo === 'encontrada') {
+      if (m.estado !== 'encontrada') return false;
+    } else if (filtroTipo !== 'Todas') {
+      if (m.estado === 'encontrada') return false;
+      if (m.tipoReporte !== filtroTipo) return false;
+    }
     if (filtroEspecie !== 'Todas' && m.especie !== filtroEspecie) return false;
     if (filtroGenero !== 'Todos' && m.genero !== filtroGenero) return false;
     if (filtroColor !== 'Todos' && m.color !== filtroColor) return false;
@@ -149,7 +158,6 @@ export function Inicio() {
 
   const cantidadFiltrosActivos = [
     filtroTipo !== 'Todas',
-    filtroEstado !== 'Todas',
     filtroEspecie !== 'Todas',
     filtroGenero !== 'Todos',
     filtroColor !== 'Todos',
@@ -160,7 +168,6 @@ export function Inicio() {
 
   function limpiarFiltros() {
     setFiltroTipo('Todas');
-    setFiltroEstado('Todas');
     setFiltroEspecie('Todas');
     setFiltroGenero('Todos');
     setFiltroColor('Todos');
@@ -299,16 +306,7 @@ export function Inicio() {
                   <option value="Todas">Tipo: todos</option>
                   <option value="perdida">Perdida (con dueño)</option>
                   <option value="rescatada">Busca su dueño</option>
-                </select>
-
-                <select
-                  value={filtroEstado}
-                  onChange={(e) => setFiltroEstado(e.target.value as FiltroEstado)}
-                  className={selectClassApilado}
-                >
-                  <option value="Todas">Estado: todos</option>
-                  <option value="perdida">Perdida</option>
-                  <option value="encontrada">Encontrada</option>
+                  <option value="encontrada">Está con su familia</option>
                 </select>
 
                 <select
@@ -329,7 +327,7 @@ export function Inicio() {
                   onChange={(e) => setFiltroCiudad(e.target.value)}
                   className={selectClassApilado}
                 >
-                  <option value="Todas">Ciudad: todas</option>
+                  <option value="Todas">Municipio: todos</option>
                   {ciudadesDisponibles.map((ciudad) => (
                     <option key={ciudad.nombre} value={ciudad.nombre}>
                       {ciudad.nombre}
@@ -431,16 +429,7 @@ export function Inicio() {
               <option value="Todas">Tipo: todos</option>
               <option value="perdida">Perdida (con dueño)</option>
               <option value="rescatada">Busca su dueño</option>
-            </select>
-
-            <select
-              value={filtroEstado}
-              onChange={(e) => setFiltroEstado(e.target.value as FiltroEstado)}
-              className={selectClass}
-            >
-              <option value="Todas">Estado: todos</option>
-              <option value="perdida">Perdida</option>
-              <option value="encontrada">Encontrada</option>
+              <option value="encontrada">Está con su familia</option>
             </select>
 
             <select
@@ -461,7 +450,7 @@ export function Inicio() {
               onChange={(e) => setFiltroCiudad(e.target.value)}
               className={selectClass}
             >
-              <option value="Todas">Ciudad: todas</option>
+              <option value="Todas">Municipio: todos</option>
               {ciudadesDisponibles.map((ciudad) => (
                 <option key={ciudad.nombre} value={ciudad.nombre}>
                   {ciudad.nombre}

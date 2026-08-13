@@ -131,7 +131,7 @@ export function MapaMascotas({
         items={[
           { color: COLOR_PERDIDA, etiqueta: 'Perdida' },
           { color: COLOR_RESCATADA, etiqueta: 'Busca su dueño' },
-          { color: COLOR_RESUELTA, etiqueta: 'Resuelta' },
+          { color: COLOR_RESUELTA, etiqueta: 'Está con su familia', emoji: '❤️' },
         ]}
       />
 

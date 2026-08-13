@@ -1,6 +1,8 @@
 interface ItemLeyenda {
   color: string;
   etiqueta: string;
+  /** Si se pasa, se muestra este emoji en vez del punto de color (para marcadores tipo ❤️). */
+  emoji?: string;
 }
 
 interface Props {
@@ -15,11 +17,17 @@ export function MapaLeyenda({ items, className = '' }: Props) {
       <ul className="space-y-1">
         {items.map((item) => (
           <li key={item.etiqueta} className="flex items-center gap-1.5">
-            <span
-              className="h-2.5 w-2.5 shrink-0 rounded-full border border-white shadow-sm"
-              style={{ backgroundColor: item.color }}
-              aria-hidden
-            />
+            {item.emoji ? (
+              <span className="w-2.5 shrink-0 text-center text-[10px] leading-none" aria-hidden>
+                {item.emoji}
+              </span>
+            ) : (
+              <span
+                className="h-2.5 w-2.5 shrink-0 rounded-full border border-white shadow-sm"
+                style={{ backgroundColor: item.color }}
+                aria-hidden
+              />
+            )}
             <span className="u-data text-ink-soft">{item.etiqueta}</span>
           </li>
         ))}
