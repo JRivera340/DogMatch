@@ -47,7 +47,9 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
           className={`h-full w-full object-cover contrast-[1.03] ${estaEncontrada ? 'grayscale-[35%]' : 'grayscale-[8%]'}`}
         />
         <span
-          className={`stamp absolute -top-2 -left-2 bg-paper-raised ${estaEncontrada ? 'text-moss-700' : 'text-brand-600'}`}
+          className={`absolute top-1 left-1 z-10 max-w-[calc(100%-0.5rem)] truncate whitespace-nowrap ${
+            estaEncontrada ? 'bg-moss-700' : 'bg-brand-600'
+          } px-1.5 py-0.5 text-[9px] font-bold tracking-wide text-white uppercase shadow-sm`}
           aria-hidden
         >
           {etiquetaEstado(mascota.tipoReporte, mascota.estado, mascota.genero)}

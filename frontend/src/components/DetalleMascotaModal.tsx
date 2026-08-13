@@ -81,7 +81,9 @@ export function DetalleMascotaModal({ mascota, onClose, admin }: Props) {
                 <div className="flex flex-col items-end gap-1">
                   <span className="u-data text-ink-faint">#{codigoCaso(mascota.id)}</span>
                   <span
-                    className={`stamp text-[10px] ${estaEncontrada ? 'text-moss-700' : 'text-brand-600'}`}
+                    className={`whitespace-nowrap px-2 py-1 text-[10px] font-bold tracking-wide text-white uppercase ${
+                      estaEncontrada ? 'bg-moss-700' : 'bg-brand-600'
+                    }`}
                   >
                     {etiquetaEstado(mascota.tipoReporte, mascota.estado, mascota.genero)}
                   </span>
