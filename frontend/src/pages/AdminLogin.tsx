@@ -8,13 +8,14 @@ export function AdminLogin() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
+  const [mostrarContrasena, setMostrarContrasena] = useState(false);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
     setEnviando(true);
     try {
-      const { token } = await adminLogin(password);
+      const { token } = await adminLogin(password.trim());
       guardarTokenAdmin(token);
       navigate('/admin/dashboard');
     } catch {
@@ -36,14 +37,27 @@ export function AdminLogin() {
         <label htmlFor="admin-password" className="u-label block">
           Contraseña
         </label>
-        <input
-          id="admin-password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          autoFocus
-          className="mt-1 w-full border border-line-strong bg-paper-raised px-3 py-2 u-body text-ink focus:border-brand-600 focus:outline-none"
-        />
+        <div className="relative mt-1">
+          <input
+            id="admin-password"
+            type={mostrarContrasena ? 'text' : 'password'}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoFocus
+            autoCapitalize="none"
+            autoCorrect="off"
+            autoComplete="current-password"
+            spellCheck={false}
+            className="w-full border border-line-strong bg-paper-raised px-3 py-2 pr-16 u-body text-ink focus:border-brand-600 focus:outline-none"
+          />
+          <button
+            type="button"
+            onClick={() => setMostrarContrasena((v) => !v)}
+            className="u-data absolute top-1/2 right-2 -translate-y-1/2 px-1.5 py-1 text-[11px] text-ink-soft hover:text-brand-700"
+          >
+            {mostrarContrasena ? 'Ocultar' : 'Ver'}
+          </button>
+        </div>
         {error && <p className="mt-2 text-[13px] font-medium text-brand-700">{error}</p>}
 
         <button
