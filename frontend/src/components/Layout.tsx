@@ -48,9 +48,9 @@ export function Layout() {
       <main className="flex min-h-0 flex-1 overflow-y-auto">
         <Outlet />
       </main>
-      <footer className="flex shrink-0 items-center justify-center gap-1.5 border-t border-line bg-paper-raised px-3 py-1">
-        <img src="/brand/demodata-logo.png" alt="DemoData" className="h-2.5 w-auto shrink-0" />
-        <span className="u-eyebrow text-[6.5px] leading-tight text-brand-700 sm:text-[8px]">
+      <footer className="flex shrink-0 items-center justify-center gap-1 border-t border-line bg-paper-raised px-2 py-0.5">
+        <img src="/brand/demodata-logo.png" alt="DemoData" className="h-2 w-auto shrink-0" />
+        <span className="font-mono text-[5.5px] leading-none tracking-normal text-brand-700 normal-case sm:text-[7px]">
           Una iniciativa de DemoData para proteger y reunir a nuestras mascotas en momentos de
           emergencia. 🐾
         </span>
