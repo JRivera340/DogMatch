@@ -368,7 +368,7 @@ export function AdminDashboard() {
                       </td>
                       <td className="u-body px-3 py-2.5">
                         <span className="font-semibold">{mascota.nombre}</span>
-                        {mascota.tipoReporte === 'rescatada' && (
+                        {mascota.tipoReporte === 'rescatada' && mascota.estado !== 'encontrada' && (
                           <span className="u-data mt-0.5 block text-brand-600">Busca su dueño</span>
                         )}
                       </td>

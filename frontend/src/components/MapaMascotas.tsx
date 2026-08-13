@@ -105,7 +105,7 @@ export function MapaMascotas({
             <Popup>
               <div className="u-body">
                 <p className="u-title-card text-[1rem]">{mascota.nombre}</p>
-                {mascota.tipoReporte === 'rescatada' && (
+                {mascota.tipoReporte === 'rescatada' && mascota.estado !== 'encontrada' && (
                   <p className="u-data text-brand-600">Busca su dueño</p>
                 )}
                 <p className="text-ink-soft">{mascota.raza}</p>
