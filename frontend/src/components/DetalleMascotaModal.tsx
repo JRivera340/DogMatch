@@ -128,6 +128,10 @@ export function DetalleMascotaModal({ mascota, onClose, admin }: Props) {
                     : 'Sin validar todavía'}
               </span>
 
+              <p className="u-data mt-2 text-ink-faint">
+                {mascota.clicks} {mascota.clicks === 1 ? 'vista' : 'vistas'}
+              </p>
+
               <dl className="mt-4 space-y-2">
                 <div className="u-body flex gap-1.5">
                   <PinIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-ink-faint" />
