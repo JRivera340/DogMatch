@@ -1,9 +1,15 @@
 import type { TipoReporte } from '../types';
 
-/** Texto del sello/estado — depende de si es un reporte de mascota perdida o rescatada sin dueño. */
-export function etiquetaEstado(tipoReporte: TipoReporte, estado: 'perdida' | 'encontrada') {
+/** Texto del sello/estado — depende del tipo de reporte y concuerda en género con la mascota. */
+export function etiquetaEstado(
+  tipoReporte: TipoReporte,
+  estado: 'perdida' | 'encontrada',
+  genero: 'Macho' | 'Hembra',
+) {
   if (estado === 'encontrada') return 'Con dueño';
-  return tipoReporte === 'rescatada' ? 'Rescatada' : 'Perdida';
+  const masculino = genero === 'Macho';
+  if (tipoReporte === 'rescatada') return masculino ? 'Rescatado' : 'Rescatada';
+  return masculino ? 'Perdido' : 'Perdida';
 }
 
 /** Texto del botón que resuelve el caso — distinto según el tipo de reporte. */

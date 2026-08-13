@@ -38,7 +38,7 @@ export function DetalleMascotaModal({ mascota, onClose, admin }: Props) {
   return (
     <>
       <div
-        className="fixed inset-0 z-[900] flex items-center justify-center bg-ink/60 p-3 sm:p-4"
+        className="fixed inset-0 z-[1060] flex items-center justify-center bg-ink/60 p-3 sm:p-4"
         onClick={onClose}
         role="dialog"
         aria-modal="true"
@@ -83,7 +83,7 @@ export function DetalleMascotaModal({ mascota, onClose, admin }: Props) {
                   <span
                     className={`stamp text-[10px] ${estaEncontrada ? 'text-moss-700' : 'text-brand-600'}`}
                   >
-                    {etiquetaEstado(mascota.tipoReporte, mascota.estado)}
+                    {etiquetaEstado(mascota.tipoReporte, mascota.estado, mascota.genero)}
                   </span>
                 </div>
               </div>

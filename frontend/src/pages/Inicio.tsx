@@ -252,7 +252,7 @@ export function Inicio() {
         </div>
 
         {filtrosAbiertos && (
-          <div className="fixed inset-0 z-[800]">
+          <div className="fixed inset-0 z-[1050]">
             <div
               className="absolute inset-0 bg-ink/50"
               onClick={() => setFiltrosAbiertos(false)}

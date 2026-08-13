@@ -34,7 +34,7 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
   }
 
   return (
-    <article className="flex h-[150px] border border-line bg-paper-raised sm:h-auto sm:min-h-0">
+    <article className="flex h-[150px] border border-line bg-paper-raised sm:h-[168px]">
       <button
         type="button"
         onClick={() => setDetalleAbierto(true)}
@@ -50,13 +50,13 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
           className={`stamp absolute -top-2 -left-2 bg-paper-raised ${estaEncontrada ? 'text-moss-700' : 'text-brand-600'}`}
           aria-hidden
         >
-          {etiquetaEstado(mascota.tipoReporte, mascota.estado)}
+          {etiquetaEstado(mascota.tipoReporte, mascota.estado, mascota.genero)}
         </span>
       </button>
 
       <div className="perforation bg-paper-raised" aria-hidden />
 
-      <div className="min-w-0 flex-1 overflow-hidden py-1.5 pr-2.5 pl-2 sm:overflow-visible sm:p-4">
+      <div className="min-w-0 flex-1 overflow-hidden py-1.5 pr-2.5 pl-2 sm:p-4">
         <div className="flex items-start justify-between gap-1.5">
           <div className="min-w-0">
             <h3 className="u-title-card truncate text-[13px] sm:text-base">{mascota.nombre}</h3>
