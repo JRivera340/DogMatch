@@ -34,7 +34,7 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
   }
 
   return (
-    <article className="flex border border-line bg-paper-raised">
+    <article className="flex h-[150px] overflow-hidden border border-line bg-paper-raised sm:h-auto sm:min-h-0">
       <button
         type="button"
         onClick={() => setDetalleAbierto(true)}
@@ -56,11 +56,11 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
 
       <div className="perforation bg-paper-raised" aria-hidden />
 
-      <div className="min-w-0 flex-1 py-1.5 pr-2.5 pl-2 sm:p-4">
-        <div className="flex items-start justify-between gap-2">
+      <div className="min-w-0 flex-1 overflow-hidden py-1.5 pr-2.5 pl-2 sm:overflow-visible sm:p-4">
+        <div className="flex items-start justify-between gap-1.5">
           <div className="min-w-0">
-            <h3 className="u-title-card truncate">{mascota.nombre}</h3>
-            <p className="u-body truncate text-ink-soft">
+            <h3 className="u-title-card truncate text-[13px] sm:text-base">{mascota.nombre}</h3>
+            <p className="truncate text-[11px] text-ink-soft sm:u-body">
               {mascota.tipoReporte === 'rescatada' && (
                 <span className="text-brand-600">Rescatada · </span>
               )}
@@ -68,7 +68,7 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
             </p>
           </div>
           <span
-            className={`u-data shrink-0 border px-1.5 py-0.5 text-[10px] ${
+            className={`u-data shrink-0 border px-1.5 py-0.5 text-[9px] sm:text-[10px] ${
               mascota.validacion === 'aprobada'
                 ? 'border-moss-600 text-moss-700'
                 : 'border-line-strong text-ink-faint'
@@ -78,26 +78,18 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
           </span>
         </div>
 
-        {(mascota.esUrgente || mascota.esAsustadiza) && (
-          <div className="mt-1 flex flex-wrap gap-1">
-            {mascota.esUrgente && (
-              <span className="u-data border border-brand-600 bg-brand-50 px-1.5 py-0.5 text-[10px] text-brand-700">
-                Urgente
-              </span>
-            )}
-            {mascota.esAsustadiza && (
-              <span className="u-data border border-brand-600 bg-brand-50 px-1.5 py-0.5 text-[10px] text-brand-700">
-                Acercarse con cuidado
-              </span>
-            )}
-          </div>
-        )}
-
-        <p className="u-body mt-1 flex items-center gap-1.5 truncate text-ink-soft">
-          <PinIcon className="h-3.5 w-3.5 shrink-0 text-ink-faint" />
+        <p className="mt-1 flex items-center gap-1 truncate text-[11px] text-ink-soft sm:u-body">
+          <PinIcon className="h-3 w-3 shrink-0 text-ink-faint" />
           <span className="truncate">
             {formatearFecha(mascota.ultimaVezFecha)} — {mascota.ultimaVezLugarTexto}
           </span>
+        </p>
+
+        <p className="mt-0.5 truncate text-[11px] text-ink-soft sm:u-body">
+          <span className="font-semibold text-ink-soft">
+            {mascota.tipoReporte === 'rescatada' ? 'Dónde está ahora: ' : 'Residencia: '}
+          </span>
+          {mascota.lugarResidencia}
         </p>
 
         <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
@@ -107,7 +99,7 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
           <button
             type="button"
             onClick={() => setDetalleAbierto(true)}
-            className="u-data border border-line-strong px-2 py-1.5 text-ink-soft transition-colors hover:border-brand-600 hover:text-brand-700"
+            className="u-data border border-line-strong px-2 py-1 text-[11px] text-ink-soft transition-colors hover:border-brand-600 hover:text-brand-700 sm:py-1.5 sm:text-[13px]"
           >
             Ver detalle
           </button>

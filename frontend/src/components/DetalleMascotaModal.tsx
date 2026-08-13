@@ -38,17 +38,17 @@ export function DetalleMascotaModal({ mascota, onClose, admin }: Props) {
   return (
     <>
       <div
-        className="fixed inset-0 z-[900] flex items-center justify-center bg-ink/60 p-4"
+        className="fixed inset-0 z-[900] flex items-center justify-center bg-ink/60 p-3 sm:p-4"
         onClick={onClose}
         role="dialog"
         aria-modal="true"
         aria-label={`Detalle de ${mascota.nombre}`}
       >
         <div
-          className="max-h-[90vh] w-full max-w-2xl overflow-y-auto border-t-4 border-brand-600 bg-paper-raised shadow-[4px_4px_0_rgba(34,29,26,0.2)]"
+          className="max-h-[82vh] w-full max-w-2xl overflow-y-auto border-t-4 border-brand-600 bg-paper-raised shadow-[4px_4px_0_rgba(34,29,26,0.2)] sm:max-h-[90vh]"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex items-center justify-between border-b border-line px-5 py-3">
+          <div className="flex items-center justify-between border-b border-line px-4 py-2.5 sm:px-5 sm:py-3">
             <p className="u-eyebrow">Detalle del reporte</p>
             <button
               type="button"
@@ -59,7 +59,7 @@ export function DetalleMascotaModal({ mascota, onClose, admin }: Props) {
             </button>
           </div>
 
-          <div className="grid grid-cols-1 gap-5 p-5 sm:grid-cols-[220px_1fr]">
+          <div className="grid grid-cols-1 gap-3 p-4 sm:gap-5 sm:p-5 sm:grid-cols-[220px_1fr]">
             <button
               type="button"
               onClick={() => setLightboxAbierto(true)}
@@ -68,7 +68,7 @@ export function DetalleMascotaModal({ mascota, onClose, admin }: Props) {
               <img
                 src={mascota.fotoUrl}
                 alt={mascota.nombre}
-                className={`h-56 w-full object-cover sm:h-full ${estaEncontrada ? 'grayscale-[35%]' : ''}`}
+                className={`h-40 w-full object-cover sm:h-full ${estaEncontrada ? 'grayscale-[35%]' : ''}`}
               />
               <span className="u-data absolute right-2 bottom-2 border border-white/40 bg-ink/60 px-2 py-1 text-white opacity-0 transition-opacity group-hover:opacity-100">
                 Ver en grande
