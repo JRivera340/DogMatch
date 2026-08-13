@@ -228,7 +228,7 @@ export function Inicio() {
         </div>
 
         <div
-          className={`absolute inset-x-0 bottom-0 z-[600] flex flex-col border-t-2 border-brand-700 bg-paper-raised shadow-[0_-4px_16px_rgba(34,29,26,0.25)] transition-[height] duration-300 ease-out ${
+          className={`absolute inset-x-0 bottom-0 z-[1010] flex flex-col border-t-2 border-brand-700 bg-paper-raised shadow-[0_-4px_16px_rgba(34,29,26,0.25)] transition-[height] duration-300 ease-out ${
             listaAbierta ? 'h-[70vh]' : 'h-14'
           }`}
         >
