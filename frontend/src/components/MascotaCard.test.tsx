@@ -48,7 +48,6 @@ describe('MascotaCard', () => {
     expect(screen.getByText('Firulais')).toBeInTheDocument();
     expect(screen.getByText(/Criollo/)).toBeInTheDocument();
     expect(screen.getByText(/Parque principal/)).toBeInTheDocument();
-    expect(screen.getByText(/Cra 10 #5-20/)).toBeInTheDocument();
     expect(screen.getByText('Sin validar')).toBeInTheDocument();
   });
 

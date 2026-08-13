@@ -5,7 +5,7 @@ import { TELEFONOS_FUNCIONARIOS } from '../data/contactoOficial';
 import { PinIcon } from './icons';
 import { BotonTelefono } from './BotonTelefono';
 import { DetalleMascotaModal } from './DetalleMascotaModal';
-import { codigoCaso, etiquetaAccionResolver, etiquetaEstado, formatearFecha } from '../utils/mascotaFormato';
+import { etiquetaAccionResolver, etiquetaEstado, formatearFecha } from '../utils/mascotaFormato';
 
 interface Props {
   mascota: Mascota;
@@ -56,37 +56,33 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
 
       <div className="perforation bg-paper-raised" aria-hidden />
 
-      <div className="min-w-0 flex-1 p-3 sm:p-4">
+      <div className="min-w-0 flex-1 py-2 pr-3 pl-2.5 sm:p-4">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <h3 className="u-title-card truncate">{mascota.nombre}</h3>
-            {mascota.tipoReporte === 'rescatada' && (
-              <p className="u-data text-brand-600">Mascota rescatada · busca dueño</p>
-            )}
-            <p className="u-body text-ink-soft">
-              {mascota.especie} · {mascota.raza} · {mascota.genero} · {mascota.color} ·{' '}
-              {mascota.tamano} · {mascota.edad}
+            <p className="u-body truncate text-ink-soft">
+              {mascota.tipoReporte === 'rescatada' && (
+                <span className="text-brand-600">Rescatada · </span>
+              )}
+              {mascota.especie} · {mascota.raza} · {mascota.genero} · {mascota.color}
             </p>
           </div>
-          <div className="flex shrink-0 flex-col items-end gap-1">
-            <span className="u-data text-ink-faint">#{codigoCaso(mascota.id)}</span>
-            <span
-              className={`u-data border px-1.5 py-0.5 text-[10px] ${
-                mascota.validacion === 'aprobada'
-                  ? 'border-moss-600 text-moss-700'
-                  : 'border-line-strong text-ink-faint'
-              }`}
-            >
-              {mascota.validacion === 'aprobada' ? 'Verificado' : 'Sin validar'}
-            </span>
-          </div>
+          <span
+            className={`u-data shrink-0 border px-1.5 py-0.5 text-[10px] ${
+              mascota.validacion === 'aprobada'
+                ? 'border-moss-600 text-moss-700'
+                : 'border-line-strong text-ink-faint'
+            }`}
+          >
+            {mascota.validacion === 'aprobada' ? 'Verificado' : 'Sin validar'}
+          </span>
         </div>
 
         {(mascota.esUrgente || mascota.esAsustadiza) && (
-          <div className="mt-2 flex flex-wrap gap-1.5">
+          <div className="mt-1 flex flex-wrap gap-1">
             {mascota.esUrgente && (
               <span className="u-data border border-brand-600 bg-brand-50 px-1.5 py-0.5 text-[10px] text-brand-700">
-                Urgente · condición de salud
+                Urgente
               </span>
             )}
             {mascota.esAsustadiza && (
@@ -97,25 +93,14 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
           </div>
         )}
 
-        <dl className="mt-2 space-y-1">
-          <div className="u-body flex gap-1.5">
-            <PinIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-ink-faint" />
-            <span className="min-w-0 truncate">
-              <dt className="inline font-semibold text-ink-soft">Visto por última vez: </dt>
-              <dd className="inline">
-                {formatearFecha(mascota.ultimaVezFecha)} — {mascota.ultimaVezLugarTexto}
-              </dd>
-            </span>
-          </div>
-          <div className="u-body truncate">
-            <dt className="inline font-semibold text-ink-soft">
-              {mascota.tipoReporte === 'rescatada' ? 'Dónde está ahora: ' : 'Residencia del dueño: '}
-            </dt>
-            <dd className="inline">{mascota.lugarResidencia}</dd>
-          </div>
-        </dl>
+        <p className="u-body mt-1 flex items-center gap-1.5 truncate text-ink-soft">
+          <PinIcon className="h-3.5 w-3.5 shrink-0 text-ink-faint" />
+          <span className="truncate">
+            {formatearFecha(mascota.ultimaVezFecha)} — {mascota.ultimaVezLugarTexto}
+          </span>
+        </p>
 
-        <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+        <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
           {TELEFONOS_FUNCIONARIOS.map((telefono) => (
             <BotonTelefono key={telefono} telefono={telefono} nombreMascota={mascota.nombre} />
           ))}
@@ -133,12 +118,12 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
             type="button"
             onClick={handleMarcarEncontrada}
             disabled={marcando}
-            className="mt-2.5 border border-brand-800 bg-brand-800 px-3 py-1.5 text-[13px] font-semibold text-white transition-colors hover:bg-brand-900 disabled:opacity-50"
+            className="mt-1.5 border border-brand-800 bg-brand-800 px-3 py-1.5 text-[13px] font-semibold text-white transition-colors hover:bg-brand-900 disabled:opacity-50"
           >
             {marcando ? 'Marcando...' : etiquetaAccionResolver(mascota.tipoReporte)}
           </button>
         )}
-        {error && <p className="mt-2 text-[13px] font-medium text-brand-700">{error}</p>}
+        {error && <p className="mt-1.5 text-[13px] font-medium text-brand-700">{error}</p>}
       </div>
 
       {detalleAbierto && (
