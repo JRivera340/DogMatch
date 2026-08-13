@@ -48,22 +48,12 @@ export function Layout() {
       <main className="flex min-h-0 flex-1 overflow-y-auto">
         <Outlet />
       </main>
-      <footer className="border-t border-line bg-paper-raised py-1 sm:py-1.5">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-0.5 px-4 text-center">
-          <span className="u-eyebrow text-[6.5px] leading-tight text-brand-700 sm:text-[8px]">
-            Una iniciativa de DemoData para proteger y reunir a nuestras mascotas en momentos de
-            emergencia. 🐾
-          </span>
-          <div className="flex flex-col items-center justify-center gap-0.5 sm:flex-row sm:justify-between sm:gap-2">
-            <span className="u-eyebrow text-[6.5px] leading-tight sm:text-[8px]">
-              Huellas de Regreso · Red de apoyo para reunir mascotas con sus familias
-            </span>
-            <div className="flex items-center gap-1 text-ink-faint">
-              <span className="u-data text-[7px] leading-tight sm:text-[9px]">Desarrollado por</span>
-              <img src="/brand/demodata-logo.png" alt="DemoData" className="h-2.5 w-auto sm:h-3.5" />
-            </div>
-          </div>
-        </div>
+      <footer className="flex shrink-0 items-center justify-center gap-1.5 border-t border-line bg-paper-raised px-3 py-1">
+        <img src="/brand/demodata-logo.png" alt="DemoData" className="h-2.5 w-auto shrink-0" />
+        <span className="u-eyebrow text-[6.5px] leading-tight text-brand-700 sm:text-[8px]">
+          Una iniciativa de DemoData para proteger y reunir a nuestras mascotas en momentos de
+          emergencia. 🐾
+        </span>
       </footer>
     </div>
   );
