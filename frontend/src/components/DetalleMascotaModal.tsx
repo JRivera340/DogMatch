@@ -165,7 +165,12 @@ export function DetalleMascotaModal({ mascota, onClose, admin }: Props) {
                     <dd className="inline">{mascota.senasParticulares}</dd>
                   </div>
                 )}
-
+                {mascota.otrasSenas && (
+                  <div className="u-body">
+                    <dt className="inline font-semibold text-ink-soft">Otras señas: </dt>
+                    <dd className="inline">{mascota.otrasSenas}</dd>
+                  </div>
+                )}
               </dl>
 
               {mascota.senas.length > 0 && (
