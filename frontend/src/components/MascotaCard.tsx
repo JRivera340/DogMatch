@@ -5,7 +5,7 @@ import { TELEFONOS_FUNCIONARIOS } from '../data/contactoOficial';
 import { PinIcon } from './icons';
 import { BotonTelefono } from './BotonTelefono';
 import { DetalleMascotaModal } from './DetalleMascotaModal';
-import { etiquetaAccionResolver, etiquetaEstado, formatearFecha } from '../utils/mascotaFormato';
+import { etiquetaAccionResolver, etiquetaEstadoCorta, formatearFecha } from '../utils/mascotaFormato';
 
 interface Props {
   mascota: Mascota;
@@ -50,7 +50,7 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
           className={`stamp absolute -top-2 -left-2 bg-paper-raised ${estaEncontrada ? 'text-moss-700' : 'text-brand-600'}`}
           aria-hidden
         >
-          {etiquetaEstado(mascota.tipoReporte, mascota.estado, mascota.genero)}
+          {etiquetaEstadoCorta(mascota.tipoReporte, mascota.estado, mascota.genero)}
         </span>
       </button>
 
