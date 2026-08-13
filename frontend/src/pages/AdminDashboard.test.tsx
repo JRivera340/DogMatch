@@ -84,7 +84,7 @@ describe('AdminDashboard', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Validación' }));
 
     expect(await screen.findByText('Firulais')).toBeInTheDocument();
-    expect(screen.getAllByText('perdida').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Perdido').length).toBeGreaterThan(0);
   });
 
   it('elimina un caso tras confirmar dos veces', async () => {

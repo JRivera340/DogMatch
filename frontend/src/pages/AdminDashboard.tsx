@@ -11,7 +11,7 @@ import { limpiarTokenAdmin, obtenerTokenAdmin } from '../adminAuth';
 import type { Mascota, TipoReporte, Validacion } from '../types';
 import { MapaValidacion } from '../components/MapaValidacion';
 import { DetalleMascotaModal } from '../components/DetalleMascotaModal';
-import { codigoCaso, formatearFecha } from '../utils/mascotaFormato';
+import { codigoCaso, etiquetaEstado, formatearFecha } from '../utils/mascotaFormato';
 import { useAlturaDisponible } from '../utils/useAlturaDisponible';
 import {
   TODAS_LAS_CIUDADES,
@@ -377,7 +377,7 @@ export function AdminDashboard() {
                               : 'border-moss-600 text-moss-700'
                           }`}
                         >
-                          {mascota.estado}
+                          {etiquetaEstado(mascota.tipoReporte, mascota.estado, mascota.genero)}
                         </span>
                       </td>
                       <td className="px-3 py-2.5">
