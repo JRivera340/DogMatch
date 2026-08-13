@@ -47,9 +47,7 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
           className={`h-full w-full object-cover contrast-[1.03] ${estaEncontrada ? 'grayscale-[35%]' : 'grayscale-[8%]'}`}
         />
         <span
-          className={`absolute top-1 left-1 z-10 max-w-[calc(100%-0.5rem)] truncate whitespace-nowrap ${
-            estaEncontrada ? 'bg-moss-700' : 'bg-brand-600'
-          } px-1.5 py-0.5 text-[9px] font-bold tracking-wide text-white uppercase shadow-sm`}
+          className={`stamp absolute -top-2 -left-2 bg-paper-raised ${estaEncontrada ? 'text-moss-700' : 'text-brand-600'}`}
           aria-hidden
         >
           {etiquetaEstado(mascota.tipoReporte, mascota.estado, mascota.genero)}
@@ -63,8 +61,10 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
           <div className="min-w-0">
             <h3 className="u-title-card truncate text-[13px] sm:text-base">{mascota.nombre}</h3>
             <p className="truncate text-[11px] text-ink-soft sm:u-body">
-              {mascota.tipoReporte === 'rescatada' && mascota.estado !== 'encontrada' && (
-                <span className="text-brand-600">Busca su dueño · </span>
+              {(estaEncontrada || mascota.tipoReporte === 'rescatada') && (
+                <span className={estaEncontrada ? 'text-moss-700' : 'text-brand-600'}>
+                  {etiquetaEstado(mascota.tipoReporte, mascota.estado, mascota.genero)} ·{' '}
+                </span>
               )}
               {mascota.especie} · {mascota.raza} · {mascota.genero} · {mascota.color}
             </p>

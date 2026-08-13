@@ -368,8 +368,12 @@ export function AdminDashboard() {
                       </td>
                       <td className="u-body px-3 py-2.5">
                         <span className="font-semibold">{mascota.nombre}</span>
-                        {mascota.tipoReporte === 'rescatada' && mascota.estado !== 'encontrada' && (
-                          <span className="u-data mt-0.5 block text-brand-600">Busca su dueño</span>
+                        {(mascota.estado === 'encontrada' || mascota.tipoReporte === 'rescatada') && (
+                          <span
+                            className={`u-data mt-0.5 block ${mascota.estado === 'encontrada' ? 'text-moss-700' : 'text-brand-600'}`}
+                          >
+                            {etiquetaEstado(mascota.tipoReporte, mascota.estado, mascota.genero)}
+                          </span>
                         )}
                       </td>
                       <td className="px-3 py-2.5">

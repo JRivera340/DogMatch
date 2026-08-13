@@ -7,6 +7,7 @@ import { BuscadorCiudad } from './BuscadorCiudad';
 import { DetalleMascotaModal } from './DetalleMascotaModal';
 import { MapaLeyenda } from './MapaLeyenda';
 import { useInvalidarMapaAlRedimensionar } from '../utils/useInvalidarMapa';
+import { etiquetaEstado } from '../utils/mascotaFormato';
 
 // Color = tipo de reporte mientras el caso está activo; una vez resuelto
 // (estado="encontrada", sin importar el tipo) se muestra en gris apagado.
@@ -105,8 +106,10 @@ export function MapaMascotas({
             <Popup>
               <div className="u-body">
                 <p className="u-title-card text-[1rem]">{mascota.nombre}</p>
-                {mascota.tipoReporte === 'rescatada' && mascota.estado !== 'encontrada' && (
-                  <p className="u-data text-brand-600">Busca su dueño</p>
+                {(mascota.estado === 'encontrada' || mascota.tipoReporte === 'rescatada') && (
+                  <p className={`u-data ${mascota.estado === 'encontrada' ? 'text-moss-700' : 'text-brand-600'}`}>
+                    {etiquetaEstado(mascota.tipoReporte, mascota.estado, mascota.genero)}
+                  </p>
                 )}
                 <p className="text-ink-soft">{mascota.raza}</p>
                 <p className="u-data text-ink-faint">{mascota.ultimaVezLugarTexto}</p>

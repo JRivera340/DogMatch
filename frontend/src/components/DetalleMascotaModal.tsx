@@ -81,16 +81,17 @@ export function DetalleMascotaModal({ mascota, onClose, admin }: Props) {
                 <div className="flex flex-col items-end gap-1">
                   <span className="u-data text-ink-faint">#{codigoCaso(mascota.id)}</span>
                   <span
-                    className={`whitespace-nowrap px-2 py-1 text-[10px] font-bold tracking-wide text-white uppercase ${
-                      estaEncontrada ? 'bg-moss-700' : 'bg-brand-600'
-                    }`}
+                    className={`stamp text-[10px] ${estaEncontrada ? 'text-moss-700' : 'text-brand-600'}`}
                   >
                     {etiquetaEstado(mascota.tipoReporte, mascota.estado, mascota.genero)}
                   </span>
                 </div>
               </div>
 
-              {mascota.tipoReporte === 'rescatada' && mascota.estado !== 'encontrada' && (
+              {estaEncontrada && (
+                <p className="u-data text-moss-700">Este caso ya está con su familia</p>
+              )}
+              {!estaEncontrada && mascota.tipoReporte === 'rescatada' && (
                 <p className="u-data text-brand-600">Esta mascota busca a su dueño</p>
               )}
 
