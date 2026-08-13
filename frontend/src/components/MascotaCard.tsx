@@ -38,7 +38,7 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
       <button
         type="button"
         onClick={() => setDetalleAbierto(true)}
-        className="relative w-20 shrink-0 overflow-visible sm:w-28"
+        className="relative w-24 shrink-0 overflow-visible sm:w-28"
         aria-label={`Ver detalle de ${mascota.nombre}`}
       >
         <img
@@ -97,17 +97,17 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
           </div>
         )}
 
-        <dl className="mt-3 space-y-1.5">
+        <dl className="mt-2 space-y-1">
           <div className="u-body flex gap-1.5">
             <PinIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-ink-faint" />
-            <span>
+            <span className="min-w-0 truncate">
               <dt className="inline font-semibold text-ink-soft">Visto por última vez: </dt>
               <dd className="inline">
                 {formatearFecha(mascota.ultimaVezFecha)} — {mascota.ultimaVezLugarTexto}
               </dd>
             </span>
           </div>
-          <div className="u-body">
+          <div className="u-body truncate">
             <dt className="inline font-semibold text-ink-soft">
               {mascota.tipoReporte === 'rescatada' ? 'Dónde está ahora: ' : 'Residencia del dueño: '}
             </dt>
@@ -115,7 +115,7 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
           </div>
         </dl>
 
-        <div className="mt-3.5 flex flex-wrap items-center gap-1.5">
+        <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
           {TELEFONOS_FUNCIONARIOS.map((telefono) => (
             <BotonTelefono key={telefono} telefono={telefono} nombreMascota={mascota.nombre} />
           ))}
@@ -133,7 +133,7 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
             type="button"
             onClick={handleMarcarEncontrada}
             disabled={marcando}
-            className="mt-3.5 border border-brand-800 bg-brand-800 px-3 py-1.5 text-[13px] font-semibold text-white transition-colors hover:bg-brand-900 disabled:opacity-50"
+            className="mt-2.5 border border-brand-800 bg-brand-800 px-3 py-1.5 text-[13px] font-semibold text-white transition-colors hover:bg-brand-900 disabled:opacity-50"
           >
             {marcando ? 'Marcando...' : etiquetaAccionResolver(mascota.tipoReporte)}
           </button>

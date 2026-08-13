@@ -193,35 +193,16 @@ export function Inicio() {
           />
         </div>
 
-        {/* Todo en la esquina izquierda a propósito: la derecha la ocupa el buscador
-            de ciudad del mapa (BuscadorCiudad), y el zoom +/- de Leaflet va apagado
-            en mobile (se usa pellizco) para no competir por espacio con nada de esto. */}
-        <div className="pointer-events-none absolute top-0 left-0 z-[550] flex flex-col items-start gap-1.5 p-2">
+        {/* Solo el contador flota sobre el mapa, en la esquina izquierda: la derecha
+            la ocupa el buscador de ciudad (BuscadorCiudad), y el zoom +/- de Leaflet
+            va apagado en mobile (se usa pellizco) para no competir con nada de esto. */}
+        <div className="pointer-events-none absolute top-2 left-2 z-[550]">
           <div className="pointer-events-auto border border-line bg-paper-raised/95 px-3 py-1.5 shadow-[2px_2px_0_rgba(34,29,26,0.15)]">
             <p className="u-eyebrow text-[9px] text-ink-faint">Casos</p>
             <p className="u-title-section text-base text-brand-700">
               {cargando ? '—' : mascotasFiltradas.length}
               <span className="u-data ml-1 text-[10px] text-ink-faint">/ {total}</span>
             </p>
-          </div>
-          <div className="pointer-events-auto flex gap-1.5">
-            <button
-              type="button"
-              onClick={() => setFiltrosAbiertos(true)}
-              className="u-data flex items-center gap-1.5 border-2 border-brand-700 bg-brand-600 px-3 py-2 font-semibold text-white shadow-[2px_2px_0_rgba(74,14,23,0.35)]"
-            >
-              <FilterIcon className="h-3.5 w-3.5" />
-              Filtros{hayFiltrosActivos ? ` (${cantidadFiltrosActivos})` : ''}
-            </button>
-            {hayFiltrosActivos && (
-              <button
-                type="button"
-                onClick={limpiarFiltros}
-                className="u-data border border-line-strong bg-paper-raised px-3 py-2 text-brand-700 shadow-[2px_2px_0_rgba(34,29,26,0.15)]"
-              >
-                Limpiar
-              </button>
-            )}
           </div>
         </div>
 
@@ -230,19 +211,42 @@ export function Inicio() {
             listaAbierta ? 'h-[70vh]' : 'h-14'
           }`}
         >
-          <button
-            type="button"
-            onClick={() => setListaAbierta((v) => !v)}
-            aria-expanded={listaAbierta}
-            className="flex shrink-0 items-center justify-center gap-2 py-2.5"
-          >
-            <ChevronIcon
-              className={`h-4 w-4 text-ink-faint transition-transform duration-300 ${listaAbierta ? 'rotate-180' : ''}`}
-            />
-            <span className="u-label">
-              Casos reportados ({cargando ? '—' : mascotasFiltradas.length})
-            </span>
-          </button>
+          {/* Filtros/Limpiar viven en esta barra a propósito: sube y baja pegada
+              al panel en vez de flotar aparte sobre el mapa. */}
+          <div className="flex shrink-0 items-center justify-between gap-2 pr-2 pl-3">
+            <button
+              type="button"
+              onClick={() => setListaAbierta((v) => !v)}
+              aria-expanded={listaAbierta}
+              className="flex flex-1 items-center gap-2 py-2.5"
+            >
+              <ChevronIcon
+                className={`h-4 w-4 shrink-0 text-ink-faint transition-transform duration-300 ${listaAbierta ? 'rotate-180' : ''}`}
+              />
+              <span className="u-label">
+                Casos reportados ({cargando ? '—' : mascotasFiltradas.length})
+              </span>
+            </button>
+            <div className="flex shrink-0 items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setFiltrosAbiertos(true)}
+                className="u-data flex items-center gap-1.5 border-2 border-brand-700 bg-brand-600 px-2.5 py-1.5 font-semibold text-white shadow-[2px_2px_0_rgba(74,14,23,0.35)]"
+              >
+                <FilterIcon className="h-3.5 w-3.5" />
+                Filtros{hayFiltrosActivos ? ` (${cantidadFiltrosActivos})` : ''}
+              </button>
+              {hayFiltrosActivos && (
+                <button
+                  type="button"
+                  onClick={limpiarFiltros}
+                  className="u-data border border-line-strong px-2.5 py-1.5 text-brand-700"
+                >
+                  Limpiar
+                </button>
+              )}
+            </div>
+          </div>
 
           <div className="flex-1 space-y-3 overflow-y-auto border-t border-line px-4 py-3">{listaCasos}</div>
         </div>
