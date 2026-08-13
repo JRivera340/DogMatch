@@ -106,11 +106,9 @@ export function MapaMascotas({
             <Popup>
               <div className="u-body">
                 <p className="u-title-card text-[1rem]">{mascota.nombre}</p>
-                {(mascota.estado === 'encontrada' || mascota.tipoReporte === 'rescatada') && (
-                  <p className={`u-data ${mascota.estado === 'encontrada' ? 'text-moss-700' : 'text-brand-600'}`}>
-                    {etiquetaEstado(mascota.tipoReporte, mascota.estado, mascota.genero)}
-                  </p>
-                )}
+                <p className={`u-data ${mascota.estado === 'encontrada' ? 'text-moss-700' : 'text-brand-600'}`}>
+                  {etiquetaEstado(mascota.tipoReporte, mascota.estado, mascota.genero)}
+                </p>
                 <p className="text-ink-soft">{mascota.raza}</p>
                 <p className="u-data text-ink-faint">{mascota.ultimaVezLugarTexto}</p>
                 <button
