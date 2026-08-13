@@ -248,7 +248,7 @@ export function Inicio() {
             </div>
           </div>
 
-          <div className="flex-1 space-y-6 overflow-y-auto border-t border-line px-4 py-3">{listaCasos}</div>
+          <div className="flex-1 space-y-8 overflow-y-auto border-t border-line px-4 py-3">{listaCasos}</div>
         </div>
 
         {filtrosAbiertos && (
@@ -277,7 +277,7 @@ export function Inicio() {
                 >
                   <option value="Todas">Tipo: todos</option>
                   <option value="perdida">Perdida (con dueño)</option>
-                  <option value="rescatada">Rescatada (sin dueño)</option>
+                  <option value="rescatada">Busca su dueño</option>
                 </select>
 
                 <select
@@ -409,7 +409,7 @@ export function Inicio() {
             >
               <option value="Todas">Tipo: todos</option>
               <option value="perdida">Perdida (con dueño)</option>
-              <option value="rescatada">Rescatada (sin dueño)</option>
+              <option value="rescatada">Busca su dueño</option>
             </select>
 
             <select
@@ -494,7 +494,7 @@ export function Inicio() {
           </div>
         </div>
 
-        <div className="flex-1 space-y-6 p-4">{listaCasos}</div>
+        <div className="flex-1 space-y-8 p-4">{listaCasos}</div>
       </div>
     </div>
   );

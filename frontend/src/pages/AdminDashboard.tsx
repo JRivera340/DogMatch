@@ -12,7 +12,12 @@ import { MapaValidacion } from '../components/MapaValidacion';
 import { DetalleMascotaModal } from '../components/DetalleMascotaModal';
 import { codigoCaso, formatearFecha } from '../utils/mascotaFormato';
 import { useAlturaDisponible } from '../utils/useAlturaDisponible';
-import { CIUDADES_COLOMBIA, centroDepartamento, DEPARTAMENTOS_AFECTADOS } from '../data/ciudades';
+import {
+  CIUDADES_COLOMBIA,
+  CIUDADES_AFECTADAS,
+  centroDepartamento,
+  DEPARTAMENTOS_AFECTADOS,
+} from '../data/ciudades';
 import { distanciaKm } from '../utils/geo';
 
 const RADIO_CIUDAD_KM = 25;
@@ -37,6 +42,7 @@ export function AdminDashboard() {
   const [filtroTipo, setFiltroTipo] = useState<FiltroTipo>('todas');
   const [filtroValidacion, setFiltroValidacion] = useState<FiltroValidacion>(null);
   const [filtroDepartamento, setFiltroDepartamento] = useState<string>('Todos');
+  const [filtroCiudad, setFiltroCiudad] = useState<string>('Todas');
   const [confirmandoId, setConfirmandoId] = useState<string | null>(null);
   const [procesandoId, setProcesandoId] = useState<string | null>(null);
   const [detalleId, setDetalleId] = useState<string | null>(null);
@@ -142,16 +148,24 @@ export function AdminDashboard() {
     setFiltroValidacion((actual) => (actual === valor ? null : valor));
   }
 
+  const ciudadSeleccionada = CIUDADES_COLOMBIA.find((c) => c.nombre === filtroCiudad) ?? null;
   const ciudadesDelDepartamento =
     filtroDepartamento !== 'Todos'
       ? CIUDADES_COLOMBIA.filter((c) => c.departamento === filtroDepartamento)
       : [];
-  const objetivoMapa = filtroDepartamento !== 'Todos' ? centroDepartamento(filtroDepartamento) : null;
+  // Si hay ciudad puntual, esa manda; si solo hay departamento, el mapa se va al centro de ese departamento.
+  const objetivoMapa =
+    ciudadSeleccionada ??
+    (filtroDepartamento !== 'Todos' ? centroDepartamento(filtroDepartamento) : null);
 
   const mascotasFiltradas = mascotas.filter((m) => {
     if (filtroTipo !== 'todas' && m.tipoReporte !== filtroTipo) return false;
     if (filtroEstado !== 'todas' && m.estado !== filtroEstado) return false;
     if (filtroValidacion && m.validacion !== filtroValidacion) return false;
+    if (ciudadSeleccionada) {
+      const distancia = distanciaKm(m.lat, m.lng, ciudadSeleccionada.lat, ciudadSeleccionada.lng);
+      if (distancia > RADIO_CIUDAD_KM) return false;
+    }
     if (filtroDepartamento !== 'Todos') {
       const perteneceAlDepartamento = ciudadesDelDepartamento.some(
         (c) => distanciaKm(m.lat, m.lng, c.lat, c.lng) <= RADIO_CIUDAD_KM,
@@ -242,7 +256,7 @@ export function AdminDashboard() {
           >
             <option value="todas">Todos</option>
             <option value="perdida">Perdida (con dueño)</option>
-            <option value="rescatada">Rescatada (sin dueño)</option>
+            <option value="rescatada">Busca su dueño</option>
           </select>
 
           <span className="u-label ml-4 shrink-0">Estado</span>
@@ -271,6 +285,20 @@ export function AdminDashboard() {
             {DEPARTAMENTOS_AFECTADOS.map((departamento) => (
               <option key={departamento} value={departamento}>
                 {departamento}
+              </option>
+            ))}
+          </select>
+
+          <span className="u-label ml-4 shrink-0">Municipio</span>
+          <select
+            value={filtroCiudad}
+            onChange={(e) => setFiltroCiudad(e.target.value)}
+            className="u-data shrink-0 border border-line-strong bg-paper-raised px-2 py-1.5 text-ink focus:border-brand-600 focus:outline-none"
+          >
+            <option value="Todas">Todos</option>
+            {CIUDADES_AFECTADAS.map((ciudad) => (
+              <option key={ciudad.nombre} value={ciudad.nombre}>
+                {ciudad.nombre}
               </option>
             ))}
           </select>
@@ -336,9 +364,7 @@ export function AdminDashboard() {
                       <td className="u-body px-3 py-2.5">
                         <span className="font-semibold">{mascota.nombre}</span>
                         {mascota.tipoReporte === 'rescatada' && (
-                          <span className="u-data mt-0.5 block text-brand-600">
-                            Rescatada · sin dueño
-                          </span>
+                          <span className="u-data mt-0.5 block text-brand-600">Busca su dueño</span>
                         )}
                       </td>
                       <td className="px-3 py-2.5">

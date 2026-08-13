@@ -43,7 +43,6 @@ export function FormReportar() {
   const [edad, setEdad] = useState<Edad>('Adulto');
   const [senasParticulares, setSenasParticulares] = useState('');
   const [senas, setSenas] = useState<string[]>([]);
-  const [otrasSenas, setOtrasSenas] = useState('');
   const [esUrgente, setEsUrgente] = useState(false);
   const [esAsustadiza, setEsAsustadiza] = useState(false);
   const [ultimaVezFecha, setUltimaVezFecha] = useState('');
@@ -123,7 +122,6 @@ export function FormReportar() {
         edad,
         senasParticulares: senasParticulares.trim(),
         senas,
-        otrasSenas: otrasSenas.trim(),
         esUrgente,
         esAsustadiza,
         fotoUrl: publicUrl,
@@ -153,8 +151,15 @@ export function FormReportar() {
       <div>
         <p className="u-eyebrow">Formulario de reporte</p>
         <h1 className="u-title-page mt-1">
-          {esRescatada ? 'Reportar mascota rescatada' : 'Reportar mascota perdida'}
+          {esRescatada ? 'Reportar mascota que busca dueño' : 'Reportar mascota perdida'}
         </h1>
+      </div>
+
+      <div className="border-l-4 border-brand-600 bg-brand-50 p-3">
+        <p className="u-body text-brand-800">
+          Nuestro equipo intermediario prestará sus servicios para unir familias de manera
+          voluntaria.
+        </p>
       </div>
 
       <section className="border border-line bg-paper-raised p-5 shadow-[3px_3px_0_rgba(34,29,26,0.05)] sm:p-6">
@@ -193,7 +198,7 @@ export function FormReportar() {
         </div>
         <p className="u-data mt-2 text-ink-faint">
           {esRescatada
-            ? 'Publicamos esta mascota como rescatada, sin dueño conocido, para que su dueño la reconozca o alguien la adopte.'
+            ? 'Publicamos esta mascota, sin dueño conocido, para que su dueño la reconozca o alguien la adopte.'
             : 'Publicamos tu mascota como perdida para que la reconozcan y te contacten.'}
         </p>
       </section>
@@ -337,16 +342,6 @@ export function FormReportar() {
               </label>
             ))}
           </div>
-        </div>
-
-        <div>
-          <label className={labelClass}>Otras señas (opcional)</label>
-          <input
-            value={otrasSenas}
-            onChange={(e) => setOtrasSenas(e.target.value)}
-            placeholder="Cualquier otra característica que ayude a identificarla"
-            className={inputClass}
-          />
         </div>
 
         <label className="flex items-start gap-3 border-l-4 border-brand-600 bg-brand-50 p-3 u-body">

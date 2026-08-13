@@ -52,7 +52,7 @@ export interface NuevaMascota {
   edad: Edad;
   senasParticulares: string;
   senas: string[];
-  otrasSenas: string;
+  otrasSenas?: string;
   esUrgente: boolean;
   esAsustadiza: boolean;
   fotoUrl: string;
@@ -62,6 +62,6 @@ export interface NuevaMascota {
   lng: number;
   lugarResidencia: string;
   telefono1: string;
-  telefono2: string;
+  telefono2?: string;
   autorizaTratamientoDatos: boolean;
 }

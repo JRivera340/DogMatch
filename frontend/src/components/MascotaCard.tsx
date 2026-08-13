@@ -62,7 +62,7 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
             <h3 className="u-title-card truncate text-[13px] sm:text-base">{mascota.nombre}</h3>
             <p className="truncate text-[11px] text-ink-soft sm:u-body">
               {mascota.tipoReporte === 'rescatada' && (
-                <span className="text-brand-600">Rescatada · </span>
+                <span className="text-brand-600">Busca su dueño · </span>
               )}
               {mascota.especie} · {mascota.raza} · {mascota.genero} · {mascota.color}
             </p>

@@ -89,7 +89,7 @@ export function DetalleMascotaModal({ mascota, onClose, admin }: Props) {
               </div>
 
               {mascota.tipoReporte === 'rescatada' && (
-                <p className="u-data text-brand-600">Mascota rescatada · busca dueño</p>
+                <p className="u-data text-brand-600">Esta mascota busca a su dueño</p>
               )}
 
               <p className="u-body mt-1 text-ink-soft">

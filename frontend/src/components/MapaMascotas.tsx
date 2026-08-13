@@ -97,7 +97,7 @@ export function MapaMascotas({
               <div className="u-body">
                 <p className="u-title-card text-[1rem]">{mascota.nombre}</p>
                 {mascota.tipoReporte === 'rescatada' && (
-                  <p className="u-data text-brand-600">Rescatada · busca dueño</p>
+                  <p className="u-data text-brand-600">Busca su dueño</p>
                 )}
                 <p className="text-ink-soft">{mascota.raza}</p>
                 <p className="u-data text-ink-faint">{mascota.ultimaVezLugarTexto}</p>
@@ -121,7 +121,7 @@ export function MapaMascotas({
         className={leyendaClassName}
         items={[
           { color: COLOR_PERDIDA, etiqueta: 'Perdida' },
-          { color: COLOR_RESCATADA, etiqueta: 'Rescatada' },
+          { color: COLOR_RESCATADA, etiqueta: 'Busca su dueño' },
           { color: COLOR_RESUELTA, etiqueta: 'Resuelta' },
         ]}
       />

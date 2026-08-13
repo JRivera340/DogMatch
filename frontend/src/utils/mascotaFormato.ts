@@ -7,9 +7,8 @@ export function etiquetaEstado(
   genero: 'Macho' | 'Hembra',
 ) {
   if (estado === 'encontrada') return 'Con dueño';
-  const masculino = genero === 'Macho';
-  if (tipoReporte === 'rescatada') return masculino ? 'Rescatado' : 'Rescatada';
-  return masculino ? 'Perdido' : 'Perdida';
+  if (tipoReporte === 'rescatada') return 'Busca su dueño';
+  return genero === 'Macho' ? 'Perdido' : 'Perdida';
 }
 
 /** Texto del botón que resuelve el caso — distinto según el tipo de reporte. */
