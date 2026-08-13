@@ -38,7 +38,7 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
       <button
         type="button"
         onClick={() => setDetalleAbierto(true)}
-        className="relative w-24 shrink-0 overflow-visible sm:w-28"
+        className="relative w-28 shrink-0 overflow-visible sm:w-32"
         aria-label={`Ver detalle de ${mascota.nombre}`}
       >
         <img
@@ -56,7 +56,7 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
 
       <div className="perforation bg-paper-raised" aria-hidden />
 
-      <div className="min-w-0 flex-1 py-2 pr-3 pl-2.5 sm:p-4">
+      <div className="min-w-0 flex-1 py-1.5 pr-2.5 pl-2 sm:p-4">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <h3 className="u-title-card truncate">{mascota.nombre}</h3>
@@ -102,12 +102,12 @@ export function MascotaCard({ mascota, onEncontrada }: Props) {
 
         <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
           {TELEFONOS_FUNCIONARIOS.map((telefono) => (
-            <BotonTelefono key={telefono} telefono={telefono} nombreMascota={mascota.nombre} />
+            <BotonTelefono key={telefono} telefono={telefono} nombreMascota={mascota.nombre} compacto />
           ))}
           <button
             type="button"
             onClick={() => setDetalleAbierto(true)}
-            className="u-data border border-line-strong px-2.5 py-1.5 text-ink-soft transition-colors hover:border-brand-600 hover:text-brand-700"
+            className="u-data border border-line-strong px-2 py-1.5 text-ink-soft transition-colors hover:border-brand-600 hover:text-brand-700"
           >
             Ver detalle
           </button>

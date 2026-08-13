@@ -5,15 +5,31 @@ import { linkWhatsApp } from '../utils/mascotaFormato';
 interface Props {
   telefono: string;
   nombreMascota: string;
+  /** Solo el ícono de WhatsApp, sin el botón de copiar número — para listados angostos. */
+  compacto?: boolean;
 }
 
-export function BotonTelefono({ telefono, nombreMascota }: Props) {
+export function BotonTelefono({ telefono, nombreMascota, compacto = false }: Props) {
   const [copiado, setCopiado] = useState(false);
 
   async function copiar() {
     await navigator.clipboard.writeText(telefono);
     setCopiado(true);
     setTimeout(() => setCopiado(false), 2000);
+  }
+
+  if (compacto) {
+    return (
+      <a
+        href={linkWhatsApp(telefono, nombreMascota)}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`WhatsApp ${telefono}`}
+        className="flex items-center justify-center border border-moss-700 bg-moss-600 p-1.5 text-white transition-colors hover:bg-moss-700"
+      >
+        <PhoneIcon className="h-3.5 w-3.5" />
+      </a>
+    );
   }
 
   return (
