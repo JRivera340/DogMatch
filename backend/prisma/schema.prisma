@@ -37,4 +37,20 @@ model Mascota {
   autorizaTratamientoDatos  Boolean
   clicks                    Int      @default(0)
   createdAt                 DateTime @default(now())
+  comunidadId               String?
+  comunidad                 Comunidad? @relation(fields: [comunidadId], references: [id], onDelete: SetNull)
+}
+
+// Punto de agrupación en el mapa — varias mascotas reportadas en el mismo
+// vecindario/zona se pueden vincular acá para verlas juntas. Cualquiera
+// (admin o público) puede vincular mascotas ya registradas; solo el admin
+// crea/borra el punto de comunidad en sí.
+model Comunidad {
+  id          String    @id @default(uuid())
+  nombre      String
+  descripcion String    @default("")
+  lat         Float
+  lng         Float
+  createdAt   DateTime  @default(now())
+  mascotas    Mascota[]
 }

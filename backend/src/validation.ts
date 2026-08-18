@@ -83,6 +83,17 @@ export const adminValidacionSchema = z.object({
   validacion: z.enum(['pendiente', 'aprobada', 'rechazada']),
 });
 
+export const crearComunidadSchema = z.object({
+  nombre: z.string().trim().min(1, 'Nombre requerido').max(80),
+  descripcion: z.string().trim().max(300).optional().default(''),
+  lat: z.number().min(LAT_MIN).max(LAT_MAX),
+  lng: z.number().min(LNG_MIN).max(LNG_MAX),
+});
+
+export const vincularComunidadSchema = z.object({
+  comunidadId: z.string().uuid('comunidadId inválido').nullable(),
+});
+
 export const presignSchema = z.object({
   filename: z.string().trim().min(1).max(200),
   contentType: z

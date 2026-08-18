@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import L, { type Map as LeafletMap } from 'leaflet';
-import type { Mascota } from '../types';
+import type { Comunidad, Mascota } from '../types';
 import type { Ciudad } from '../data/ciudades';
+import { listarComunidades } from '../api';
 import { BuscadorCiudad } from './BuscadorCiudad';
+import { ComunidadMarcador } from './ComunidadMarcador';
 import { DetalleMascotaModal } from './DetalleMascotaModal';
 import { MapaLeyenda } from './MapaLeyenda';
 import { useInvalidarMapaAlRedimensionar } from '../utils/useInvalidarMapa';
@@ -80,7 +82,16 @@ export function MapaMascotas({
 }: Props) {
   const [map, setMap] = useState<LeafletMap | null>(null);
   const [detalle, setDetalle] = useState<Mascota | null>(null);
+  const [comunidades, setComunidades] = useState<Comunidad[]>([]);
   useInvalidarMapaAlRedimensionar(map);
+
+  function cargarComunidades() {
+    listarComunidades()
+      .then(setComunidades)
+      .catch(() => {});
+  }
+
+  useEffect(cargarComunidades, []);
 
   return (
     <div className="relative h-full w-full">
@@ -122,6 +133,9 @@ export function MapaMascotas({
             </Popup>
           </Marker>
         ))}
+        {comunidades.map((comunidad) => (
+          <ComunidadMarcador key={comunidad.id} comunidad={comunidad} onCambio={cargarComunidades} />
+        ))}
       </MapContainer>
 
       <div className="absolute top-2 right-2 z-[500]">
@@ -133,6 +147,7 @@ export function MapaMascotas({
           { color: COLOR_PERDIDA, etiqueta: 'Perdida' },
           { color: COLOR_RESCATADA, etiqueta: 'Busca su dueño' },
           { color: COLOR_RESUELTA, etiqueta: 'Está con su familia', emoji: '❤️' },
+          { color: '#6b4c9a', etiqueta: 'Comunidad', emoji: '🏘️' },
         ]}
       />
 

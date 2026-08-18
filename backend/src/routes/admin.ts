@@ -1,6 +1,12 @@
 import { Router } from 'express';
 import { prisma } from '../prisma';
-import { adminEstadoSchema, adminLoginSchema, adminTipoSchema, adminValidacionSchema } from '../validation';
+import {
+  adminEstadoSchema,
+  adminLoginSchema,
+  adminTipoSchema,
+  adminValidacionSchema,
+  crearComunidadSchema,
+} from '../validation';
 import { firmarTokenAdmin, requireAdmin } from '../adminAuth';
 import { envolverPaginado, leerPaginacion } from '../pagination';
 
@@ -89,6 +95,28 @@ adminRouter.patch('/mascotas/:id/tipo', requireAdmin, async (req, res) => {
     res.json({ id: mascota.id, tipoReporte: mascota.tipoReporte, estado: mascota.estado });
   } catch {
     res.status(404).json({ error: 'Mascota no encontrada' });
+  }
+});
+
+adminRouter.post('/comunidades', requireAdmin, async (req, res) => {
+  const parsed = crearComunidadSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.flatten() });
+    return;
+  }
+
+  const comunidad = await prisma.comunidad.create({ data: parsed.data });
+  res.status(201).json(comunidad);
+});
+
+adminRouter.delete('/comunidades/:id', requireAdmin, async (req, res) => {
+  const id = String(req.params.id);
+  try {
+    // Las mascotas vinculadas no se borran, solo pierden la referencia (onDelete: SetNull).
+    await prisma.comunidad.delete({ where: { id } });
+    res.status(204).send();
+  } catch {
+    res.status(404).json({ error: 'Comunidad no encontrada' });
   }
 });
 

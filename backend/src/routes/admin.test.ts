@@ -11,6 +11,10 @@ jest.mock('../prisma', () => ({
       delete: jest.fn(),
       update: jest.fn(),
     },
+    comunidad: {
+      create: jest.fn(),
+      delete: jest.fn(),
+    },
   },
 }));
 
@@ -20,6 +24,10 @@ const mockPrisma = prisma as unknown as {
     count: jest.Mock;
     delete: jest.Mock;
     update: jest.Mock;
+  };
+  comunidad: {
+    create: jest.Mock;
+    delete: jest.Mock;
   };
 };
 
@@ -185,6 +193,68 @@ describe('rutas admin protegidas', () => {
 
     expect(res.status).toBe(400);
     expect(mockPrisma.mascota.update).not.toHaveBeenCalled();
+  });
+
+  it('POST /api/admin/comunidades crea una comunidad', async () => {
+    mockPrisma.comunidad.create.mockResolvedValue({
+      id: 'com-1',
+      nombre: 'Barrio Las Flores',
+      descripcion: '',
+      lat: 4.5,
+      lng: -75.6,
+      createdAt: new Date().toISOString(),
+    });
+
+    const res = await request(app)
+      .post('/api/admin/comunidades')
+      .set('Authorization', `Bearer ${tokenValido()}`)
+      .send({ nombre: 'Barrio Las Flores', lat: 4.5, lng: -75.6 });
+
+    expect(res.status).toBe(201);
+    expect(res.body.nombre).toBe('Barrio Las Flores');
+    expect(mockPrisma.comunidad.create).toHaveBeenCalledWith({
+      data: { nombre: 'Barrio Las Flores', descripcion: '', lat: 4.5, lng: -75.6 },
+    });
+  });
+
+  it('POST /api/admin/comunidades rechaza sin token con 401', async () => {
+    const res = await request(app)
+      .post('/api/admin/comunidades')
+      .send({ nombre: 'X', lat: 4.5, lng: -75.6 });
+
+    expect(res.status).toBe(401);
+    expect(mockPrisma.comunidad.create).not.toHaveBeenCalled();
+  });
+
+  it('POST /api/admin/comunidades rechaza coordenadas fuera de rango con 400', async () => {
+    const res = await request(app)
+      .post('/api/admin/comunidades')
+      .set('Authorization', `Bearer ${tokenValido()}`)
+      .send({ nombre: 'X', lat: 90, lng: -75.6 });
+
+    expect(res.status).toBe(400);
+    expect(mockPrisma.comunidad.create).not.toHaveBeenCalled();
+  });
+
+  it('DELETE /api/admin/comunidades/:id elimina la comunidad', async () => {
+    mockPrisma.comunidad.delete.mockResolvedValue({ id: 'com-1' });
+
+    const res = await request(app)
+      .delete('/api/admin/comunidades/com-1')
+      .set('Authorization', `Bearer ${tokenValido()}`);
+
+    expect(res.status).toBe(204);
+    expect(mockPrisma.comunidad.delete).toHaveBeenCalledWith({ where: { id: 'com-1' } });
+  });
+
+  it('DELETE /api/admin/comunidades/:id retorna 404 si no existe', async () => {
+    mockPrisma.comunidad.delete.mockRejectedValue(new Error('not found'));
+
+    const res = await request(app)
+      .delete('/api/admin/comunidades/no-existe')
+      .set('Authorization', `Bearer ${tokenValido()}`);
+
+    expect(res.status).toBe(404);
   });
 
   it('PATCH /api/admin/mascotas/:id/validacion aprueba un caso', async () => {

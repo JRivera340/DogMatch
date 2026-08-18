@@ -255,6 +255,55 @@ describe('POST /api/mascotas/:id/click', () => {
   });
 });
 
+describe('PATCH /api/mascotas/:id/comunidad', () => {
+  const comunidadId = 'c0a1b2c3-d4e5-4f60-8a1b-2c3d4e5f6071';
+
+  it('vincula la mascota a una comunidad sin necesitar editToken', async () => {
+    mockPrisma.mascota.update.mockResolvedValue({ id: 'mascota-1', comunidadId });
+
+    const res = await request(app)
+      .patch('/api/mascotas/mascota-1/comunidad')
+      .send({ comunidadId });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ id: 'mascota-1', comunidadId });
+    expect(mockPrisma.mascota.update).toHaveBeenCalledWith({
+      where: { id: 'mascota-1' },
+      data: { comunidadId },
+    });
+  });
+
+  it('acepta comunidadId null para desvincular', async () => {
+    mockPrisma.mascota.update.mockResolvedValue({ id: 'mascota-1', comunidadId: null });
+
+    const res = await request(app)
+      .patch('/api/mascotas/mascota-1/comunidad')
+      .send({ comunidadId: null });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ id: 'mascota-1', comunidadId: null });
+  });
+
+  it('rechaza un comunidadId con formato inválido', async () => {
+    const res = await request(app)
+      .patch('/api/mascotas/mascota-1/comunidad')
+      .send({ comunidadId: 'no-es-un-uuid' });
+
+    expect(res.status).toBe(400);
+    expect(mockPrisma.mascota.update).not.toHaveBeenCalled();
+  });
+
+  it('retorna 404 si la mascota no existe', async () => {
+    mockPrisma.mascota.update.mockRejectedValue(new Error('not found'));
+
+    const res = await request(app)
+      .patch('/api/mascotas/no-existe/comunidad')
+      .send({ comunidadId });
+
+    expect(res.status).toBe(404);
+  });
+});
+
 describe('PATCH /api/mascotas/:id/encontrada', () => {
   it('rechaza editToken incorrecto con 403', async () => {
     mockPrisma.mascota.findUnique.mockResolvedValue({

@@ -36,6 +36,7 @@ const mascota: Mascota = {
   validacion: 'pendiente',
   clicks: 0,
   createdAt: new Date().toISOString(),
+  comunidadId: null,
 };
 
 describe('MascotaCard', () => {

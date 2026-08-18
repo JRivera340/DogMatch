@@ -4,6 +4,7 @@ import path from 'path';
 import { mascotasRouter } from './routes/mascotas';
 import { uploadsRouter } from './routes/uploads';
 import { adminRouter } from './routes/admin';
+import { comunidadesRouter } from './routes/comunidades';
 
 export function crearApp() {
   const app = express();
@@ -20,6 +21,7 @@ export function crearApp() {
   app.use('/api/mascotas', mascotasRouter);
   app.use('/api/uploads', uploadsRouter);
   app.use('/api/admin', adminRouter);
+  app.use('/api/comunidades', comunidadesRouter);
 
   const manejarErrores: ErrorRequestHandler = (err, _req, res, _next) => {
     console.error(err);

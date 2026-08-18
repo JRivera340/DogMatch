@@ -32,6 +32,17 @@ export interface Mascota {
   validacion: Validacion;
   clicks: number;
   createdAt: string;
+  comunidadId: string | null;
+}
+
+/** Punto de agrupación en el mapa — varias mascotas reportadas en la misma zona. */
+export interface Comunidad {
+  id: string;
+  nombre: string;
+  descripcion: string;
+  lat: number;
+  lng: number;
+  cantidadMascotas: number;
 }
 
 export interface Paginado<T> {

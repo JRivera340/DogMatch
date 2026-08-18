@@ -77,6 +77,24 @@ export function FilterIcon({ className }: IconProps) {
   );
 }
 
+export function HomeIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={className} aria-hidden>
+      <path d="M4 11.5 12 4l8 7.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M6 10v9h12v-9" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M10 19v-5h4v5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function PlusIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className} aria-hidden>
+      <path d="M12 5v14M5 12h14" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export function SearchOffIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={className} aria-hidden>

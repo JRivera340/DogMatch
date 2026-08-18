@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { randomUUID } from 'crypto';
 import { prisma } from '../prisma';
-import { crearMascotaSchema, marcarEncontradaSchema } from '../validation';
+import { crearMascotaSchema, marcarEncontradaSchema, vincularComunidadSchema } from '../validation';
 import { envolverPaginado, leerPaginacion } from '../pagination';
 
 export const mascotasRouter = Router();
@@ -59,6 +59,26 @@ mascotasRouter.post('/:id/click', async (req, res) => {
   }
 
   res.json({ clicks: actualizada.clicks });
+});
+
+mascotasRouter.patch('/:id/comunidad', async (req, res) => {
+  // Público y sin editToken a propósito: vincular una mascota YA registrada a un
+  // punto de comunidad es una acción de colaboración abierta, igual que reportar.
+  const parsed = vincularComunidadSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.flatten() });
+    return;
+  }
+
+  try {
+    const mascota = await prisma.mascota.update({
+      where: { id: req.params.id },
+      data: { comunidadId: parsed.data.comunidadId },
+    });
+    res.json({ id: mascota.id, comunidadId: mascota.comunidadId });
+  } catch {
+    res.status(404).json({ error: 'Mascota no encontrada' });
+  }
 });
 
 mascotasRouter.patch('/:id/encontrada', async (req, res) => {

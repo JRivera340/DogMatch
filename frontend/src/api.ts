@@ -1,4 +1,4 @@
-import type { Mascota, NuevaMascota, Paginado, TipoReporte, Validacion } from './types';
+import type { Comunidad, Mascota, NuevaMascota, Paginado, TipoReporte, Validacion } from './types';
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
 
@@ -49,6 +49,59 @@ export async function marcarEncontrada(id: string, editToken: string): Promise<v
     body: JSON.stringify({ editToken }),
   });
   await manejarRespuesta(res);
+}
+
+// --- Comunidades ---
+
+export async function listarComunidades(): Promise<Comunidad[]> {
+  const res = await fetch(`${API_URL}/api/comunidades`);
+  return manejarRespuesta(res);
+}
+
+export async function listarMascotasDeComunidad(
+  comunidadId: string,
+  page = 1,
+  pageSize = 50,
+): Promise<Paginado<Mascota>> {
+  const res = await fetch(
+    `${API_URL}/api/comunidades/${comunidadId}/mascotas?page=${page}&pageSize=${pageSize}`,
+  );
+  return manejarRespuesta<Paginado<Mascota>>(res);
+}
+
+/** Vincula (o desvincula con null) una mascota ya registrada a una comunidad. Público, sin editToken. */
+export async function vincularMascotaAComunidad(
+  mascotaId: string,
+  comunidadId: string | null,
+): Promise<void> {
+  const res = await fetch(`${API_URL}/api/mascotas/${mascotaId}/comunidad`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ comunidadId }),
+  });
+  await manejarRespuesta(res);
+}
+
+export async function adminCrearComunidad(
+  data: { nombre: string; descripcion?: string; lat: number; lng: number },
+  token: string,
+): Promise<Comunidad> {
+  const res = await fetch(`${API_URL}/api/admin/comunidades`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data),
+  });
+  return manejarRespuesta(res);
+}
+
+export async function adminEliminarComunidad(id: string, token: string): Promise<void> {
+  const res = await fetch(`${API_URL}/api/admin/comunidades/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (res.status !== 204) {
+    await manejarRespuesta(res);
+  }
 }
 
 export async function presignUpload(
