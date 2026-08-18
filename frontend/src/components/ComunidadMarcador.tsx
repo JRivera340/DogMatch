@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Marker, Popup } from 'react-leaflet';
+import { useNavigate } from 'react-router-dom';
 import L from 'leaflet';
 import type { Comunidad } from '../types';
 import { adminEliminarComunidad } from '../api';
-import { ModalMascotasComunidad } from './ModalMascotasComunidad';
 import { ModalAgregarMascotaAComunidad } from './ModalAgregarMascotaAComunidad';
 
 const COLOR_COMUNIDAD = '#6b4c9a';
@@ -33,7 +33,7 @@ interface Props {
  * (mismo criterio que reportar un caso); eliminar el punto es solo admin.
  */
 export function ComunidadMarcador({ comunidad, isAdmin, adminToken, onCambio }: Props) {
-  const [modalVer, setModalVer] = useState(false);
+  const navigate = useNavigate();
   const [modalAgregar, setModalAgregar] = useState(false);
   const [confirmandoEliminar, setConfirmandoEliminar] = useState(false);
   const [eliminando, setEliminando] = useState(false);
@@ -66,7 +66,7 @@ export function ComunidadMarcador({ comunidad, isAdmin, adminToken, onCambio }: 
             <div className="mt-2 flex flex-wrap gap-1.5">
               <button
                 type="button"
-                onClick={() => setModalVer(true)}
+                onClick={() => navigate(`/comunidad/${comunidad.id}`, { state: { comunidad } })}
                 className="u-data border border-brand-600 px-2 py-1 text-brand-700 hover:bg-brand-50"
               >
                 Ver mascotas
@@ -114,7 +114,6 @@ export function ComunidadMarcador({ comunidad, isAdmin, adminToken, onCambio }: 
         </Popup>
       </Marker>
 
-      {modalVer && <ModalMascotasComunidad comunidad={comunidad} onClose={() => setModalVer(false)} />}
       {modalAgregar && (
         <ModalAgregarMascotaAComunidad
           comunidad={comunidad}

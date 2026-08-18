@@ -107,7 +107,9 @@ export function MapaMascotas({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <RecentrarEnCiudad ciudad={ciudadFiltro} />
-        {mascotas.map((mascota) => (
+        {mascotas
+          .filter((m) => !m.comunidadId)
+          .map((mascota) => (
           <Marker
             key={mascota.id}
             position={[mascota.lat, mascota.lng]}

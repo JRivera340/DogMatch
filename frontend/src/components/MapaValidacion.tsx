@@ -112,7 +112,9 @@ export function MapaValidacion({ mascotas, onVerDetalle, ciudadFiltro }: Props) 
             onCambio={cargarComunidades}
           />
         ))}
-        {visibles.map((mascota) => (
+        {visibles
+          .filter((m) => !m.comunidadId)
+          .map((mascota) => (
           <Marker
             key={mascota.id}
             position={[mascota.lat, mascota.lng]}
